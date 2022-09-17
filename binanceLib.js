@@ -28,7 +28,7 @@ function everything(APIKey, APISecret) {
                 newOrderRespType: "RESULT"
             }
 
-            if (reduceOnly) params.reduceOnly = true;
+            if (reduceOnly) params.reduceOnly = 'true';
 
             return this.createFuturesOrder(params)
         },
@@ -43,7 +43,7 @@ function everything(APIKey, APISecret) {
                 newOrderRespType: "RESULT"
             }
 
-            if (reduceOnly) params.reduceOnly = true;
+            if (reduceOnly) params.reduceOnly = 'true';
 
             return this.createFuturesOrder(params)
         },
@@ -62,7 +62,7 @@ function everything(APIKey, APISecret) {
             URL = `${baseURL}?${query}&signature=${signature}`;
 
             let response = await this.sendRequest(URL, 'post', headers);
-            if (response.data) return { error: response }; else return bigInt.parse(bigInt.stringify(response));
+            if (response.error) return response; else return bigInt.parse(bigInt.stringify(response.data));
         },
 
         makeQueryString: (q) => {
@@ -83,10 +83,9 @@ function everything(APIKey, APISecret) {
 
         sendRequest: async function (URL, method, headers) {
             try {
-                URL = 'hi';
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
-                return err
+                return { error: err }
             }
         }
     }
