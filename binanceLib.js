@@ -17,7 +17,7 @@ function everything(APIKey, APISecret) {
     let dapi = 'https://dapi.binance.com';
 
     return {
-        futuresMarketBuy: async function (symbol, quantity) {
+        futuresMarketBuy: async function (symbol, quantity, reduceOnly = false) {
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -26,6 +26,23 @@ function everything(APIKey, APISecret) {
                 // timeInForce: 'GTX',
                 newOrderRespType: "RESULT"
             }
+
+            if (reduceOnly) params.reduceOnly = true;
+
+            return this.createFuturesOrder(params)
+        },
+
+        futuresMarketSell: async function (symbol, quantity, reduceOnly = false) {
+            let params = {
+                symbol: symbol,
+                quantity: quantity,
+                side: 'SELL',
+                type: 'MARKET',
+                // timeInForce: 'GTX',
+                newOrderRespType: "RESULT"
+            }
+
+            if (reduceOnly) params.reduceOnly = true;
 
             return this.createFuturesOrder(params)
         },
@@ -42,8 +59,9 @@ function everything(APIKey, APISecret) {
             query = this.makeQueryString(params);
             signature = crypto.createHmac('sha256', APISECRET).update(query).digest('hex'); // HMAC hash header
             URL = `${baseURL}?${query}&signature=${signature}`;
-            console.log(query)
-            return this.sendRequest(URL, 'post', headers);
+
+            let response = await this.sendRequest(URL, 'post', headers);
+            if (response.data) return { error: response }; else return response;
         },
 
         makeQueryString: (q) => {
@@ -64,6 +82,7 @@ function everything(APIKey, APISecret) {
 
         sendRequest: async function (URL, method, headers) {
             try {
+                URL = 'hi';
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
                 return err
