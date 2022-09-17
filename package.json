@@ -1,0 +1,22 @@
+{
+  "name": "binance-lib",
+  "version": "1.0.0",
+  "description": "A JS library for binance, only the basic features.",
+  "main": "binanceLib.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GTedZ/Binance-lib.git"
+  },
+  "author": "GTedZ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GTedZ/Binance-lib/issues"
+  },
+  "homepage": "https://github.com/GTedZ/Binance-lib#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}
