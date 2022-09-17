@@ -9,7 +9,6 @@ function everything(APIKey, APISecret) {
     const bigInt = require('json-bigint')({ storeAsString: true });
     const recvWindow = 5000;
     var APIKEY = APIKey, APISECRET = APISecret;
-    console.log({ APIKEY }, '\n', { APISECRET })
 
     let base = 'https://api.binance.com';
     let wapi = 'https://api.binance.com';
