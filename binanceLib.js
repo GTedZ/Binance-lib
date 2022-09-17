@@ -6,6 +6,7 @@ module.exports = everything;
 function everything(APIKey, APISecret) {
     const axios = require('axios')
     const crypto = require('crypto');
+    const bigInt = require('json-bigint')({ storeAsString: true });
     const recvWindow = 5000;
     var APIKEY = APIKey, APISECRET = APISecret;
     console.log({ APIKEY }, '\n', { APISECRET })
@@ -61,7 +62,7 @@ function everything(APIKey, APISecret) {
             URL = `${baseURL}?${query}&signature=${signature}`;
 
             let response = await this.sendRequest(URL, 'post', headers);
-            if (response.data) return { error: response }; else return response;
+            if (response.data) return { error: response }; else return bigInt.parse(bigInt.stringify(response));
         },
 
         makeQueryString: (q) => {
