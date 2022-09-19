@@ -92,7 +92,7 @@ function everything(APIKey, APISecret, hedge = false) {
             try {
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
-                if (err.data && err.data.msg.includes("positionSide")) {
+                if (err.data && (err.data.msg.includes("positionSide") || err.data.msg.includes("Order's position side"))) {
                     hedgeMode = hedgeMode ? false : true;
                     err.hedgeMode = true;
                     err.isHedgeMode = hedgeMode;
