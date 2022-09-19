@@ -47,7 +47,7 @@ function everything(APIKey, APISecret, hedge = false) {
             }
 
             if (hedgeMode && positionSide) {
-                params.positionSide = side;
+                params.positionSide = positionSide;
             }
 
             if (reduceOnly) params.reduceOnly = 'true';
