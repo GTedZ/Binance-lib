@@ -9,4 +9,13 @@ const binance = require("binance-lib")(
 );
 ```
 
+and in your function, for example named CreateOrder()
+```js
 let order = await binance.futuresMarketBuy("BTCUSDT",0.001);
+if(order.error) {
+  console.log(order.error.response);
+  return;
+}
+
+// continue with your code knowing that the order was executed successfully
+```
