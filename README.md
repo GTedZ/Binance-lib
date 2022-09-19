@@ -3,7 +3,7 @@
  
  How to use:
 ```js
-let hedgeMode = true;
+let hedgeMode = false;
 const binance = require("binance-lib")(
    "YOUR_APIKEY",
    "YOUR_APISECRET",
