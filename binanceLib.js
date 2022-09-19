@@ -3,12 +3,12 @@ module.exports = everything;
 
 // timeInForce is GTX for post, and GTC for limit orders apparently
 
-function everything(APIKey, APISecret) {
+function everything(APIKey, APISecret, hedge = false) {
     const axios = require('axios')
     const crypto = require('crypto');
     const bigInt = require('json-bigint')({ storeAsString: true });
     const recvWindow = 5000;
-    var APIKEY = APIKey, APISECRET = APISecret;
+    var APIKEY = APIKey, APISECRET = APISecret, hedgeMode = hedge;
 
     let base = 'https://api.binance.com';
     let wapi = 'https://api.binance.com';
@@ -17,7 +17,7 @@ function everything(APIKey, APISecret) {
     let dapi = 'https://dapi.binance.com';
 
     return {
-        futuresMarketBuy: async function (symbol, quantity, reduceOnly = false) {
+        futuresMarketBuy: async function (symbol, quantity, reduceOnly = false, positionSide = undefined) {
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -27,12 +27,16 @@ function everything(APIKey, APISecret) {
                 newOrderRespType: "RESULT"
             }
 
+            if (hedgeMode && positionSide) {
+                params.positionSide = positionSide;
+            }
+
             if (reduceOnly) params.reduceOnly = 'true';
 
             return this.createFuturesOrder(params)
         },
 
-        futuresMarketSell: async function (symbol, quantity, reduceOnly = false) {
+        futuresMarketSell: async function (symbol, quantity, reduceOnly = false, positionSide = undefined) {
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -40,6 +44,10 @@ function everything(APIKey, APISecret) {
                 type: 'MARKET',
                 // timeInForce: 'GTX',
                 newOrderRespType: "RESULT"
+            }
+
+            if (hedgeMode && positionSide) {
+                params.positionSide = side;
             }
 
             if (reduceOnly) params.reduceOnly = 'true';
@@ -84,6 +92,11 @@ function everything(APIKey, APISecret) {
             try {
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
+                if (err.data && err.data.msg.includes("positionSide")) {
+                    hedgeMode = hedgeMode ? false : true;
+                    err.hedgeMode = true;
+                    err.isHedgeMode = hedgeMode;
+                }
                 return { error: err }
             }
         }
