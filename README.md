@@ -11,7 +11,7 @@ const binance = require("binance-lib")(
 
 and in your function, for example named CreateOrder()
 ```js
-let order = await binance.futuresMarketBuy("BTCUSDT",0.001);
+let order = await binance.futuresMarketBuy("BTCUSDT",0.001);  // you can also add a third argument as 'true', if you want it to be a reduceOnly order (order will be returned as an error if there was no position open on your account)
 if(order.error) {
   console.log(order.error.response);
   return;
