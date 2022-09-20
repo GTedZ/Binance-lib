@@ -8,7 +8,7 @@ function everything(APIKey, APISecret, hedge = false) {
     const crypto = require('crypto');
     const bigInt = require('json-bigint')({ storeAsString: true });
     const recvWindow = 5000;
-    var APIKEY = APIKey, APISECRET = APISecret, hedgeMode = hedge;
+    var APIKEY = APIKey, APISECRET = APISecret;
 
     let base = 'https://api.binance.com';
     let wapi = 'https://api.binance.com';
@@ -17,7 +17,10 @@ function everything(APIKey, APISecret, hedge = false) {
     let dapi = 'https://dapi.binance.com';
 
     return {
-        futuresMarketBuy: async function (symbol, quantity, reduceOnly = false, positionSide = undefined) {
+        hedgeMode: hedge,
+
+        futuresMarketBuy: async function (symbol, quantity, reduceOnly = false, positionSide = false) {
+            console.log('sending order')
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -27,16 +30,19 @@ function everything(APIKey, APISecret, hedge = false) {
                 newOrderRespType: "RESULT"
             }
 
-            if (hedgeMode && positionSide) {
+            if (this.hedgeMode && positionSide) {
+                console.log('setting positionSide', 'hedgeMode:', this.hedgeMode, 'positionSide', positionSide)
                 params.positionSide = positionSide;
+            } else {
+                console.log('NOT SETTING POSITIONSIDE')
+                if (reduceOnly) params.reduceOnly = 'true';
             }
-
-            if (reduceOnly) params.reduceOnly = 'true';
 
             return this.createFuturesOrder(params)
         },
 
         futuresMarketSell: async function (symbol, quantity, reduceOnly = false, positionSide = undefined) {
+            console.log('sending order')
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -46,11 +52,9 @@ function everything(APIKey, APISecret, hedge = false) {
                 newOrderRespType: "RESULT"
             }
 
-            if (hedgeMode && positionSide) {
+            if (this.hedgeMode && positionSide) {
                 params.positionSide = positionSide;
-            }
-
-            if (reduceOnly) params.reduceOnly = 'true';
+            } else if (reduceOnly) params.reduceOnly = 'true';
 
             return this.createFuturesOrder(params)
         },
@@ -89,13 +93,21 @@ function everything(APIKey, APISecret, hedge = false) {
         },
 
         sendRequest: async function (URL, method, headers) {
+            console.log('hedgeMode:', this.hedgeMode);
             try {
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
-                if (err.data && (err.data.msg.includes("positionSide") || err.data.msg.includes("Order's position side"))) {
-                    hedgeMode = hedgeMode ? false : true;
+                if (err.response && err.response.data && err.response.data.msg.includes("positionSide")) {
+                    console.log('received positionSide error')
+                    this.hedgeMode = this.hedgeMode ? false : true;
                     err.hedgeMode = true;
                     err.isHedgeMode = hedgeMode;
+                }
+                else if (err.response && err.response.data && err.response.data.msg.includes("Order's position side")) {
+                    console.log('received orders position side does not match users setting')
+                    this.hedgeMode = this.hedgeMode ? false : true;
+                    err.hedgeMode = true;
+                    err.isHedgeMode = this.hedgeMode;
                 }
                 return { error: err }
             }
