@@ -1,6 +1,9 @@
 # Binance-lib
  A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
  
+ *STILL UNDER FREQUEST UPDATES AND DEVELOPMENT (Working on making every aspect of the library as intuitive as it can be, meaning I'd rather have the code do all the heavy lifting while the user just copy and pastes from this page and doing minimal changes)*
+ *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
+
  How to use:
 ```js
 let hedgeMode = false;
