@@ -3,6 +3,7 @@
  
  *STILL UNDER FREQUENT UPDATES AND DEVELOPMENT (Working on making every aspect of the library as intuitive as it can be, meaning I'd rather have the code do all the heavy lifting while the user just copy and pastes from this page while only doing minimal changes)*
  *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
+*If you have any issues/requests for this project, please do create a new 'issue' on github, and I will promptly get to work on implementing it*
 
  How to use:
 ```js
