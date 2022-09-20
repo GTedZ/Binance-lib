@@ -20,7 +20,6 @@ function everything(APIKey, APISecret, hedge = false) {
         hedgeMode: hedge,
 
         futuresMarketBuy: async function (symbol, quantity, reduceOnly = false, positionSide = false) {
-            console.log('sending order')
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -42,7 +41,6 @@ function everything(APIKey, APISecret, hedge = false) {
         },
 
         futuresMarketSell: async function (symbol, quantity, reduceOnly = false, positionSide = undefined) {
-            console.log('sending order')
             let params = {
                 symbol: symbol,
                 quantity: quantity,
@@ -93,18 +91,17 @@ function everything(APIKey, APISecret, hedge = false) {
         },
 
         sendRequest: async function (URL, method, headers) {
-            console.log('hedgeMode:', this.hedgeMode);
             try {
                 return await axios[method](URL, '', { headers: headers })
             } catch (err) {
                 if (err.response && err.response.data && err.response.data.msg.includes("positionSide")) {
-                    console.log('received positionSide error')
+                    console.log('received positionSide error, switching off switching hedgeMode')
                     this.hedgeMode = this.hedgeMode ? false : true;
                     err.hedgeMode = true;
                     err.isHedgeMode = hedgeMode;
                 }
                 else if (err.response && err.response.data && err.response.data.msg.includes("Order's position side")) {
-                    console.log('received orders position side does not match users setting')
+                    console.log('received orders position side does not match users setting, switching to hedgeMode')
                     this.hedgeMode = this.hedgeMode ? false : true;
                     err.hedgeMode = true;
                     err.isHedgeMode = this.hedgeMode;
