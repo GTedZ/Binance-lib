@@ -1,7 +1,19 @@
-const binanceLib = require('./binanceLib')(
-    '2odJcYgwLlYWTyrTZ32renKogWrJfchYJstxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
-    'Nd41g9cw9a1CrkNsO8Igr71vM0fwxvHLrzPOsMRWeTMq4Rj84QGRXgZ9nTLoRfKy',
-    true
-)
+const Binance = require('./binanceLibCopy');
+const binance = new Binance(
+    '2odJcYgwLlYWTyrTZ32renKogWrJfchYJszxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
+    '9KdJcYgwLlYWTyrTZ3gWrJfchYOajKwhJstxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
+    {
+        useServerTime: true
+    }
+);
 
-binanceLib.futuresMarketBuy('BTCUSDT',0.001,false, 'LONG ').then(x => console.log(''))
+let recvWindow = 2000;
+setTimeout(hi, 5000);
+async function hi() {
+    console.log(recvWindow)
+    let resp;
+    resp = await binance.userTrades('ANTUSDT', 5, { recvWindow: recvWindow });
+    console.log(resp.error);
+    recvWindow-=100;
+    hi();
+}
