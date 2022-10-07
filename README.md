@@ -5,21 +5,30 @@
  *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
 *If you have any issues/requests for this project, please do create a new 'issue' on github, and I will promptly get to work on implementing it*
 
+ How to setup:
+ ```bat
+  npm i binance-lib
+ ```
+
  How to use:
 ```js
-let hedgeMode = false;
-const binance = require("binance-lib")(
+const Binance = require('binance-lib');
+const binance = new Binance(
    "YOUR_APIKEY",
    "YOUR_APISECRET",
-   hedgeMode
+   {
+    // these settings here are optional
+    useServerTime: true, <= recommended for everyone, it syncs time to the server's time
+    hedgeMode: true <= You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+   }
 );
 ```
 
 and in your function, for example named CreateOrder()
 ```js
-let reduceOnly = false, positionSide = 'LONG';
-let order = await binance.futuresMarketBuy("BTCUSDT",0.001, reduceOnly, positionSide);  // you can also add a third argument as 'true', if you want it to be a reduceOnly order (order will be returned as an error if there was no position open on your account)
-// it is also recommended to keep reduceOnly as 'true' or 'false' and positionSide as 'LONG' or 'SHORT' whether you are on side Buy or Sell (for hedgeMode users, because the program will automatically switch to hedgeMode for you if you forgot to specify it while loading the module)
+let order = await binance.futuresMarketBuy("BTCUSDT",0.001, { positionSide: 'LONG', reduceOnly: false}); 
+// if you want it to be a reduceOnly order, include in the third parameter 'reduceOnly : true' (order will be returned as an error if there was no position open on your account)
+// it is also recommended to keep positionSide as 'LONG' or 'SHORT' whether you are on side Buy or Sell even if you aren't a hedgeMode user (because the program will automatically switch to hedgeMode for you if you forgot to specify it while loading the module)
 if(order.error) {
   console.log(order.error.response);
   // optionally: you can have code here to handle the error
@@ -28,3 +37,4 @@ if(order.error) {
 
 // continue with your code knowing that the order was executed successfully
 ```
+All requests can be handled via checking for an error with: 'if(response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks

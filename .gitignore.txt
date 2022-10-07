@@ -1,6 +1,6 @@
 node_modules/
-package-lock.json
-DebugRun.bat
+package-lock
+DebugRun
 log.txt
 logErr.txt
-test.js
+test

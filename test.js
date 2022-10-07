@@ -1,19 +1,22 @@
-const Binance = require('./binanceLibCopy');
+const Binance = require('./binanceLib');
 const binance = new Binance(
-    '2odJcYgwLlYWTyrTZ32renKogWrJfchYJszxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
-    '9KdJcYgwLlYWTyrTZ3gWrJfchYOajKwhJstxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
+    '2odJcYgwLlYWTyrTZ32renKogWrJfchYJstxnmmLDi6gLMJZ4R2jpooJScZ0R44E',
+    'Nd41g9cw9a1CrkNsO8Igr71vM0fwxvHLrzPOsMRWeTMq4Rj84QGRXgZ9nTLoRfKy',
     {
-        useServerTime: true
+        // useServerTime: true,
+        hedgeMode: false
     }
 );
 
-let recvWindow = 2000;
-setTimeout(hi, 5000);
+// let recvWindow = 2000;
+// setTimeout(hi, 5000);
+// setTimeout(hi, 2000);
+hi();
 async function hi() {
-    console.log(recvWindow)
-    let resp;
-    resp = await binance.userTrades('ANTUSDT', 5, { recvWindow: recvWindow });
-    console.log(resp.error);
-    recvWindow-=100;
-    hi();
+    let x;
+
+    //
+    x = await binance.futuresCountdownCancelAll();
+    //
+    console.log(x);
 }
