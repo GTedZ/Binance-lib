@@ -17,7 +17,7 @@ async function hi() {
     let x;
 
     //
-    x = await binance.futuresUserTrades('ccc')
+    x = await binance.futuresUserTrades('BTCUSDT')
     //
     console.log(x);
 }

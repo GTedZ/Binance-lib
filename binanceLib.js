@@ -997,14 +997,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (response.headers['x-response-time']) data['server-process-time'] = response.headers['x-response-time'];
                 data.latency_millis = latency;
                 data.data = response.data;
-                console.log(response.headers);
                 return data;
             }
             return response.data;
 
         } catch (err) {
             let error;
-            console.log(err.response.headers)
             if (err.response && err.response.data) {
                 error = {
                     status: err.response.status,
