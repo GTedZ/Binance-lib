@@ -4,7 +4,8 @@ const binance = new Binance(
     'Nd41g9cw9a1CrkNsO8Igr71vM0fwxvHLrzPOsMRWeTMq4Rj84QGRXgZ9nTLoRfKy',
     {
         // useServerTime: true,
-        hedgeMode: false
+        hedgeMode: false,
+        extraResponseInfo: true
     }
 );
 
@@ -16,7 +17,7 @@ async function hi() {
     let x;
 
     //
-    x = await binance.futuresCountdownCancelAll();
+    x = await binance.futuresUserTrades('ccc')
     //
     console.log(x);
 }

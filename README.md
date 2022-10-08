@@ -14,12 +14,13 @@
 ```js
 const Binance = require('binance-lib');
 const binance = new Binance(
-   "YOUR_APIKEY",
-   "YOUR_APISECRET",
+   '<YOUR_APIKEY>',
+   '<YOUR_APISECRET>',
    {
     // these settings here are optional
-    useServerTime: true, <= recommended for everyone, it syncs time to the server's time
-    hedgeMode: true <= You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+    useServerTime: true, // recommended for everyone, it syncs time to the server's time
+    hedgeMode: true, // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+  //extraInfo: true <- this will return some extra data like your APIKeys' "Used Weight" and the Server Processing Time for your request and the latency (or total elapsed time from sending the request and receiving the response)
    }
 );
 ```

@@ -20,14 +20,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     this.timestamp_offset = 0;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
+    if (options.extraResponseInfo && options.extraResponseInfo == true) this.extraResponseInfo = true; else this.extraResponseInfo = false;
 
-    /////////////////// public functions
+    // public functions ////
 
 
 
-    // futures
+    // futures ////
 
-    // futures Market DATA
+    // futures Market DATA ////
 
     this.futuresPing = async () => {
         let resp;
@@ -550,8 +551,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return parseAllPropertiesToFloat(response);
     }
 
+    // futures Market DATA \\\\
 
-    // futures Account/Trade endpoints
+    // futures Account/Trade Endpoints ////
 
     this.futuresChangePositionSide = function (dualSidePosition, opts = { recvWindow: this.recvWindow }) {
         let params = {
@@ -584,7 +586,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresChangeMultiAssetMargin = function (multiAssetMargin, opts = { recvWindow: this.recvWindow }) {
+    this.futuresChangeMultiAssetMargin = function (multiAssetsMargin, opts = { recvWindow: this.recvWindow }) {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/multiAssetsMargin',
@@ -592,13 +594,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         let options = {
-            multiAssetMargin: multiAssetMargin
+            multiAssetsMargin: multiAssetsMargin
         }
         Object.assign(options, opts);
 
-        if (multiAssetMargin == undefined) return ERR('multiAssetMargin', 'required', false, ['true', 'false', 'for Multi-Asset Mode to be turned on or off']);
+        if (multiAssetsMargin == undefined) return ERR('multiAssetsMargin', 'required', false, ['true', 'false', 'for Multi-Asset Mode to be turned on or off']);
 
-        return request(params, options);
+        return request(params, options, 'SIGNED'); // , 'SIGNED'
     }
 
     this.futuresGetMultiAssetMargin = function (opts = { recvWindow: this.recvWindow }) {
@@ -611,7 +613,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {}
         Object.assign(options, opts);
 
-        return request(params, options);
+        return request(params, options, 'SIGNED');
     }
 
     this.futuresMarketBuy = async function (symbol, quantity, opts = {}) {
@@ -697,20 +699,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
 
-        return response = bigInt.parse(bigInt.stringify(response));
+        return response = bigInt.parse(bigInt.stringify(parseAllPropertiesToFloat(response)));
     }
 
     /**
-     * @param arr - array of objects that contain the parameters of the order
+     * @param orders - array of objects that contain the parameters of the order
      */
-    this.futuresMultipleOrders = async (arr, serialize = false) => {
+    this.futuresMultipleOrders = async (orders, serialize = false) => {
         // TODO
-        if (arr.length > 5) {
+        if (orders.length > 5) {
             if (serialize == false) return ERR(`A maximum of 5 orders per batch is allowed. To avoid this, send a second parameter as 'true' to serialize the batches`);
         }
     }
 
-    this.futuresOrder = async (symbol, orderId, origClientOrderId, opts = {}) => {
+    this.futuresOrder = (symbol, orderId, origClientOrderId, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/order',
@@ -721,15 +723,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {
             symbol: symbol
         }
-        Object.assign(options, opts);
         if (orderId) options.orderId = orderId;
         if (origClientOrderId) options.origClientOrderId = origClientOrderId;
-        if (!orderId && !origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
+        Object.assign(options, opts);
+        if (!opts.orderId && !opts.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
 
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresCancelOrder = async (symbol, orderId, origClientOrderId, opts = {}) => {
+    this.futuresCancelOrder = (symbol, orderId, origClientOrderId, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/order',
@@ -743,12 +745,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         Object.assign(options, opts);
         if (orderId) options.orderId = orderId;
         if (origClientOrderId) options.origClientOrderId = origClientOrderId;
-        if (!orderId && !origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
+        if (!opts.orderId && !opts.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
 
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresCancelAll = async (symbol, opts = {}) => {
+    this.futuresCancelAll = (symbol, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/allOpenOrders ',
@@ -773,7 +775,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @param countdownTime - required: (millis) => every 1000 is 1sec 
      * @returns ({symbol, countdownTime})
      */
-    this.futuresCountdownCancelAll = async (symbol, countdownTime, opts = {}) => {
+    this.futuresCountdownCancelAll = (symbol, countdownTime, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: "/fapi/v1/countdownCancelAll",
@@ -791,9 +793,82 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    //
+    this.futuresOpenOrder = (symbol, orderId = 0, origClientOrderId = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/openOrder',
+            method: 'get'
+        }
 
-    this.leverage = function (symbol, leverage, opts = {}) {
+        if (symbol == undefined) return ERR('symbol', 'required')
+
+        let options = {
+            symbol: symbol
+        }
+        if (orderId) options.orderId = orderId;
+        if (origClientOrderId) options.origClientOrderId = origClientOrderId;
+        Object.assign(options, opts);
+        if (!opts.orderId && !opts.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresOpenOrders = (symbol = false, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/openOrders',
+            method: 'get'
+        }
+
+        let options = {};
+        if (symbol) options.symbol = symbol;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresAllOrders = (symbol, orderId = 0, limit = 500, startTime = 0, endTime = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/allOrders',
+            method: 'get'
+        }
+
+        if (symbol == undefined) return ERR('symbol', 'required');
+
+        let options = {
+            symbol: symbol,
+            limit: limit
+        }
+        if (orderId) options.orderId = orderId;
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresBalance = (options = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v2/balance',
+            method: 'get'
+        }
+
+        return request(params, options);
+    }
+
+    this.futuresAccount = (options = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v2/account',
+            method: 'get'
+        }
+
+        return request(params, options);
+    }
+
+    this.leverage = (symbol, leverage, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/leverage',
@@ -813,7 +888,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresMarginType = function (symbol, marginType, opts = {}) {
+    this.futuresMarginType = (symbol, marginType, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/marginType',
@@ -836,7 +911,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresPositionRisk = function (symbol = false, opts = {}) {
+    this.futuresPositionMargin = (symbol, amount = 0, type = undefined, opts = { positionSide: undefined }) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/positionMargin',
+            method: 'post'
+        }
+    }
+
+    this.futuresPositionRisk = (symbol = false, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v2/positionRisk',
@@ -851,7 +934,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresUserTrades = async function (symbol, limit = 500, opts = {}) {
+    this.futuresUserTrades = (symbol, limit = 500, opts = {}) => {
 
         let params = {
             baseURL: fapi,
@@ -872,7 +955,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    ///////////////////
+    // futures Account/Trade Endpoints \
+
+    // private functions ////
 
     request = async (params, options = {}, type = 'default') => {
         if (!options.recvWindow) options.recvWindow = this.recvWindow;
@@ -892,8 +977,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.signature = signature;
         }
 
-        console.log(params.baseURL + params.path, options);
-        // let startTime = Date.now(), latency;
+        // console.log(params.baseURL + params.path, options);
+        let startTime = Date.now(), latency;
         try {
             let response = await axios({
                 method: params.method,
@@ -902,18 +987,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 headers: params.headers,
                 data: ''
             })
-            /*latency = Date.now() - startTime;
-            response.data.extraInfo = {
-                'used-weight-1m': response.headers['x-mbx-used-weight-1m'],
-                'order-count-10s': response.headers['x-mbx-order-count-10s'],
-                'order-count-1m': response.headers['x-mbx-order-count-1m'],
-                'process-time': response.headers['x-response-time'],
-                latency: latency
-            };*/
+            latency = Date.now() - startTime;
+
+            if (this.extraResponseInfo) {
+                let data = {};
+                if (response.headers['x-mbx-used-weight-1m']) data['x-mbx-used-weight-1m'] = response.headers['x-mbx-used-weight-1m'];
+                if (response.headers['x-mbx-order-count-10s']) data['x-mbx-order-count-10s'] = response.headers['x-mbx-order-count-10s'];
+                if (response.headers['x-mbx-order-count-1m']) data['x-mbx-order-count-1m'] = response.headers['x-mbx-order-count-1m'];
+                if (response.headers['x-response-time']) data['server-process-time'] = response.headers['x-response-time'];
+                data.latency_millis = latency;
+                data.data = response.data;
+                console.log(response.headers);
+                return data;
+            }
             return response.data;
 
         } catch (err) {
             let error;
+            console.log(err.response.headers)
             if (err.response && err.response.data) {
                 error = {
                     status: err.response.status,
@@ -1015,6 +1106,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             msg: msg
         }
     }
+
+    // private functions \\\\
 
     if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
 }
