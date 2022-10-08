@@ -3,4 +3,4 @@ package-lock
 DebugRun
 log.txt
 logErr.txt
-test
+test.js
