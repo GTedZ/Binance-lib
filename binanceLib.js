@@ -14,7 +14,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const dapi = 'https://dapi.binance.com';
 
     const intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"];
-
+    const incomeTypes = ['TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE']
     this.APIKEY = APIKEY;
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
@@ -32,13 +32,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     this.futuresPing = async () => {
         let resp;
+        let startTime = Date.now();
         resp = await request(
             {
                 baseURL: fapi,
                 path: '/fapi/v1/ping',
                 method: 'get'
             }
-        )
+        );
+        let endTime = Date.now();
+
+        if (resp.error) return this.futuresPing();
+        resp.roundtrip_time_millis = endTime - startTime;
+        return resp;
     }
 
     this.futuresServerTime = async () => {
@@ -692,6 +698,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let response = await request(params, options, 'SIGNED');
         if (response.error) {
+            if (response.error.code && response.error.code == -2022) {
+                response.error.from_dev = 'Reduce Only rejected because there is no position open on this symbol in your account.'
+            }
             if (response.error.code && response.error.code == -4061) {  // POSITION_SIDE_NOT_MATCH user's setting
                 this.hedgeMode = this.hedgeMode == true ? false : true;
                 console.log({ _binance_lib: `Received an invalid user's setting error, so automatically toggling hedgeMode to` + this.hedgeMode + `and retrying again.` });
@@ -895,30 +904,83 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             method: 'post'
         }
 
-        if (symbol == undefined) return ERR('symbol', 'required');
-        if (marginType == undefined) return ERR('marginType', 'required');
-        marginType = marginType.toLowerCase();
-        if (marginType == 'iso' || marginType == 'isolated') marginType = "ISOLATED";
-        else if (marginType == 'cross' || marginType == 'crossed') marginType = 'CROSSED';
-        else return ERR(`marginType should be either 'ISOLATED' or 'CROSS'.`);
-
         let options = {
             symbol: symbol,
             marginType: marginType
         }
         Object.assign(options, opts);
 
+        if (options.symbol == undefined) return ERR('symbol', 'required');
+        options.marginType = fixValue(options.marginType, 'ISOLATED', ['iso', 'isolated']);
+        options.marginType = fixValue(options.marginType, 'CROSSED', ['cross', 'crossed']);
+        if (!equal(options.marginType, 'ISOLATED', 'CROSSED')) return ERR('marginType', 'value', false, ['ISOLATED', 'CROSSED']);
+
         return request(params, options, 'SIGNED');
     }
 
+    /**
+     * Change an ISOLATED position's margin
+     */
     this.futuresPositionMargin = (symbol, amount = 0, type = undefined, opts = { positionSide: undefined }) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/positionMargin',
             method: 'post'
         }
+
+        let options = {
+            symbol: symbol,
+            amount: amount,
+            type: type
+        }
+
+        Object.assign(options, opts);
+        if (symbol == undefined) return ERR('symbol', 'required');
+        if (!amount) return ERR('amount', 'required');
+        if (!number(amount)) return ERR('amount', 'type', 'Number');
+        if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
+        options.type = fixValue(options.type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
+        options.type = fixValue(options.type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
+        if (!equal(options.type, '1', '2')) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+
+        return request(params, options, 'SIGNED');
     }
 
+    this.futuresPositionMarginHistory = (symbol, limit = 500, type = 0, startTime = 0, endTime = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/positionMargin/history',
+            method: 'get'
+        }
+
+        if (symbol == undefined) return ERR("symbol", 'required');
+        let options = {
+            symbol: symbol,
+            limit: limit,
+            type: type
+        }
+        Object.assign(options, opts);
+
+        if (options.type) {
+            options.type = fixValue(options.type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
+            options.type = fixValue(options.type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
+            if (!equal(options.type, '1', '2')) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    /**
+     * returns your current futures positions/position information
+     * @param {string} symbol - optional
+     * @options The parameters below should be wrapped in an object
+     * @param {number} recvWindow - number
+     * @returns Arrays of 1 Object for One-way-mode
+     * @or 
+     * @returns Arrays of 2 Objects for hedgeMode
+     */
     this.futuresPositionRisk = (symbol = false, opts = {}) => {
         let params = {
             baseURL: fapi,
@@ -955,6 +1017,59 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
+    this.futuresIncomeHistory = (symbol, limit = 100, incomeType = undefined, startTime = 0, endTime = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/income',
+            method: 'get'
+        }
+
+        let options = {
+            symbol: symbol,
+            limit: limit
+        }
+        Object.assign(options, opts);
+
+        if (symbol == undefined) return ERR('symbol', 'required');
+        if (incomeType) {
+            if (!equal(incomeType), incomeTypes) return ERR('incomeType', 'value', false, incomeTypes);
+            options.incomeType = incomeType;
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresLeverageBrackets = (symbol = undefined, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/leverageBracket',
+            method: 'get'
+        }
+
+        let options = {};
+        if (symbol) options.symbol = symbol;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresADLQuantileEstimation = (symbol = undefined, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/adlQuantile',
+            method: 'get'
+        }
+
+        let options = {};
+        if (symbol) options.symbol = symbol;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    // TODO
     // futures Account/Trade Endpoints \
 
     // private functions ////
@@ -1079,10 +1194,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     const fixValue = (variable, end_value, possibilities) => {
+        if (variable == undefined) return variable;
+        variable = variable.toLowerCase();
         possibilities.push(end_value.toLowerCase());
         let lower = variable.toLowerCase();
 
-        if (possibilities.filter(a => lower == a).length != 0) {
+        if (possibilities.filter(a => lower == a.toLowerCase()).length != 0) {
             return end_value;
         }
 

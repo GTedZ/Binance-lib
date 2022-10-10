@@ -5,7 +5,7 @@ const binance = new Binance(
     {
         // useServerTime: true,
         hedgeMode: false,
-        extraResponseInfo: true
+        extraResponseInfo: false
     }
 );
 
@@ -17,7 +17,7 @@ async function hi() {
     let x;
 
     //
-    x = await binance.futuresUserTrades('BTCUSDT')
+    // x = await binance.futuresPing();
     //
     console.log(x);
 }
