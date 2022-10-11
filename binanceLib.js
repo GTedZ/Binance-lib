@@ -865,14 +865,21 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresBalance = (options = {}) => {
+    this.futuresBalance = async (reconnect = false, tries = -1, options = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v2/balance',
             method: 'get'
         }
 
-        return request(params, options, 'SIGNED');
+        let resp = await request(params, options, 'SIGNED');
+        if (resp.error) {
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else return this.futuresBalance(reconnect, tries, options)
+        }
+
+        return parseAllPropertiesToFloat(resp);
     }
 
     /**
@@ -1234,10 +1241,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         return {
-            status: 400,
-            statusText: 'Local Error',
-            code: -1,
-            msg: msg
+            error: {
+                status: 400,
+                statusText: 'Local Error',
+                code: -1,
+                msg: msg
+            }
         }
     }
 
