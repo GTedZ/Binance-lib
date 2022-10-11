@@ -23,8 +23,9 @@ const binance = new Binance(
    {
     // these settings here are optional
     useServerTime: true, // recommended for everyone, it syncs time to the server's time
-    hedgeMode: true, // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
-  //extraInfo: true <- this will return some extra data like your APIKeys' "Used Weight" and the Server Processing Time for your request and the latency (or total elapsed time from sending the request and receiving the response)
+    hedgeMode: false, // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+
+    extraInfo: false // <- this will return some extra data like your APIKeys' "Used Weight" and the Server Processing Time for your request and the latency (or total elapsed time from sending the request and receiving the response)
   // if you set 'extraInfo' to true, you will have to access your response data via the .data property of the response variable => 
   // let response = await binance.futuresUserTrades('BTCUSDT');
   // console.log(response.data); <= your response data is in the '.data' property
