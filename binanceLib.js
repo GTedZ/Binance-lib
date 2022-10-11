@@ -864,17 +864,27 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             method: 'get'
         }
 
-        return request(params, options);
+        return request(params, options, 'SIGNED');
     }
 
-    this.futuresAccount = (options = {}) => {
+    /**
+     * Returns account info, along with all your assets and positions
+     * @param {boolean} activePositionsOnly - optional: returns only your current open positions
+     * @param {boolean} activeAssets - optional: not recommended, it will only returns NON-ZERO assets
+     * @options {recvWindow}
+     */
+    this.futuresAccount = async (activePositionsOnly = false, activeAssets = false, options = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v2/account',
             method: 'get'
         }
 
-        return request(params, options);
+        let resp = await request(params, options, 'SIGNED');
+        if (resp.error) return resp;
+        if (activePositionsOnly == true) resp.positions = resp.positions.filter(position => position.positionAmt != 0);
+        if (activeAssets == true) resp.assets = resp.assets.filter(asset => asset.walletBalance != 0 || asset.availableBalance != 0 || asset.marginBalance != 0);
+        return parseAllPropertiesToFloat(resp);
     }
 
     this.leverage = (symbol, leverage, opts = {}) => {
@@ -1176,6 +1186,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const propertiesToFloat = (obj) => {
         for (let key of Object.keys(obj)) {
+            if (Array.isArray(obj[key])) obj[key] = parseAllPropertiesToFloat(obj[key]);
             obj[key] = getNumberOrString(obj[key]);
         }
     }
