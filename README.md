@@ -32,15 +32,48 @@ const binance = new Binance(
 
 and in your function, for example named CreateOrder()
 ```js
-let order = await binance.futuresMarketBuy("BTCUSDT",0.001, { positionSide: 'LONG', reduceOnly: false}); 
+let order = await binance.futuresMarketBuy("BTCUSDT", 0.001, { positionSide: 'LONG', reduceOnly: false}); 
 // if you want it to be a reduceOnly order, include in the third parameter 'reduceOnly: true' (order will be returned as an error if there was no position open on your account)
 // it is also recommended to keep positionSide as 'LONG' or 'SHORT' whether you are on side Buy or Sell even if you aren't a hedgeMode user (because the program will automatically switch to hedgeMode for you if you forgot to specify it while loading the module)
 if(order.error) {
-  console.log(order.error);
-  // optionally: you can have code here to handle the error
+  console.log(order.error); // optionally: you can have code here to handle the error
   return;
 }
 
 // continue with your code knowing that the order was executed successfully
 ```
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
+
+
+***FUTURES DOCUMENTATION:***
+
+**FUTURES MARKET DATA**
+ 
+.futuresPing():
+```js
+  let ping = await binance.futuresPing();
+  if(ping.error) {
+    console.log(ping.error); // check for error
+  }
+  console.log(ping); // -> { roundtrip_time_millis: 389 }
+```
+
+or optionally, you can use the parameter 'reconnect' as true, this way the library will keep pinging until it gets a successful response, just like the following:
+```js
+  let ping_til_successful = await binance.futuresPing(true);
+  console.log(ping_til_successful); // -> { roundtrip_time_millis: 389 } even though it took 10 consecutive tries to finally get a response
+```
+
+and finally, market data functions also have a parameter 'tries' if you want to ONLY try a specific amount of times before an error is returned, just like the following:
+```js
+  let ping_3tries_max = await binance.futuresPing(true, 3);
+  if(ping_3tries_max.error) {
+    // the ping request failed 3 times with no success.
+  }
+```
+**PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IF HERE**
+.futuresServerTime():
+```js
+  let serverTime = await binance.futuresServerTime();
+  
+```

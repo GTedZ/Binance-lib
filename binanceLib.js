@@ -30,7 +30,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // futures Market DATA ////
 
-    this.futuresPing = async () => {
+    this.futuresPing = async (reconnect = false, tries = -1) => {
         let resp;
         let startTime = Date.now();
         resp = await request(
@@ -42,12 +42,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         );
         let endTime = Date.now();
 
-        if (resp.error) return this.futuresPing();
+        if (resp.error) {
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else return this.futuresPing(reconnect, tries);
+        }
         resp.roundtrip_time_millis = endTime - startTime;
         return resp;
     }
 
-    this.futuresServerTime = async () => {
+    this.futuresServerTime = async (reconnect = false) => {
         let resp;
         resp = await request(
             {
@@ -57,7 +61,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             });
 
         if (resp.error) {
-            return this.futuresServerTime();
+            if (reconnect == false) return resp;
+            else return this.futuresServerTime(reconnect);
         }
 
         return resp.serverTime;
@@ -1097,7 +1102,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!this.APISECRET) return ERR('APISECRET is required for this request.');
             options.timestamp = Date.now() + this.timestamp_offset;
             query = makeQueryString(options);
-            console.log(query)
+            // console.log(query)
             let signature = crypto.createHmac('sha256', this.APISECRET).update(query).digest('hex');
             options.signature = signature;
         }
