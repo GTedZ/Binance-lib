@@ -71,10 +71,16 @@ and finally, market data functions also have a parameter 'tries' if you want to 
     // the ping request failed 3 times with no success.
   }
 ```
-**PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IF HERE**
+**PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
 .futuresServerTime():
 ```js
-  let serverTime = await binance.futuresServerTime();
-  
+  let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries)
+  console.log(serverTime); // <= 1665491953938
+```
+
+.futuresExchangeInfo():
+```js
+  let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries)
+  console.log(exchangeInfo);
 ```

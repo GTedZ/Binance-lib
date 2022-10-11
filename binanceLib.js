@@ -51,7 +51,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp;
     }
 
-    this.futuresServerTime = async (reconnect = false) => {
+    this.futuresServerTime = async (reconnect = false, tries = -1) => {
         let resp;
         resp = await request(
             {
@@ -61,14 +61,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             });
 
         if (resp.error) {
-            if (reconnect == false) return resp;
-            else return this.futuresServerTime(reconnect);
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else return this.futuresServerTime(reconnect, tries);
         }
 
         return resp.serverTime;
     }
 
-    this.futuresExchangeInfo = async () => {
+    this.futuresExchangeInfo = async (reconnect = false, tries = -1) => {
         let resp = await request(
             {
                 baseURL: fapi,
@@ -77,7 +78,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             });
 
         if (resp.error) {
-            return this.exchangeInfo();
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else return this.exchangeInfo(reconnect, tries);
         }
 
         return resp.data;
