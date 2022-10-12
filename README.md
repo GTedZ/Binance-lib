@@ -52,8 +52,8 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 |ALL FUTURES FUNCTIONS               |REQUIRED PARAMETERS|OPTIONAL PARAMETERS|OPTIONS = {}    |
 |:-----------------------------------|:-----------------:|:-----------------:|:-------------: |
-|futuresPing()                       |none               |reconnect, tries   | none           |
-|futuresServerTime()                 ||||
+|futuresPing()                       |                   |reconnect, tries   |                |
+|futuresServerTime()                 |none|reconnect, tries|none|
 |futuresExchangeInfo()               ||||
 |futuresOrderBook()                  ||||
 |futuresRecentTrades()               ||||
