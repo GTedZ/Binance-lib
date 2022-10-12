@@ -52,9 +52,9 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 |ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}    |
 |:-------------------------------------------------              |:--------------------------:|:-------------------------------:|:--------------:|
-|futuresPing()                           [<sup>ref</sup>](#futuresPing)|                            |reconnect, tries                 |                |
-|futuresServerTime()               [<sup>see</sup>](#futuresServerTime)|                            |reconnect, tries                 |                |
-|futuresExchangeInfo()          [<sup>check</sup>](#futuresExchangeInfo)|                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
+|futuresPing()                           [ref](#futuresPing)|                            |reconnect, tries                 |                |
+|futuresServerTime()               [see](#futuresServerTime)|                            |reconnect, tries                 |                |
+|futuresExchangeInfo()         [check](#futuresExchangeInfo)|                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
 |futuresOrderBook()                                                    |symbol                      |limit                            |                |
 |futuresRecentTrades()                                                 |symbol                      |limit                            |                |
 |futuresHistoricalTrades()                                             |symbol                      |limit, fromId                    |                |
