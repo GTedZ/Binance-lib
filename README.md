@@ -50,61 +50,61 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 ***FUTURES DOCUMENTATION:***
 
-|ALL FUTURES FUNCTIONS                             |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}    |
-|:-------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
-|futuresPing()                     [go](#futuresPing)|                            |reconnect, tries                 |                |
-|futuresServerTime()                [fTime](#fTime)|                            |reconnect, tries                 |                |
-|futuresExchangeInfo()                             |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
-|futuresOrderBook()                                |symbol                      |limit                            |                |
-|futuresRecentTrades()                             |symbol                      |limit                            |                |
-|futuresHistoricalTrades()                         |symbol                      |limit, fromId                    |                |
-|futuresAggTrades()                                |symbol                      |limit, startTime, endTime, fromId|                |
-|futuresCandlesticks()                             |symbol, interval            |limit, startTime, endTime, fromId|                |
-|futuresContinuousCandlesticks()                   |pair, interval, contractType|limit, startTime, endTime        |                |
-|futuresIndexPriceCandlesticks()                   |                   |                                 |                |
-|futuresMarkPriceCandlesticks()                    |                   |                                 |                |
-|futuresMarkPrice()                                |                   |                                 |                |
-|futuresFundingRate()                              |                   |                                 |                |
-|futures24hrTicker()                               |                   |                                 |                |
-|futuresPrices()                                   |                   |                                 |                |
-|futuresOpenInterestStatistics()                   |                   |                                 |                |
-|futuresOpenInterest()                             |                   |                                 |                |
-|futuresBookTicker()                               |                   |                                 |                |
-|futuresTopLongShortAccountRatio()                 |                   |                                 |                |
-|futuresTopLongShortPositionRatio()                |                   |                                 |                |
-|futuresGlobalLongShortAccountRatio() [^fGLSARatio]|                   |                                 |                |
-|futuresTakerlongshortRatio()                      |                   |                                 |                |
-|futuresBLVTCandlesticks()                         |                   |                                 |                |
-|futuresIndexInfo()                  |                   |                                 |                |
-|futuresMultiAssetModeIndex()        |                   |                                 |                |
-|futuresChangePositionSide()         |                   |                                 |                |
-|futuresGetPositionSide()            |                   |                                 |                |
-|futuresChangeMultiAssetMargin()     |                   |                                 |                |
-|futuresGetMultiAssetMargin()        |                   |                                 |                |
-|futuresMarketBuy()                  |                   |                                 |                |
-|futuresMarketSell()                 |                   |                                 |                |
-|futuresBuy()                        |                   |                                 |                |
-|futuresSell()                       |                   |                                 |                |
-|futuresCreateOrder()                |                   |                                 |                |
-|futuresMultipleOrders()             |                   |                                 |                |
-|futuresOrder()                      |                   |                                 |                |
-|futuresCancelOrder()                |                   |                                 |                |
-|futuresCancelAll()                  |                   |                                 |                |
-|futuresCancelBatchOrders()          |                   |                                 |                |
-|futuresCountdownCancelAll()         |                   |                                 |                |
-|futuresOpenOrder()                  |                   |                                 |                |
-|futuresOpenOrders()                 |                   |                                 |                |
-|futuresAllOrders()                  |                   |                                 |                |
-|futuresBalance()                    |                   |                                 |                |
-|futuresAccount()                    |                   |                                 |                |
-|futuresMarginType()                 |                   |                                 |                |
-|futuresPositionMargin()             |                   |                                 |                |
-|futuresPositionMarginHistory()      |                   |                                 |                |
-|futuresPositionRisk()               |                   |                                 |                |
-|futuresUserTrades()                 |                   |                                 |                |
-|futuresIncomeHistory()              |                   |                                 |                |
-|futuresLeverageBrackets()           |                   |                                 |                |
-|futuresADLQuantileEstimation()      |                   |                                 |                |
+|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}    |
+|:-------------------------------------------------              |:--------------------------:|:-------------------------------:|:--------------:|
+|futuresPing()                                       [go](#futuresPing)|                            |reconnect, tries                 |                |
+|futuresServerTime()                          [^go](#futuresServerTime)|                            |reconnect, tries                 |                |
+|futuresExchangeInfo()                    [^(go)](#futuresExchangeInfo)|                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
+|futuresOrderBook()                                                    |symbol                      |limit                            |                |
+|futuresRecentTrades()                                                 |symbol                      |limit                            |                |
+|futuresHistoricalTrades()                                             |symbol                      |limit, fromId                    |                |
+|futuresAggTrades()                                                    |symbol                      |limit, startTime, endTime, fromId|                |
+|futuresCandlesticks()                                                 |symbol, interval            |limit, startTime, endTime, fromId|                |
+|futuresContinuousCandlesticks()                                       |pair, interval, contractType|limit, startTime, endTime        |                |
+|futuresIndexPriceCandlesticks()                                       |                   |                                 |                |
+|futuresMarkPriceCandlesticks()                                        |                   |                                 |                |
+|futuresMarkPrice()                                                    |                   |                                 |                |
+|futuresFundingRate()                                                  |                   |                                 |                |
+|futures24hrTicker()                                                   |                   |                                 |                |
+|futuresPrices()                                                       |                   |                                 |                |
+|futuresOpenInterestStatistics()                                       |                   |                                 |                |
+|futuresOpenInterest()                                                 |                   |                                 |                |
+|futuresBookTicker()                                                   |                   |                                 |                |
+|futuresTopLongShortAccountRatio()                                     |                   |                                 |                |
+|futuresTopLongShortPositionRatio()                                    |                   |                                 |                |
+|futuresGlobalLongShortAccountRatio()                     [^fGLSARatio]|                   |                                 |                |
+|futuresTakerlongshortRatio()                                          |                   |                                 |                |
+|futuresBLVTCandlesticks()                                             |                   |                                 |                |
+|futuresIndexInfo()                                                    |                   |                                 |                |
+|futuresMultiAssetModeIndex()                                          |                   |                                 |                |
+|futuresChangePositionSide()                                           |                   |                                 |                |
+|futuresGetPositionSide()                                              |                   |                                 |                |
+|futuresChangeMultiAssetMargin()                                       |                   |                                 |                |
+|futuresGetMultiAssetMargin()                                          |                   |                                 |                |
+|futuresMarketBuy()                                                    |                   |                                 |                |
+|futuresMarketSell()                                                   |                   |                                 |                |
+|futuresBuy()                                                          |                   |                                 |                |
+|futuresSell()                                                         |                   |                                 |                |
+|futuresCreateOrder()                                                  |                   |                                 |                |
+|futuresMultipleOrders()                                               |                   |                                 |                |
+|futuresOrder()                                                        |                   |                                 |                |
+|futuresCancelOrder()                                                  |                   |                                 |                |
+|futuresCancelAll()                                                    |                   |                                 |                |
+|futuresCancelBatchOrders()                                            |                   |                                 |                |
+|futuresCountdownCancelAll()                                           |                   |                                 |                |
+|futuresOpenOrder()                                                    |                   |                                 |                |
+|futuresOpenOrders()                                                   |                   |                                 |                |
+|futuresAllOrders()                                                    |                   |                                 |                |
+|futuresBalance()                                                      |                   |                                 |                |
+|futuresAccount()                                                      |                   |                                 |                |
+|futuresMarginType()                                                   |                   |                                 |                |
+|futuresPositionMargin()                                               |                   |                                 |                |
+|futuresPositionMarginHistory()                                        |                   |                                 |                |
+|futuresPositionRisk()                                                 |                   |                                 |                |
+|futuresUserTrades()                                                   |                   |                                 |                |
+|futuresIncomeHistory()                                                |                   |                                 |                |
+|futuresLeverageBrackets()                                             |                   |                                 |                |
+|futuresADLQuantileEstimation()                                        |                   |                                 |                |
 
 **FUTURES MARKET DATA**
  
@@ -132,13 +132,13 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 **PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
-.futuresServerTime():
+### .futuresServerTime():
 ```js
   let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
   console.log(serverTime); // <= 1665491953938
 ```
 
-.futuresExchangeInfo():
+### .futuresExchangeInfo():
 ```js
   let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries, options {})
   console.log(exchangeInfo);
