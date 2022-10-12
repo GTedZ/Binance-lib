@@ -628,7 +628,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // futures Account/Trade Endpoints ////
 
-    this.futuresChangePositionSide = function (dualSidePosition, opts = { recvWindow: this.recvWindow }) {
+    this.futuresChangePositionSide = function (dualSidePosition, opts = {}) {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/positionSide/dual',
@@ -646,7 +646,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresGetPositionSide = function (opts = { recvWindow: this.recvWindow }) {
+    this.futuresGetPositionSide = function (opts = {}) {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/positionSide/dual',
@@ -659,7 +659,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresChangeMultiAssetMargin = function (multiAssetsMargin, opts = { recvWindow: this.recvWindow }) {
+    this.futuresChangeMultiAssetMargin = function (multiAssetsMargin, opts = {}) {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/multiAssetsMargin',
@@ -676,7 +676,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED'); // , 'SIGNED'
     }
 
-    this.futuresGetMultiAssetMargin = function (opts = { recvWindow: this.recvWindow }) {
+    this.futuresGetMultiAssetMargin = function (opts = {}) {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/multiAssetsMargin',
