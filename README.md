@@ -108,7 +108,8 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 **FUTURES MARKET DATA**
  
-[^fPing]:.futuresPing():
+### fPing
+.futuresPing():
 ```js
   let ping = await binance.futuresPing();
   if(ping.error) {
