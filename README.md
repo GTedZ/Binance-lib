@@ -7,7 +7,7 @@
  
  *STILL UNDER FREQUENT UPDATES AND DEVELOPMENT (Working on making every aspect of the library as intuitive as it can be, meaning no try/catch blocks whatsoever, meaning I'd rather have the code do all the heavy lifting while the user just copy and pastes from this page while only doing minimal changes)*
  *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
-*If you have any issues/requests for this project, please do create a new 'issue' on github, and I will promptly get to work on implementing it*
+ *If you have any issues/requests for this project, please do create a new 'issue' on github, and I will promptly get to work on implementing it*
 
  How to setup:
  ```bat
@@ -47,10 +47,10 @@ if(order.error) {
 ```
 
 
-### ERROR HANDLING:
+# ERROR HANDLING:
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
 
-### OPTIONS = {}:
+# OPTIONS = {}:
 In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-used parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
 ```js
 let reconnect = true, tries = 10;
@@ -60,7 +60,7 @@ let response = await binance.futuresExchangeInfo(reconnect, tries, options); // 
 let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quantityPrecision: true})
 ```
 
-### ***FUTURES DOCUMENTATION:***
+# ***FUTURES DOCUMENTATION:***
 
 |ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}  [<sup>ref</sup>](#options--)|
 |:---------------------------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
@@ -120,7 +120,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 **FUTURES MARKET DATA**
  
-### .futuresPing():
+# .futuresPing():
 ```js
   let ping = await binance.futuresPing();
   if(ping.error) {
@@ -144,13 +144,13 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 **PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
-### .futuresServerTime():
+# .futuresServerTime():
 ```js
   let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
   console.log(serverTime); // <= 1665491953938
 ```
 
-### .futuresExchangeInfo():
+# .futuresExchangeInfo():
 ```js
   let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries, options {})
   console.log(exchangeInfo);
