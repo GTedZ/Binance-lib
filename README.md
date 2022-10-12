@@ -50,7 +50,7 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 ***FUTURES DOCUMENTATION:***
 
-|ALL FUTURES FUNCTIONS               |REQUIRED PARAMETERS|OPTIONAL PARAMETERS|OPTIONS = {}    |
+|ALL FUTURES FUNCTIONS               |REQUIRED PARAMETERS|OPTIONAL PARAMETERS|OPTIONS = {} <= these should be wrapped around an object, and comes after all the REQUIRED and OPTIONAL PARAMETERS while calling the function|
 |:-----------------------------------|:-----------------:|:-----------------:|:-------------: |
 |futuresPing()                       |                   |reconnect, tries   |                |
 |futuresServerTime()                 |                   |reconnect, tries   |                |
