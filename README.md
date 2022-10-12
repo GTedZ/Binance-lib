@@ -61,11 +61,11 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 ```
 
 # ***FUTURES DOCUMENTATION:***
-### All functions<a href='#All-Futures-Functions'>ref</a>
-### Market Data<a href='#Futures-Market-Data'>ref</a>
+### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
+### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>
 
 ## ALL FUTURES FUNCTIONS:
-|FUNCTIONS                                                             |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}<a href='#options--'>ref</a>|
+|FUNCTIONS                                                             |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}<a href='#options--'><sup>ref</sup></a>|
 |:---------------------------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
 |futuresPing()                                                         |                            |reconnect, tries                 |                |
 |futuresServerTime()                                                   |                            |reconnect, tries                 |                |
