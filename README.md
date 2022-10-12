@@ -52,7 +52,7 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 |ALL FUTURES FUNCTIONS                             |REQUIRED PARAMETERS|OPTIONAL PARAMETERS              |OPTIONS = {}    |
 |:-------------------------------------------------|:-----------------:|:-------------------------------:|:--------------:|
-|futuresPing()                             [^fPing]|                            |reconnect, tries                 |                |
+|futuresPing()                             [^1]|                            |reconnect, tries                 |                |
 |futuresServerTime()                               |                            |reconnect, tries                 |                |
 |futuresExchangeInfo()                             |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
 |futuresOrderBook()                                |symbol                      |limit                            |                |
@@ -108,7 +108,7 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 **FUTURES MARKET DATA**
  
-.futuresPing():[^fPing]
+.futuresPing():[^1]
 ```js
   let ping = await binance.futuresPing();
   if(ping.error) {
