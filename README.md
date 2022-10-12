@@ -50,10 +50,10 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 ***FUTURES DOCUMENTATION:***
 
-|ALL FUTURES FUNCTIONS                             |REQUIRED PARAMETERS|OPTIONAL PARAMETERS              |OPTIONS = {}    |
-|:-------------------------------------------------|:-----------------:|:-------------------------------:|:--------------:|
-|futuresPing()                     [^fPing](#fPing)|                            |reconnect, tries                 |                |
-|futuresServerTime()                               |                            |reconnect, tries                 |                |
+|ALL FUTURES FUNCTIONS                             |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}    |
+|:-------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
+|futuresPing()                     [](#futuresPing)|                            |reconnect, tries                 |                |
+|futuresServerTime()                [fTime](#fTime)|                            |reconnect, tries                 |                |
 |futuresExchangeInfo()                             |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
 |futuresOrderBook()                                |symbol                      |limit                            |                |
 |futuresRecentTrades()                             |symbol                      |limit                            |                |
@@ -108,8 +108,7 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 **FUTURES MARKET DATA**
  
-### fPing
-.futuresPing():
+### .futuresPing():
 ```js
   let ping = await binance.futuresPing();
   if(ping.error) {
