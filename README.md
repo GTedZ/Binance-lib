@@ -5,7 +5,7 @@
 
  **Futures API almost fully implemented for now, documentation will come shortly**
 
- #### Please use the '<sup>ref</sup>' symbols to navigate through the documentation, as it is huge.
+ #### Please use the <a href='#please-use-the-ref-symbols-to-navigate-through-the-documentation-as-it-is-huge'>'<sup>ref</sup></a>' symbols to navigate through the documentation, as it is huge.
  
  *STILL UNDER FREQUENT UPDATES AND DEVELOPMENT (Working on making every aspect of the library as intuitive as it can be, meaning no try/catch blocks whatsoever, meaning I'd rather have the code do all the heavy lifting while the user just copy and pastes from this page while only doing minimal changes)*
  *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
