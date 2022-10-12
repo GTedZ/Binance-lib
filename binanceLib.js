@@ -869,7 +869,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresOpenOrder = (symbol, orderId = 0, origClientOrderId = 0, opts = {}) => {
+    this.futuresOpenOrder = (symbol, orderId, origClientOrderId, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/openOrder',
@@ -961,7 +961,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return parseAllPropertiesToFloat(resp);
     }
 
-    this.leverage = (symbol, leverage, opts = {}) => {
+    this.futuresLeverage = (symbol, leverage, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/leverage',
@@ -1005,7 +1005,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     /**
      * Change an ISOLATED position's margin
      */
-    this.futuresPositionMargin = (symbol, amount = 0, type = undefined, opts = { positionSide: undefined }) => {
+    this.futuresPositionMargin = (symbol, amount, type, opts = { positionSide: undefined }) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/positionMargin',
@@ -1030,7 +1030,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresPositionMarginHistory = (symbol, limit = 500, type = 0, startTime = 0, endTime = 0, opts = {}) => {
+    this.futuresPositionMarginHistory = (symbol, limit = 500, type, startTime = 0, endTime = 0, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/positionMargin/history',
@@ -1101,7 +1101,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresIncomeHistory = (symbol, limit = 100, incomeType = undefined, startTime = 0, endTime = 0, opts = {}) => {
+    this.futuresIncomeHistory = (symbol = false, limit = 100, incomeType = undefined, startTime = 0, endTime = 0, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/income',
@@ -1109,12 +1109,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         let options = {
-            symbol: symbol,
             limit: limit
         }
         Object.assign(options, opts);
 
-        if (symbol == undefined) return ERR('symbol', 'required');
+        if (symbol) options.symbol = symbol;
         if (incomeType) {
             if (!equal(incomeType), incomeTypes) return ERR('incomeType', 'value', false, incomeTypes);
             options.incomeType = incomeType;
