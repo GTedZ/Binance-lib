@@ -50,61 +50,61 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 ***FUTURES DOCUMENTATION:***
 
-|ALL FUNCTIONS|
-:---------------
-| futuresPing() |
-| futuresServerTime() |
-| futuresExchangeInfo() |
-| futuresOrderBook() |
-| futuresRecentTrades() |
-| futuresHistoricalTrades() |
-| futuresAggTrades() |
-| futuresCandlesticks() |
-| futuresContinuousCandlesticks() |
-| futuresIndexPriceCandlesticks() |
-| futuresMarkPriceCandlesticks() |
-| futuresMarkPrice() |
-| futuresFundingRate() |
-| futures24hrTicker() |
-| futuresPrices() |
-| futuresBookTicker() |
-| futuresOpenInterest() |
-| futuresOpenInterestStatistics() |
-| futuresTopLongShortAccountRatio() |
-| futuresTopLongShortPositionRatio() |
-| futuresGlobalLongShortAccountRatio() |
-| futuresTakerlongshortRatio() |
-| futuresBLVTCandlesticks() |
-| futuresIndexInfo() |
-| futuresMultiAssetModeIndex() |
-| futuresChangePositionSide() |
-| futuresGetPositionSide() |
-| futuresChangeMultiAssetMargin() |
-| futuresGetMultiAssetMargin() |
-| futuresMarketBuy() |
-| futuresMarketSell() |
-| futuresBuy() |
-| futuresSell() |
-| futuresCreateOrder() |
-| futuresMultipleOrders() |
-| futuresOrder() |
-| futuresCancelOrder() |
-| futuresCancelAll() |
-| futuresCancelBatchOrders() |
-| futuresCountdownCancelAll() |
-| futuresOpenOrder() |
-| futuresOpenOrders() |
-| futuresAllOrders() |
-| futuresBalance() |
-| futuresAccount() |
-| futuresMarginType() |
-| futuresPositionMargin() |
-| futuresPositionMarginHistory() |
-| futuresPositionRisk() |
-| futuresUserTrades() |
-| futuresIncomeHistory() |
-| futuresLeverageBrackets() |
-| futuresADLQuantileEstimation() |
+|ALL FUTURES FUNCTIONS|REQUIRED PARAMETERS|OPTIONAL PARAMETERS|OPTIONS = {}|
+|:-----------------------------------|:-----------------:|:-----------------:|:----------:|
+|futuresPing()                       ||||
+|futuresServerTime()                 ||||
+|futuresExchangeInfo()               ||||
+|futuresOrderBook()                  ||||
+|futuresRecentTrades()               ||||
+|futuresHistoricalTrades()           ||||
+|futuresAggTrades()                  ||||
+|futuresCandlesticks()               ||||
+|futuresContinuousCandlesticks()     ||||
+|futuresIndexPriceCandlesticks()     ||||
+|futuresMarkPriceCandlesticks()      ||||
+|futuresMarkPrice()                  ||||
+|futuresFundingRate()                ||||
+|futures24hrTicker()                 ||||
+|futuresPrices()                     ||||
+|futuresBookTicker()                 ||||
+|futuresOpenInterest()               ||||
+|futuresOpenInterestStatistics()     ||||
+|futuresTopLongShortAccountRatio()   ||||
+|futuresTopLongShortPositionRatio()  ||||
+|futuresGlobalLongShortAccountRatio()||||
+|futuresTakerlongshortRatio()        ||||
+|futuresBLVTCandlesticks()           ||||
+|futuresIndexInfo()                  ||||
+|futuresMultiAssetModeIndex()        ||||
+|futuresChangePositionSide()         ||||
+|futuresGetPositionSide()            ||||
+|futuresChangeMultiAssetMargin()     ||||
+|futuresGetMultiAssetMargin()        ||||
+|futuresMarketBuy()                  ||||
+|futuresMarketSell()                 ||||
+|futuresBuy()                        ||||
+|futuresSell()                       ||||
+|futuresCreateOrder()                ||||
+|futuresMultipleOrders()             ||||
+|futuresOrder()                      ||||
+|futuresCancelOrder()                ||||
+|futuresCancelAll()                  ||||
+|futuresCancelBatchOrders()          ||||
+|futuresCountdownCancelAll()         ||||
+|futuresOpenOrder()                  ||||
+|futuresOpenOrders()                 ||||
+|futuresAllOrders()                  ||||
+|futuresBalance()                    ||||
+|futuresAccount()                    ||||
+|futuresMarginType()                 ||||
+|futuresPositionMargin()             ||||
+|futuresPositionMarginHistory()      ||||
+|futuresPositionRisk()               ||||
+|futuresUserTrades()                 ||||
+|futuresIncomeHistory()              ||||
+|futuresLeverageBrackets()           ||||
+|futuresADLQuantileEstimation()      ||||
 
 **FUTURES MARKET DATA**
  
