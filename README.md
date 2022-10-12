@@ -49,10 +49,10 @@ All requests can be handled via checking for an error with: 'if (response.error)
 
 
 ***FUTURES DOCUMENTATION:***
-
+[^1]
 |ALL FUTURES FUNCTIONS                             |REQUIRED PARAMETERS|OPTIONAL PARAMETERS              |OPTIONS = {}    |
 |:-------------------------------------------------|:-----------------:|:-------------------------------:|:--------------:|
-|futuresPing()                             [^1]|                            |reconnect, tries                 |                |
+|futuresPing()                                     |                            |reconnect, tries                 |                |
 |futuresServerTime()                               |                            |reconnect, tries                 |                |
 |futuresExchangeInfo()                             |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
 |futuresOrderBook()                                |symbol                      |limit                            |                |
