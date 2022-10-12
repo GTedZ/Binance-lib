@@ -1,6 +1,6 @@
 {
   "name": "binance-lib",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A JS library for binance, only the basic features.",
   "main": "binanceLib.js",
   "scripts": {
@@ -11,13 +11,27 @@
     "url": "git+https://github.com/GTedZ/Binance-lib.git"
   },
   "author": "GTedZ",
-  "license": "ISC",
+  "email": "gtedz1961@gmail.com",
   "bugs": {
     "url": "https://github.com/GTedZ/Binance-lib/issues"
   },
+  "license": "Creative Commons Attribution 4.0 International",
+  "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
   "homepage": "https://github.com/GTedZ/Binance-lib#readme",
   "dependencies": {
     "axios": "^1.1.2",
     "json-bigint": "^1.0.0"
-  }
+  },
+  "keywords": [
+    "binance",
+    "api",
+    "crypto",
+    "trading",
+    "binance futures",
+    "binance spot",
+    "binance margin",
+    "websocket",
+    "market data",
+    "binance api"
+  ]
 }
