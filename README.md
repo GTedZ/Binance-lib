@@ -47,10 +47,10 @@ if(order.error) {
 ```
 
 
-# ERROR HANDLING:
+### ERROR HANDLING:
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
 
-# OPTIONS = {}:
+### OPTIONS = {}:
 In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-used parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
 ```js
 let reconnect = true, tries = 10;
@@ -61,12 +61,15 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 ```
 
 # ***FUTURES DOCUMENTATION:***
+### All functions<a href='#All-Futures-Functions'>ref</a>
+### Market Data<a href='#Futures-Market-Data'>ref</a>
 
-|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}|
+## ALL FUTURES FUNCTIONS:
+|FUNCTIONS                                                             |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}<a href='#options--'>ref</a>|
 |:---------------------------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
-|futuresPing()                           |                            |reconnect, tries                 |                |
-|futuresServerTime()              |                            |reconnect, tries                 |                |
-|futuresExchangeInfo()           |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
+|futuresPing()                                                         |                            |reconnect, tries                 |                |
+|futuresServerTime()                                                   |                            |reconnect, tries                 |                |
+|futuresExchangeInfo()                                                 |                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
 |futuresOrderBook()                                                    |symbol                      |limit                            |                |
 |futuresRecentTrades()                                                 |symbol                      |limit                            |                |
 |futuresHistoricalTrades()                                             |symbol                      |limit, fromId                    |                |
@@ -84,7 +87,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresBookTicker()                                                   |                   |                                 |                |
 |futuresTopLongShortAccountRatio()                                     |                   |                                 |                |
 |futuresTopLongShortPositionRatio()                                    |                   |                                 |                |
-|futuresGlobalLongShortAccountRatio()                     |                   |                                 |                |
+|futuresGlobalLongShortAccountRatio()                                  |                   |                                 |                |
 |futuresTakerlongshortRatio()                                          |                   |                                 |                |
 |futuresBLVTCandlesticks()                                             |                   |                                 |                |
 |futuresIndexInfo()                                                    |                   |                                 |                |
@@ -118,9 +121,9 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresLeverageBrackets()                                             |                   |                                 |                |
 |futuresADLQuantileEstimation()                                        |                   |                                 |                |
 
-**FUTURES MARKET DATA**
+## **FUTURES MARKET DATA**
  
-# .futuresPing():
+### .futuresPing():
 ```js
   let ping = await binance.futuresPing();
   if(ping.error) {
@@ -144,13 +147,13 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 **PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
-# .futuresServerTime():
+### .futuresServerTime():
 ```js
   let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
   console.log(serverTime); // <= 1665491953938
 ```
 
-# .futuresExchangeInfo():
+### .futuresExchangeInfo():
 ```js
   let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries, options {})
   console.log(exchangeInfo);
