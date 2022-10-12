@@ -1,7 +1,7 @@
 # Binance-lib
  A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
 
- ***WILL include all SPOT[<sup>ref</sup](#spot-documentation), MARGIN[<sup>ref</sup](#margin-documentation), FUTURES[<sup>ref</sup](#futures-documentation) and EUROPEAN[<sup>ref</sup](#european-documentation) market/account/trade/websocket options***
+ ***WILL include all SPOT[<sup>ref</sup>](#spot-documentation), MARGIN[<sup>ref</sup>](#margin-documentation), FUTURES[<sup>ref</sup>](#futures-documentation) and EUROPEAN[<sup>ref</sup>](#european-documentation) market/account/trade/websocket options***
 
  **Futures API almost fully implemented for now, documentation will come shortly**
  
@@ -62,7 +62,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 ### ***FUTURES DOCUMENTATION:***
 
-|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}[<sup>ref</sup](#explainOptions)|
+|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}[<sup>ref</sup>](#explainOptions)|
 |:---------------------------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
 |futuresPing()                           [<sup>ref</sup>](#futuresPing)|                            |reconnect, tries                 |                |
 |futuresServerTime()               [<sup>ref</sup>](#futuresServerTime)|                            |reconnect, tries                 |                |
