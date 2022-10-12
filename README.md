@@ -53,7 +53,7 @@ if(order.error) {
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
 
 ### OPTIONS = {}:
-In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-used parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
+In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-frequent parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
 ```js
 let reconnect = true, tries = 10;
 let options = {symbols: true, quantityPrecision: true}
