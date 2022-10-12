@@ -673,7 +673,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (multiAssetsMargin == undefined) return ERR('multiAssetsMargin', 'required', false, ['true', 'false', 'for Multi-Asset Mode to be turned on or off']);
 
-        return request(params, options, 'SIGNED'); // , 'SIGNED'
+        return request(params, options, 'SIGNED');
     }
 
     this.futuresGetMultiAssetMargin = function (opts = {}) {
@@ -752,6 +752,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (!symbol) return ERR('symbol', 'required');
         if (!side) return ERR('side', 'required');
+        side = fixValue(side, "BUY", ['long', 'buy']);
+        side = fixValue(side, "BUY", ['short', 'sell']);
+        if (!equal(side, 'BUY', 'SELL')) return ERR('side', 'value', false, ['BUY', 'SELL'])
         if (!type) return ERR('type', 'required');
         if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
         if (options.positionSide) {
