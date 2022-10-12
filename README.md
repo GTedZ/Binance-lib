@@ -1,7 +1,7 @@
 # Binance-lib
  A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
 
- ***WILL include all SPOT, MARGIN, FUTURES and EUROPEAN market/account/trade/websocket options***
+ ***WILL include all SPOT[<sup>ref</sup](#spot-documentation), MARGIN[<sup>ref</sup](#margin-documentation), FUTURES[<sup>ref</sup](#futures-documentation) and EUROPEAN[<sup>ref</sup](#european-documentation) market/account/trade/websocket options***
 
  **Futures API almost fully implemented for now, documentation will come shortly**
  
@@ -45,13 +45,25 @@ if(order.error) {
 
 // continue with your code knowing that the order was executed successfully
 ```
+
+
+### ERROR HANDLING:
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
 
+### OPTIONS = {}:
+In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-used parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
+```js
+let reconnect = true, tries = 10;
+let options = {symbols: true, quantityPrecision: true}
+let response = await binance.futuresExchangeInfo(reconnect, tries, options); // <= 'options' here contains our parameters that are considered as options
+// OR
+let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quantityPrecision: true})
+```
 
-***FUTURES DOCUMENTATION:***
+### ***FUTURES DOCUMENTATION:***
 
-|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}    |
-|:-------------------------------------------------              |:--------------------------:|:-------------------------------:|:--------------:|
+|ALL FUTURES FUNCTIONS                                                 |REQUIRED PARAMETERS         |OPTIONAL PARAMETERS              |OPTIONS = {}[<sup>ref</sup](#explainOptions)|
+|:---------------------------------------------------------------------|:--------------------------:|:-------------------------------:|:--------------:|
 |futuresPing()                           [<sup>ref</sup>](#futuresPing)|                            |reconnect, tries                 |                |
 |futuresServerTime()               [<sup>ref</sup>](#futuresServerTime)|                            |reconnect, tries                 |                |
 |futuresExchangeInfo()           [<sup>ref</sup>](#futuresExchangeInfo)|                            |reconnect, tries                 |quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
