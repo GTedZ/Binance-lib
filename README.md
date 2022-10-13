@@ -1753,6 +1753,383 @@ OR
   console.log(aggTrades);
 ```
 
+### .futuresCandlesticks():
+```js
+  let candlesticks = await binance.futuresCandlesticks('BTCUSDT', '1m', 5);
+  console.log(candlesticks);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    open_time: 1665667620000,
+    open: 18308.5,
+    high: 18324.4,
+    low: 18301.7,
+    close: 18324.2,
+    volume: 659.087,
+    close_time: 1665667679999,
+    quote_asset_volume: 12069931.8632,
+    trades_count: 4176,
+    Taker_buy_base_asset_volume: 303.265,
+    Taker_buy_quote_asset_volume: 5554177.2288,
+    ignore: 0
+  },
+  {
+    open_time: 1665667680000,
+    open: 18324.3,
+    high: 18327,
+    low: 18313.8,
+    close: 18314.6,
+    volume: 507.953,
+    close_time: 1665667739999,
+    quote_asset_volume: 9305666.0267,
+    trades_count: 3394,
+    Taker_buy_base_asset_volume: 245.085,
+    Taker_buy_quote_asset_volume: 4489933.3437,
+    ignore: 0
+  },
+  {
+    open_time: 1665667740000,
+    open: 18314.5,
+    high: 18314.6,
+    low: 18285.2,
+    close: 18302,
+    volume: 906.295,
+    close_time: 1665667799999,
+    quote_asset_volume: 16583679.2108,
+    trades_count: 5136,
+    Taker_buy_base_asset_volume: 296.932,
+    Taker_buy_quote_asset_volume: 5432955.6652,
+    ignore: 0
+  },
+  {
+    open_time: 1665667800000,
+    open: 18302,
+    high: 18320,
+    low: 18270,
+    close: 18314.5,
+    volume: 2244.353,
+    close_time: 1665667859999,
+    quote_asset_volume: 41058116.2425,
+    trades_count: 11247,
+    Taker_buy_base_asset_volume: 1114.533,
+    Taker_buy_quote_asset_volume: 20392560.448,
+    ignore: 0
+  },
+  {
+    open_time: 1665667860000,
+    open: 18314.6,
+    high: 18316.2,
+    low: 18301.4,
+    close: 18302.3,
+    volume: 199.436,
+    close_time: 1665667919999,
+    quote_asset_volume: 3651314.3669,
+    trades_count: 1136,
+    Taker_buy_base_asset_volume: 87.375,
+    Taker_buy_quote_asset_volume: 1599607.2908,
+    ignore: 0
+  }
+]
+```
+</details>
+
+### .futuresContinuousCandlesticks():
+```js
+  let contCandlesticks = await binance.futuresContinuousCandlesticks('BTCUP', '1m');
+  console.log(contCandlesticks);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    open_time: 1665668520000,
+    open: 18363.8,
+    high: 18394,
+    low: 18355,
+    close: 18393,
+    volume: 3749.998,
+    close_time: 1665668579999,
+    quote_asset_volume: 68919237.456,
+    trades_count: 13624,
+    Taker_buy_base_asset_volume: 2375.665,
+    Taker_buy_quote_asset_volume: 43658320.5968,
+    ignore: 0
+  },
+  {
+    open_time: 1665668580000,
+    open: 18393,
+    high: 18393.1,
+    low: 18360.2,
+    close: 18381.3,
+    volume: 1246.72,
+    close_time: 1665668639999,
+    quote_asset_volume: 22914351.2042,
+    trades_count: 6442,
+    Taker_buy_base_asset_volume: 566.069,
+    Taker_buy_quote_asset_volume: 10404112.7807,
+    ignore: 0
+  },
+  {
+    open_time: 1665668640000,
+    open: 18381.3,
+    high: 18381.3,
+    low: 18355.1,
+    close: 18367.7,
+    volume: 1252.831,
+    close_time: 1665668699999,
+    quote_asset_volume: 23010727.8257,
+    trades_count: 5730,
+    Taker_buy_base_asset_volume: 693.83,
+    Taker_buy_quote_asset_volume: 12744150.0498,
+    ignore: 0
+  },
+  {
+    open_time: 1665668700000,
+    open: 18367.8,
+    high: 18390,
+    low: 18355.1,
+    close: 18388.9,
+    volume: 1738.816,
+    close_time: 1665668759999,
+    quote_asset_volume: 31947839.6941,
+    trades_count: 6652,
+    Taker_buy_base_asset_volume: 1266.802,
+    Taker_buy_quote_asset_volume: 23274400.7782,
+    ignore: 0
+  },
+  {
+    open_time: 1665668760000,
+    open: 18388.9,
+    high: 18418.5,
+    low: 18388.8,
+    close: 18401.6,
+    volume: 1995.499,
+    close_time: 1665668819999,
+    quote_asset_volume: 36730888.7081,
+    trades_count: 9241,
+    Taker_buy_base_asset_volume: 1219.669,
+    Taker_buy_quote_asset_volume: 22449084.2429,
+    ignore: 0
+  }
+]
+```
+</details>
+
+### .futuresIndexPriceCandlesticks():
+```js
+  let indexPriceCandlesticks = await binance.futuresIndexPriceCandlesticks('BTCUP', '1m', 5);
+  console.log(indexPriceCandlesticks);
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+[
+  {
+    open_time: 1665668700000,
+    open: 18374.60611354,
+    high: 18399.03665601,
+    low: 18365.72467163,
+    close: 18397.5647953,
+    ignore: 0,
+    close_time: 1665668759999
+  },
+  {
+    open_time: 1665668760000,
+    open: 18398.22716751,
+    high: 18418.88130404,
+    low: 18398.22562579,
+    close: 18417.26593521,
+    ignore: 0,
+    close_time: 1665668819999
+  },
+  {
+    open_time: 1665668820000,
+    open: 18424.00801333,
+    high: 18431.72887525,
+    low: 18413.1712703,
+    close: 18431.03350516,
+    ignore: 0,
+    close_time: 1665668879999
+  },
+  {
+    open_time: 1665668880000,
+    open: 18429.87576499,
+    high: 18438.76874095,
+    low: 18426.55439659,
+    close: 18437.97295329,
+    ignore: 0,
+    close_time: 1665668939999
+  },
+  {
+    open_time: 1665668940000,
+    open: 18438.6402853,
+    high: 18467.55226191,
+    low: 18437.93523335,
+    close: 18465.83161211,
+    ignore: 0,
+    close_time: 1665668999999
+  }
+]
+ ```
+ </details>
+
+### .futuresMarkPriceCandlesticks():
+```js
+  let markPriceCandlesticks = await binance.futuresMarkPriceCandlesticks('BTCUSDT', '1m', 5);
+  console.log(markPriceCandlesticks);
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+[
+  {
+    open_time: 1665668760000,
+    open: 18390.83034308,
+    high: 18416.1,
+    low: 18390.83034308,
+    close: 18410.1398562,
+    ignore: 0,
+    close_time: 1665668819999
+  },
+  {
+    open_time: 1665668820000,
+    open: 18417.8,
+    high: 18428.4,
+    low: 18406.5,
+    close: 18428.4,
+    ignore: 0,
+    close_time: 1665668879999
+  },
+  {
+    open_time: 1665668880000,
+    open: 18425,
+    high: 18431.08475539,
+    low: 18418.79928662,
+    close: 18428.72394225,
+    ignore: 0,
+    close_time: 1665668939999
+  },
+  {
+    open_time: 1665668940000,
+    open: 18430.77621812,
+    high: 18460.6,
+    low: 18430.07116617,
+    close: 18448.04953004,
+    ignore: 0,
+    close_time: 1665668999999
+  },
+  {
+    open_time: 1665669000000,
+    open: 18448.04953004,
+    high: 18448.04953004,
+    low: 18434.08339331,
+    close: 18434.08339331,
+    ignore: 0,
+    close_time: 1665669059999
+  }
+]
+ ```
+ </details>
+
+### .futuresMarkPrice():
+```js
+  let markPrice = await binance.futuresMarkPrice('XRPBUSD');
+  console.log(markPrice); // <= BEWARE: markPrices aren't the executed price of the symbol, instead use .futuresPrices() for the 'last price' which is the accurate price for the symbol in order on binance.
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+{
+  symbol: 'XRPBUSD',
+  markPrice: 0.4717213,
+  indexPrice: 0.47195037,
+  estimatedSettlePrice: 0.46220571,
+  lastFundingRate: -0.00008265,
+  interestRate: 0.0001,
+  nextFundingTime: 1665676800000,
+  time: 1665669213008
+}
+ ```
+</details>
+
+OR
+
+```js
+  let markPrices = await binance.futuresMarkPrice();
+  console.log(markPrices);
+```
+
+<details>
+ <summary>View Response</summary>
+ 
+ ```js
+[
+  {
+    symbol: 'RAYUSDT',
+    markPrice: 0.47495979,
+    indexPrice: 0.47498446,
+    estimatedSettlePrice: 0.47189122,
+    lastFundingRate: -0.00042089,
+    interestRate: 0.0001,
+    nextFundingTime: 1665676800000,
+    time: 1665669251005
+  },
+  {
+    symbol: 'API3USDT',
+    markPrice: 1.49386986,
+    indexPrice: 1.49454814,
+    estimatedSettlePrice: 1.47463299,
+    lastFundingRate: 0.00000406,
+    interestRate: 0.0001,
+    nextFundingTime: 1665676800000,
+    time: 1665669251005
+  },
+  {
+    symbol: 'SUSHIUSDT',
+    markPrice: 1.19213418,
+    indexPrice: 1.19308404,
+    estimatedSettlePrice: 1.16535126,
+    lastFundingRate: 0.0001,
+    interestRate: 0.0001,
+    nextFundingTime: 1665676800000,
+    time: 1665669251005
+  },
+  {
+    symbol: 'CVCUSDT',
+    markPrice: 0.11247608,
+    indexPrice: 0.11247845,
+    estimatedSettlePrice: 0.11114315,
+    lastFundingRate: -0.00003552,
+    interestRate: 0.0001,
+    nextFundingTime: 1665676800000,
+    time: 1665669251005
+  },
+  {
+    symbol: 'BTSUSDT',
+    markPrice: 0.00909415,
+    indexPrice: 0.00909403,
+    estimatedSettlePrice: 0,
+    lastFundingRate: 0.0001,
+    interestRate: 0.0001,
+    nextFundingTime: 1665676800000,
+    time: 1665669251005
+  },
+  ...
+]
+```
+</details>
+
+
+
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
 ### 
