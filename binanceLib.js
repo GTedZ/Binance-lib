@@ -232,7 +232,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (endTime) options.endTime = endTime;
         if (fromId) options.fromId = fromId;
 
-        return request(params, options);
+        let resp = await request(params, options);
+        if (resp.error) return resp;
+        
+        return renameObjectProperties(resp, ['tradeId', 'price', 'qty', 'first_tradeId', 'last_tradeId', 'timestamp', 'maker'])
     }
 
     this.futuresCandlesticks = async (symbol, interval = '1m', limit = 500, startTime = 0, endTime = 0, fromId = 0) => {
@@ -1258,6 +1261,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             });
             return ret;
         })
+    }
+
+    const renameObjectProperties = (obj, keys) => {
+        if (Array.isArray(obj)) {
+            for (let ind in obj) {
+                obj[ind] = renameObjectProperties(obj[ind], keys);
+            }
+        } else {
+            let oldKeys = Object.keys(obj);
+            let newObj = {};
+            for (let x in keys) {
+                let newKey = keys[x];
+                let oldKey = oldKeys[x];
+                newObj[newKey] = obj[oldKey];
+            }
+            obj = newObj;
+        }
+        return obj;
     }
 
     const parseAllPropertiesToFloat = (obj) => {
