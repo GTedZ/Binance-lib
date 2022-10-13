@@ -248,10 +248,10 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 <details>
  <summary>View Response</summary>
  ```
-{
-    "timezone": "UTC",
-    "serverTime": 1665626426405,
-    "futuresType": "U_MARGINED",
+{  
+    "timezone": "UTC",  
+    "serverTime": 1665626426405,  
+    "futuresType": "U_MARGINED",  
     "rateLimits": [
         {
             "rateLimitType": "REQUEST_WEIGHT",
