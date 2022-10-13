@@ -1624,6 +1624,60 @@ Or using the options parameters:
  ```
 </details>
 
+### .futuresHistoricalTrades():
+```js
+  let historicalTrades = await binance.futuresHistoricalTrades('BTCUSDT', 5);
+  console.log(historicalTrades);  // older first, newest last
+```
+
+<details>
+ <summary>View Response</summary>
+
+ ```js
+[
+  {
+    id: 2950111592,
+    price: 18352.5,
+    qty: 0.4,
+    quoteQty: 7341,
+    time: 1665665892089,  // oldest
+    isBuyerMaker: true
+  },
+  {
+    id: 2950111593,
+    price: 18352.5,
+    qty: 0.314,
+    quoteQty: 5762.68,
+    time: 1665665892089,
+    isBuyerMaker: true
+  },
+  {
+    id: 2950111594,
+    price: 18352.5,
+    qty: 0.001,
+    quoteQty: 18.35,
+    time: 1665665892099,
+    isBuyerMaker: true
+  },
+  {
+    id: 2950111595,
+    price: 18352.6,
+    qty: 0.304,
+    quoteQty: 5579.19,
+    time: 1665665892136,
+    isBuyerMaker: false
+  },
+  {
+    id: 2950111596,
+    price: 18352.5,
+    qty: 0.01,
+    quoteQty: 183.52,
+    time: 1665665892156,  // newest
+    isBuyerMaker: true
+  }
+]
+ ```
+</details>
 
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>

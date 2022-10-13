@@ -212,7 +212,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         if (fromId) options.fromId = fromId;
 
-        return request(params, options);
+        return request(params, options, 'DATA');
     }
 
     this.futuresAggTrades = async (symbol, limit = 500, startTime = 0, endTime = 0, fromId = 0) => {
