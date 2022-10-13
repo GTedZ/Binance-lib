@@ -248,171 +248,169 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 <details>
  <summary>View Response</summary>
  ```js
-
-{<br/>
-  "timezone": "UTC",<br/>
-  "serverTime": 1665626426405,<br/>
-  "futuresType": "U_MARGINED",<br/>
-  "rateLimits": [<br/>
-    {<br/>
-      "rateLimitType": "REQUEST_WEIGHT",<br/>
-      "interval": "MINUTE",<br/>
-      "intervalNum": 1,<br/>
-      "limit": 2400<br/>
-    },<br/>
-    {<br/>
-      "rateLimitType": "ORDERS",<br/>
-      "interval": "MINUTE",<br/>
-      "intervalNum": 1,<br/>
-      "limit": 1200<br/>
-    },<br/>
-    {<br/>
-      "rateLimitType": "ORDERS",<br/>
-      "interval": "SECOND",<br/>
-      "intervalNum": 10,<br/>
-      "limit": 300<br/>
-    }<br/>
-  ],<br/>
-  "exchangeFilters": [],<br/>
-  "assets": [<br/>
-    {<br/>
-      "asset": "USDT",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "-10000"<br/>
-    },<br/>
-    {<br/>
-      "asset": "BTC",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "-0.00100000"<br/>
-    },<br/>
-    {<br/>
-      "asset": "BNB",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "-10"<br/>
-    },<br/>
-    {<br/>
-      "asset": "ETH",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "-5"<br/>
-    },<br/>
-    {<br/>
-      "asset": "XRP",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "0"<br/>
-    },<br/>
-    {<br/>
-      "asset": "ADA",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "0"<br/>
-    },<br/>
-    {<br/>
-      "asset": "DOT",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "0"<br/>
-    },<br/>
-    {<br/>
-      "asset": "SOL",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "0"<br/>
-    },<br/>
-    {<br/>
-      "asset": "BUSD",<br/>
-      "marginAvailable": true,<br/>
-      "autoAssetExchange": "-10000"<br/>
-    }<br/>
-  ],<br/>
-  "symbols": [<br/>
-    {<br/>
-      "symbol": "BTCUSDT",<br/>
-      "pair": "BTCUSDT",<br/>
-      "contractType": "PERPETUAL",<br/>
-      "deliveryDate": 4133404800000,<br/>
-      "onboardDate": 1569398400000,<br/>
-      "status": "TRADING",<br/>
-      "maintMarginPercent": "2.5000",<br/>
-      "requiredMarginPercent": "5.0000",<br/>
-      "baseAsset": "BTC",<br/>
-      "quoteAsset": "USDT",<br/>
-      "marginAsset": "USDT",<br/>
-      "pricePrecision": 2,<br/>
-      "quantityPrecision": 3,<br/>
-      "baseAssetPrecision": 8,<br/>
-      "quotePrecision": 8,<br/>
-      "underlyingType": "COIN",<br/>
-      "underlyingSubType": [<br/>
-        "PoW"<br/>
-      ],<br/>
-      "settlePlan": 0,<br/>
-      "triggerProtect": "0.0500",<br/>
-      "liquidationFee": "0.017500",<br/>
-      "marketTakeBound": "0.05",<br/>
-      "filters": [<br/>
-        {<br/>
-          "minPrice": "556.80",<br/>
-          "maxPrice": "4529764",<br/>
-          "filterType": "PRICE_FILTER",<br/>
-          "tickSize": "0.10"<br/>
-        },<br/>
-        {<br/>
-          "stepSize": "0.001",<br/>
-          "filterType": "LOT_SIZE",<br/>
-          "maxQty": "1000",<br/>
-          "minQty": "0.001"<br/>
-        },<br/>
-        {<br/>
-          "stepSize": "0.001",<br/>
-          "filterType": "MARKET_LOT_SIZE",<br/>
-          "maxQty": "120",<br/>
-          "minQty": "0.001"<br/>
-        },<br/>
-        {<br/>
-          "limit": 200,<br/>
-          "filterType": "MAX_NUM_ORDERS"<br/>
-        },<br/>
-        {<br/>
-          "limit": 10,<br/>
-          "filterType": "MAX_NUM_ALGO_ORDERS"<br/>
-        },<br/>
-        {<br/>
-          "notional": "5",<br/>
-          "filterType": "MIN_NOTIONAL"<br/>
-        },<br/>
-        {<br/>
-          "multiplierDown": "0.9500",<br/>
-          "multiplierUp": "1.0500",<br/>
-          "multiplierDecimal": "4",<br/>
-          "filterType": "PERCENT_PRICE"<br/>
-        }<br/>
-      ],<br/>
-      "orderTypes": [<br/>
-        "LIMIT",<br/>
-        "MARKET",<br/>
-        "STOP",<br/>
-        "STOP_MARKET",<br/>
-        "TAKE_PROFIT",<br/>
-        "TAKE_PROFIT_MARKET",<br/>
-        "TRAILING_STOP_MARKET"<br/>
-      ],<br/>
-      "timeInForce": [<br/>
-        "GTC",<br/>
-        "IOC",<br/>
-        "FOK",<br/>
-        "GTX"<br/>
-      ]<br/>
-    },<br/>
-    {<br/>
-      "symbol": "ETHUSDT",<br/>
-      ...<br/>
-    },<br/>
-    {<br/>
-      "symbol": "XRPBUSD",<br/>
-      ...<br/>
-    }<br/>
-  ]<br/>
+{
+    "timezone": "UTC",
+    "serverTime": 1665626426405,
+    "futuresType": "U_MARGINED",
+    "rateLimits": [
+        {
+            "rateLimitType": "REQUEST_WEIGHT",
+            "interval": "MINUTE",
+            "intervalNum": 1,
+            "limit": 2400
+        },
+        {
+            "rateLimitType": "ORDERS",
+            "interval": "MINUTE",
+            "intervalNum": 1,
+            "limit": 1200
+        },
+        {
+            "rateLimitType": "ORDERS",
+            "interval": "SECOND",
+            "intervalNum": 10,
+            "limit": 300
+        }
+    ],
+    "exchangeFilters": [],
+    "assets": [
+        {
+            "asset": "USDT",
+            "marginAvailable": true,
+            "autoAssetExchange": "-10000"
+        },
+        {
+            "asset": "BTC",
+            "marginAvailable": true,
+            "autoAssetExchange": "-0.00100000"
+        },
+        {
+            "asset": "BNB",
+            "marginAvailable": true,
+            "autoAssetExchange": "-10"
+        },
+        {
+            "asset": "ETH",
+            "marginAvailable": true,
+            "autoAssetExchange": "-5"
+        },
+        {
+            "asset": "XRP",
+            "marginAvailable": true,
+            "autoAssetExchange": "0"
+        },
+        {
+            "asset": "ADA",
+            "marginAvailable": true,
+            "autoAssetExchange": "0"
+        },
+        {
+            "asset": "DOT",
+            "marginAvailable": true,
+            "autoAssetExchange": "0"
+        },
+        {
+            "asset": "SOL",
+            "marginAvailable": true,
+            "autoAssetExchange": "0"
+        },
+        {
+            "asset": "BUSD",
+            "marginAvailable": true,
+            "autoAssetExchange": "-10000"
+        }
+    ],
+    "symbols": [
+        {
+            "symbol": "BTCUSDT",
+            "pair": "BTCUSDT",
+            "contractType": "PERPETUAL",
+            "deliveryDate": 4133404800000,
+            "onboardDate": 1569398400000,
+            "status": "TRADING",
+            "maintMarginPercent": "2.5000",
+            "requiredMarginPercent": "5.0000",
+            "baseAsset": "BTC",
+            "quoteAsset": "USDT",
+            "marginAsset": "USDT",
+            "pricePrecision": 2,
+            "quantityPrecision": 3,
+            "baseAssetPrecision": 8,
+            "quotePrecision": 8,
+            "underlyingType": "COIN",
+            "underlyingSubType": [
+                "PoW"
+            ],
+            "settlePlan": 0,
+            "triggerProtect": "0.0500",
+            "liquidationFee": "0.017500",
+            "marketTakeBound": "0.05",
+            "filters": [
+                {
+                    "minPrice": "556.80",
+                    "maxPrice": "4529764",
+                    "filterType": "PRICE_FILTER",
+                    "tickSize": "0.10"
+                },
+                {
+                    "stepSize": "0.001",
+                    "filterType": "LOT_SIZE",
+                    "maxQty": "1000",
+                    "minQty": "0.001"
+                },
+                {
+                    "stepSize": "0.001",
+                    "filterType": "MARKET_LOT_SIZE",
+                    "maxQty": "120",
+                    "minQty": "0.001"
+                },
+                {
+                    "limit": 200,
+                    "filterType": "MAX_NUM_ORDERS"
+                },
+                {
+                    "limit": 10,
+                    "filterType": "MAX_NUM_ALGO_ORDERS"
+                },
+                {
+                    "notional": "5",
+                    "filterType": "MIN_NOTIONAL"
+                },
+                {
+                    "multiplierDown": "0.9500",
+                    "multiplierUp": "1.0500",
+                    "multiplierDecimal": "4",
+                    "filterType": "PERCENT_PRICE"
+                }
+            ],
+            "orderTypes": [
+                "LIMIT",
+                "MARKET",
+                "STOP",
+                "STOP_MARKET",
+                "TAKE_PROFIT",
+                "TAKE_PROFIT_MARKET",
+                "TRAILING_STOP_MARKET"
+            ],
+            "timeInForce": [
+                "GTC",
+                "IOC",
+                "FOK",
+                "GTX"
+            ]
+        },
+        {
+            "symbol": "ETHUSDT",
+            "etc": "..."
+        },
+        {
+            "symbol": "XRPBUSD",
+            "etc": "..."
+        }
+    ]
 }
-
  ```
- </details>
+</details>
 
 ```js
   let exchangeInfo = await binance.futuresExchangeInfo(true, 0, {
