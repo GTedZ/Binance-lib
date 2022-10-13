@@ -153,7 +153,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresTopLongShortAccountRatio()      <a href='#futuresTopLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
 |futuresTopLongShortPositionRatio()    <a href='#futuresTopLongShortPositionRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
 |futuresGlobalLongShortAccountRatio()<a href='#futuresGlobalLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresTakerlongshortRatio()                <a href='#futuresTakerlongshortRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresTakerLongShortRatio()                <a href='#futuresTakerLongShortRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
 |futuresBLVTCandlesticks()                      <a href='#futuresBLVTCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime                                |                |
 |futuresIndexInfo()                                    <a href='#futuresIndexInfo'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
 |futuresMultiAssetModeIndex()                <a href='#futuresMultiAssetModeIndex'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
@@ -1422,6 +1422,255 @@ OR
 }
 ```
 </details>
+
+### .futuresBookTicker():
+```js
+  let btc_bookTicker = await binance.futuresBookTicker('BTCUSDT');
+  console.log(btc_bookTicker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'BTCUSDT',
+  bidPrice: 18414.8,
+  bidQty: 4.629,
+  askPrice: 18414.9,
+  askQty: 24.508,
+  time: 1665673452329
+}
+```
+</details>
+
+OR
+
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    bidPrice: 18419.9,
+    bidQty: 52.445,
+    askPrice: 18420,
+    askQty: 1.158,
+    time: 1665673489281
+  },
+  {
+    symbol: 'ETHUSDT',
+    bidPrice: 1222.39,
+    bidQty: 167.099,
+    askPrice: 1222.4,
+    askQty: 0.328,
+    time: 1665673489282
+  },
+  {
+    symbol: 'BCHUSDT',
+    bidPrice: 104.78,
+    bidQty: 9.298,
+    askPrice: 104.79,
+    askQty: 0.701,
+    time: 1665673489273
+  },
+  ...
+]
+```
+</details>
+
+### .futuresOpenInterest():
+```js
+  let BTCUSDT_openInterest = await binance.futuresOpenInterest('BTCUSDT');
+  console.log(BTCUSDT_openInterest)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  symbol: 'BTCUSDT', 
+  openInterest: 157039.639, 
+  time: 1665673573719
+}
+```
+</details>
+
+### .futuresOpenInterestStatistics():
+```js
+  let openInterestStats_BTCUSDT = await binance.futuresOpenInterestStatistics('BTCUSDT','5m');
+  console.log(openInterestStats_BTCUSDT);
+```
+
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    sumOpenInterest: 157327.707,
+    sumOpenInterestValue: '2896695782.24412300',
+    timestamp: 1665672900000
+  },
+  {
+    symbol: 'BTCUSDT',
+    sumOpenInterest: 157287.549,
+    sumOpenInterestValue: '2895195079.41137270',
+    timestamp: 1665673200000
+  },
+  {
+    symbol: 'BTCUSDT',
+    sumOpenInterest: 157214.985,
+    sumOpenInterestValue: '2896544605.13850000',
+    timestamp: 1665673500000
+  },
+  ...
+]
+```
+</details>
+
+### .futuresTopLongShortAccountRatio():
+```js
+  let topLongShortAccountRatio_BTC = await binance.futuresTopLongShortAccountRatio('BTCUSDT','5m');
+  console.log(topLongShortAccountRatio_BTC);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.757,
+    longShortRatio: 3.1152,
+    shortAccount: 0.243,
+    timestamp: 1665673200000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.7557,
+    longShortRatio: 3.0933,
+    shortAccount: 0.2443,
+    timestamp: 1665673500000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.755,
+    longShortRatio: 3.0816,
+    shortAccount: 0.245,
+    timestamp: 1665673800000
+  },
+  ...
+]
+```
+</details>
+
+### .futuresTopLongShortPositionRatio():
+```js
+  let topLongShortPositionRatio_BTC = await binance.futuresTopLongShortPositionRatio('BTCUSDT','5m');
+  console.log(topLongShortPositionRatio_BTC);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.5474,
+    longShortRatio: 1.2096,
+    shortAccount: 0.4526,
+    timestamp: 1665672900000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.5475,
+    longShortRatio: 1.2099,
+    shortAccount: 0.4525,
+    timestamp: 1665673200000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.5477,
+    longShortRatio: 1.2108,
+    shortAccount: 0.4523,
+    timestamp: 1665673500000
+  },
+  ...
+]
+```
+</details>
+
+### .futuresGlobalLongShortAccountRatio():
+```js
+  let globalLongShortAccountRatio = await binance.futuresGlobalLongShortAccountRatio('BTCUSDT', '5m');
+  console.log(globalLongShortAccountRatio)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.7727,
+    longShortRatio: 3.3995,
+    shortAccount: 0.2273,
+    timestamp: 1665673200000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.7716,
+    longShortRatio: 3.3783,
+    shortAccount: 0.2284,
+    timestamp: 1665673500000
+  },
+  {
+    symbol: 'BTCUSDT',
+    longAccount: 0.7753,
+    longShortRatio: 3.4504,
+    shortAccount: 0.2247,
+    timestamp: 1665673800000
+  },
+  ...
+]
+```
+</details>
+
+### .futuresTakerLongShortRatio():
+```js
+  let takerLongShortRatio = await binance.futuresTakerLongShortRatio('BTCUSDT','5m');
+  console.log(takerLongShortRatio);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    buySellRatio: 0.9968,
+    sellVol: 1111.974,
+    buyVol: 1108.438,
+    timestamp: 1665673200000
+  },
+  {
+    buySellRatio: 1.4123,
+    sellVol: 3994.784,
+    buyVol: 5641.728,
+    timestamp: 1665673500000
+  },
+  {
+    buySellRatio: 1.3328,
+    sellVol: 4259.732,
+    buyVol: 5677.406,
+    timestamp: 1665673800000
+  }
+]
+```
+</details>
+
+
 
 
 
