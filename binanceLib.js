@@ -41,11 +41,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         );
         let endTime = Date.now();
-
+        console.log(tries);
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
-            else return this.futuresPing(reconnect, tries);
+            else {
+                await delay(50);
+                return this.futuresPing(reconnect, tries);
+            }
         }
         resp.roundtrip_time_millis = endTime - startTime;
         return resp;
@@ -63,7 +66,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
-            else return this.futuresServerTime(reconnect, tries);
+            else {
+                await delay(50);
+                return this.futuresServerTime(reconnect, tries);
+            }
         }
 
         return resp.serverTime;
@@ -107,11 +113,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
-            else return this.exchangeInfo(reconnect, tries);
+            else {
+                await delay(50);
+                return this.futuresExchangeInfo(reconnect, tries, options);
+            }
         }
 
         if (typeof options == 'object' && Object.keys(options).length != 0) {
-            altResponse = new Map();
+            altResponse = {};
 
             if (options.symbols) altResponse.symbols = resp.symbols.map(symbol => symbol.symbol);
 
@@ -141,7 +150,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             })
         }
 
-        if (altResponse != false) return altResponse;
+        if (altResponse != false && Object.keys(altResponse).length != 0) return altResponse;
         return resp;
     }
 
@@ -938,7 +947,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
-            else return this.futuresBalance(reconnect, tries, options)
+            else {
+                await delay(50);
+                return this.futuresBalance(reconnect, tries, options);
+            }
         }
 
         return parseAllPropertiesToFloat(resp);
@@ -1212,9 +1224,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 Object.assign(error, err.response.data);
                 if (!err.code) err.code = -2;
                 if (!err.msg) err.msg = 'Unknown error, possibly connection error.'
-            } else error = err;
-            if (!err.code) err.code = -2;
-            if (!err.msg) err.msg = 'Unknown error, possibly connection error.'
+            } else error = {
+                status: 408,
+                statusText: 'Request Timeout'
+            };
+            if (!err.code || err.code == 'ENOTFOUND') error.code = -2;
+            if (!err.msg) error.msg = 'No connection'
             return { error: error };
         }
     }
@@ -1310,6 +1325,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
     }
+
+    const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
     // private functions \\\\
 

@@ -195,8 +195,15 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
   if(ping.error) {
     console.log(ping.error); // check for error
   }
-  console.log(ping); // -> { roundtrip_time_millis: 389 }
 ```
+<details>
+ <summary>View Response</summary>
+ ```js
+ { 
+  roundtrip_time_millis: 410 // <= in millis
+ }
+ ```
+</details>
 
 or optionally, you can use the parameter 'reconnect' as true, this way the library will keep pinging until it gets a successful response, just like the following:
 ```js
@@ -206,11 +213,25 @@ or optionally, you can use the parameter 'reconnect' as true, this way the libra
 
 and finally, market data functions also have a parameter 'tries' if you want to ONLY try a specific amount of times before an error is returned, just like the following:
 ```js
-  let ping_3tries_max = await binance.futuresPing(true, 3);
-  if(ping_3tries_max.error) {
-    // the ping request failed 3 times with no success.
+  let ping_3tries = await binance.futuresPing(true, 3);
+  if(ping_3tries.error) {
+    console.log(ping_3tries); // the ping request failed 3 times with no success.
   }
 ```
+<details>
+ <summary>View Error Response</summary>
+ ```js
+ {
+  error: {
+    status: 408,
+    statusText: 'Request Timeout',
+    code: -2,
+    msg: 'No connection'
+  }
+}
+ ```
+</details>
+
 **PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
 ### .futuresServerTime():
@@ -224,6 +245,1296 @@ and finally, market data functions also have a parameter 'tries' if you want to 
   let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries, options {})
   console.log(exchangeInfo);
 ```
+<details>
+ <summary>View Response</summary>
+ ```js
+ {
+  timezone: 'UTC',
+  serverTime: 1665626426404,
+  futuresType: 'U_MARGINED',
+  rateLimits: [
+    {
+      rateLimitType: 'REQUEST_WEIGHT',
+      interval: 'MINUTE',
+      intervalNum: 1,
+      limit: 2400
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'MINUTE',
+      intervalNum: 1,
+      limit: 1200
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'SECOND',
+      intervalNum: 10,
+      limit: 300
+    }
+  ],
+  exchangeFilters: [],
+  assets: [
+    {
+      asset: 'USDT',
+      marginAvailable: true,
+      autoAssetExchange: '-10000'
+    },
+    {
+      asset: 'BTC',
+      marginAvailable: true,
+      autoAssetExchange: '-0.00100000'
+    },
+    { asset: 'BNB', marginAvailable: true, autoAssetExchange: '-10' },
+    { asset: 'ETH', marginAvailable: true, autoAssetExchange: '-5' },
+    { asset: 'XRP', marginAvailable: true, autoAssetExchange: '0' },
+    { asset: 'ADA', marginAvailable: true, autoAssetExchange: '0' },
+    { asset: 'DOT', marginAvailable: true, autoAssetExchange: '0' },
+    { asset: 'SOL', marginAvailable: true, autoAssetExchange: '0' },
+    {
+      asset: 'BUSD',
+      marginAvailable: true,
+      autoAssetExchange: '-10000'
+    }
+  ],
+  symbols: [
+    {
+      symbol: 'BTCUSDT',
+      pair: 'BTCUSDT',
+      contractType: 'PERPETUAL',
+      deliveryDate: 4133404800000,
+      onboardDate: 1569398400000,
+      status: 'TRADING',
+      maintMarginPercent: '2.5000',
+      requiredMarginPercent: '5.0000',
+      baseAsset: 'BTC',
+      quoteAsset: 'USDT',
+      marginAsset: 'USDT',
+      pricePrecision: 2,
+      quantityPrecision: 3,
+      baseAssetPrecision: 8,
+      quotePrecision: 8,
+      underlyingType: 'COIN',
+      underlyingSubType: [ 'PoW' ],
+      settlePlan: 0,
+      triggerProtect: '0.0500',
+      liquidationFee: '0.017500',
+      marketTakeBound: '0.05',
+      filters: [
+        {
+          minPrice: '556.80',
+          maxPrice: '4529764',
+          filterType: 'PRICE_FILTER',
+          tickSize: '0.10'
+        },
+        {
+          stepSize: '0.001',
+          filterType: 'LOT_SIZE',
+          maxQty: '1000',
+         minQty: '0.001'
+        },
+        {
+          stepSize: '0.001',
+          filterType: 'MARKET_LOT_SIZE',
+          maxQty: '120',
+          minQty: '0.001'
+        },
+        { limit: 200, filterType: 'MAX_NUM_ORDERS' },
+        { limit: 10, filterType: 'MAX_NUM_ALGO_ORDERS' },
+        { notional: '5', filterType: 'MIN_NOTIONAL' },
+        {
+          multiplierDown: '0.9500',
+          multiplierUp: '1.0500',
+          multiplierDecimal: '4',
+          filterType: 'PERCENT_PRICE'
+        }
+      ],
+      orderTypes: [
+        'LIMIT',
+        'MARKET',
+        'STOP',
+        'STOP_MARKET',
+        'TAKE_PROFIT',
+        'TAKE_PROFIT_MARKET',
+        'TRAILING_STOP_MARKET'
+      ],
+      timeInForce: [ 'GTC', 'IOC', 'FOK', 'GTX' ]
+    },
+    {
+      symbol: 'ETHUSDT',
+      ...
+    },
+    {
+      symbol: 'XRPBUSD',
+      ...
+    }
+  ]
+}
+ ```
+</details>
+
+```js
+  let exchangeInfo = await binance.futuresExchangeInfo(true, 0, {
+    pricePrecision: true,
+    quantityPrecision: true,
+    baseAsset: true,
+    quoteAsset: true          // you can check the rest of the options parameters in the futures functions table above
+  });
+  console.log(exchangeInfo);
+```
+<details>
+ <summary>View Response</summary>
+ ```js
+ {
+  BTCUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'BTC',
+    quoteAsset: 'USDT'
+  },
+  ETHUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'ETH',
+    quoteAsset: 'USDT'
+  },
+  BCHUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'BCH',
+    quoteAsset: 'USDT'
+  },
+  XRPUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'XRP',
+    quoteAsset: 'USDT'
+  },
+  EOSUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'EOS',
+    quoteAsset: 'USDT'
+  },
+  LTCUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'LTC',
+    quoteAsset: 'USDT'
+  },
+  TRXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'TRX',
+    quoteAsset: 'USDT'
+  },
+  ETCUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'ETC',
+    quoteAsset: 'USDT'
+  },
+  LINKUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'LINK',
+    quoteAsset: 'USDT'
+  },
+  XLMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'XLM',
+    quoteAsset: 'USDT'
+  },
+  ADAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ADA',
+    quoteAsset: 'USDT'
+  },
+  XMRUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'XMR',
+    quoteAsset: 'USDT'
+  },
+  DASHUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'DASH',
+    quoteAsset: 'USDT'
+  },
+  ZECUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'ZEC',
+    quoteAsset: 'USDT'
+  },
+  XTZUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'XTZ',
+    quoteAsset: 'USDT'
+  },
+  BNBUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'BNB',
+    quoteAsset: 'USDT'
+  },
+  ATOMUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'ATOM',
+    quoteAsset: 'USDT'
+  },
+  ONTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'ONT',
+    quoteAsset: 'USDT'
+  },
+  IOTAUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'IOTA',
+    quoteAsset: 'USDT'
+  },
+  BATUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'BAT',
+    quoteAsset: 'USDT'
+  },
+  VETUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'VET',
+    quoteAsset: 'USDT'
+  },
+  NEOUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'NEO',
+    quoteAsset: 'USDT'
+  },
+  QTUMUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'QTUM',
+    quoteAsset: 'USDT'
+  },
+  IOSTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'IOST',
+    quoteAsset: 'USDT'
+  },
+  THETAUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'THETA',
+    quoteAsset: 'USDT'
+  },
+  ALGOUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'ALGO',
+    quoteAsset: 'USDT'
+  },
+  ZILUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ZIL',
+    quoteAsset: 'USDT'
+  },
+  KNCUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'KNC',
+    quoteAsset: 'USDT'
+  },
+  ZRXUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'ZRX',
+    quoteAsset: 'USDT'
+  },
+  COMPUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'COMP',
+    quoteAsset: 'USDT'
+  },
+  OMGUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'OMG',
+    quoteAsset: 'USDT'
+  },
+  DOGEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'DOGE',
+    quoteAsset: 'USDT'
+  },
+  SXPUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'SXP',
+    quoteAsset: 'USDT'
+  },
+  KAVAUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'KAVA',
+    quoteAsset: 'USDT'
+  },
+  BANDUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'BAND',
+    quoteAsset: 'USDT'
+  },
+  RLCUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'RLC',
+    quoteAsset: 'USDT'
+  },
+  WAVESUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'WAVES',
+    quoteAsset: 'USDT'
+  },
+  MKRUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'MKR',
+    quoteAsset: 'USDT'
+  },
+  SNXUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'SNX',
+    quoteAsset: 'USDT'
+  },
+  DOTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'DOT',
+    quoteAsset: 'USDT'
+  },
+  DEFIUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 1,
+    baseAsset: 'DEFI',
+    quoteAsset: 'USDT'
+  },
+  YFIUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 1,
+    baseAsset: 'YFI',
+    quoteAsset: 'USDT'
+  },
+  BALUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'BAL',
+    quoteAsset: 'USDT'
+  },
+  CRVUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'CRV',
+    quoteAsset: 'USDT'
+  },
+  TRBUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'TRB',
+    quoteAsset: 'USDT'
+  },
+  RUNEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'RUNE',
+    quoteAsset: 'USDT'
+  },
+  SUSHIUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'SUSHI',
+    quoteAsset: 'USDT'
+  },
+  SRMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'SRM',
+    quoteAsset: 'USDT'
+  },
+  EGLDUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'EGLD',
+    quoteAsset: 'USDT'
+  },
+  SOLUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'SOL',
+    quoteAsset: 'USDT'
+  },
+  ICXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'ICX',
+    quoteAsset: 'USDT'
+  },
+  STORJUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'STORJ',
+    quoteAsset: 'USDT'
+  },
+  BLZUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'BLZ',
+    quoteAsset: 'USDT'
+  },
+  UNIUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'UNI',
+    quoteAsset: 'USDT'
+  },
+  AVAXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'AVAX',
+    quoteAsset: 'USDT'
+  },
+  FTMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'FTM',
+    quoteAsset: 'USDT'
+  },
+  HNTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'HNT',
+    quoteAsset: 'USDT'
+  },
+  ENJUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ENJ',
+    quoteAsset: 'USDT'
+  },
+  FLMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'FLM',
+    quoteAsset: 'USDT'
+  },
+  TOMOUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'TOMO',
+    quoteAsset: 'USDT'
+  },
+  RENUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'REN',
+    quoteAsset: 'USDT'
+  },
+  KSMUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'KSM',
+    quoteAsset: 'USDT'
+  },
+  NEARUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'NEAR',
+    quoteAsset: 'USDT'
+  },
+  AAVEUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'AAVE',
+    quoteAsset: 'USDT'
+  },
+  FILUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'FIL',
+    quoteAsset: 'USDT'
+  },
+  RSRUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'RSR',
+    quoteAsset: 'USDT'
+  },
+  LRCUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'LRC',
+    quoteAsset: 'USDT'
+  },
+  MATICUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'MATIC',
+    quoteAsset: 'USDT'
+  },
+  OCEANUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'OCEAN',
+    quoteAsset: 'USDT'
+  },
+  CVCUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'CVC',
+    quoteAsset: 'USDT'
+  },
+  BELUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'BEL',
+    quoteAsset: 'USDT'
+  },
+  CTKUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'CTK',
+    quoteAsset: 'USDT'
+  },
+  AXSUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'AXS',
+    quoteAsset: 'USDT'
+  },
+  ALPHAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ALPHA',
+    quoteAsset: 'USDT'
+  },
+  ZENUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'ZEN',
+    quoteAsset: 'USDT'
+  },
+  SKLUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'SKL',
+    quoteAsset: 'USDT'
+  },
+  GRTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'GRT',
+    quoteAsset: 'USDT'
+  },
+  '1INCHUSDT': {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: '1INCH',
+    quoteAsset: 'USDT'
+  },
+  BTCBUSD: {
+    quantityPrecision: 3,
+    pricePrecision: 1,
+    baseAsset: 'BTC',
+    quoteAsset: 'BUSD'
+  },
+  CHZUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'CHZ',
+    quoteAsset: 'USDT'
+  },
+  SANDUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'SAND',
+    quoteAsset: 'USDT'
+  },
+  ANKRUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'ANKR',
+    quoteAsset: 'USDT'
+  },
+  BTSUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'BTS',
+    quoteAsset: 'USDT'
+  },
+  LITUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'LIT',
+    quoteAsset: 'USDT'
+  },
+  UNFIUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'UNFI',
+    quoteAsset: 'USDT'
+  },
+  REEFUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'REEF',
+    quoteAsset: 'USDT'
+  },
+  RVNUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'RVN',
+    quoteAsset: 'USDT'
+  },
+  SFPUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'SFP',
+    quoteAsset: 'USDT'
+  },
+  XEMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'XEM',
+    quoteAsset: 'USDT'
+  },
+  BTCSTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'BTCST',
+    quoteAsset: 'USDT'
+  },
+  COTIUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'COTI',
+    quoteAsset: 'USDT'
+  },
+  CHRUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'CHR',
+    quoteAsset: 'USDT'
+  },
+  MANAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'MANA',
+    quoteAsset: 'USDT'
+  },
+  ALICEUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'ALICE',
+    quoteAsset: 'USDT'
+  },
+  HBARUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'HBAR',
+    quoteAsset: 'USDT'
+  },
+  ONEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ONE',
+    quoteAsset: 'USDT'
+  },
+  LINAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'LINA',
+    quoteAsset: 'USDT'
+  },
+  STMXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'STMX',
+    quoteAsset: 'USDT'
+  },
+  DENTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'DENT',
+    quoteAsset: 'USDT'
+  },
+  CELRUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'CELR',
+    quoteAsset: 'USDT'
+  },
+  HOTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'HOT',
+    quoteAsset: 'USDT'
+  },
+  MTLUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'MTL',
+    quoteAsset: 'USDT'
+  },
+  OGNUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'OGN',
+    quoteAsset: 'USDT'
+  },
+  NKNUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'NKN',
+    quoteAsset: 'USDT'
+  },
+  SCUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'SC',
+    quoteAsset: 'USDT'
+  },
+  DGBUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'DGB',
+    quoteAsset: 'USDT'
+  },
+  '1000SHIBUSDT': {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: '1000SHIB',
+    quoteAsset: 'USDT'
+  },
+  BAKEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'BAKE',
+    quoteAsset: 'USDT'
+  },
+  GTCUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'GTC',
+    quoteAsset: 'USDT'
+  },
+  ETHBUSD: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'ETH',
+    quoteAsset: 'BUSD'
+  },
+  BTCDOMUSDT: {
+    quantityPrecision: 3,
+    pricePrecision: 1,
+    baseAsset: 'BTCDOM',
+    quoteAsset: 'USDT'
+  },
+  TLMUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'TLM',
+    quoteAsset: 'USDT'
+  },
+  BNBBUSD: {
+    quantityPrecision: 2,
+    pricePrecision: 3,
+    baseAsset: 'BNB',
+    quoteAsset: 'BUSD'
+  },
+  ADABUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ADA',
+    quoteAsset: 'BUSD'
+  },
+  XRPBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'XRP',
+    quoteAsset: 'BUSD'
+  },
+  IOTXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'IOTX',
+    quoteAsset: 'USDT'
+  },
+  DOGEBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'DOGE',
+    quoteAsset: 'BUSD'
+  },
+  AUDIOUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'AUDIO',
+    quoteAsset: 'USDT'
+  },
+  RAYUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'RAY',
+    quoteAsset: 'USDT'
+  },
+  C98USDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'C98',
+    quoteAsset: 'USDT'
+  },
+  MASKUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'MASK',
+    quoteAsset: 'USDT'
+  },
+  ATAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'ATA',
+    quoteAsset: 'USDT'
+  },
+  SOLBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'SOL',
+    quoteAsset: 'BUSD'
+  },
+  FTTBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'FTT',
+    quoteAsset: 'BUSD'
+  },
+  DYDXUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'DYDX',
+    quoteAsset: 'USDT'
+  },
+  '1000XECUSDT': {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: '1000XEC',
+    quoteAsset: 'USDT'
+  },
+  GALAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'GALA',
+    quoteAsset: 'USDT'
+  },
+  CELOUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'CELO',
+    quoteAsset: 'USDT'
+  },
+  ARUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'AR',
+    quoteAsset: 'USDT'
+  },
+  KLAYUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'KLAY',
+    quoteAsset: 'USDT'
+  },
+  ARPAUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ARPA',
+    quoteAsset: 'USDT'
+  },
+  CTSIUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'CTSI',
+    quoteAsset: 'USDT'
+  },
+  LPTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'LPT',
+    quoteAsset: 'USDT'
+  },
+  ENSUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'ENS',
+    quoteAsset: 'USDT'
+  },
+  PEOPLEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'PEOPLE',
+    quoteAsset: 'USDT'
+  },
+  ANTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'ANT',
+    quoteAsset: 'USDT'
+  },
+  ROSEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'ROSE',
+    quoteAsset: 'USDT'
+  },
+  DUSKUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'DUSK',
+    quoteAsset: 'USDT'
+  },
+  FLOWUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 3,
+    baseAsset: 'FLOW',
+    quoteAsset: 'USDT'
+  },
+  IMXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'IMX',
+    quoteAsset: 'USDT'
+  },
+  API3USDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'API3',
+    quoteAsset: 'USDT'
+  },
+  GMTUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'GMT',
+    quoteAsset: 'USDT'
+  },
+  APEUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 4,
+    baseAsset: 'APE',
+    quoteAsset: 'USDT'
+  },
+  BNXUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'BNX',
+    quoteAsset: 'USDT'
+  },
+  WOOUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'WOO',
+    quoteAsset: 'USDT'
+  },
+  FTTUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'FTT',
+    quoteAsset: 'USDT'
+  },
+  JASMYUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'JASMY',
+    quoteAsset: 'USDT'
+  },
+  DARUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 4,
+    baseAsset: 'DAR',
+    quoteAsset: 'USDT'
+  },
+  GALUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 5,
+    baseAsset: 'GAL',
+    quoteAsset: 'USDT'
+  },
+  AVAXBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 6,
+    baseAsset: 'AVAX',
+    quoteAsset: 'BUSD'
+  },
+  NEARBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'NEAR',
+    quoteAsset: 'BUSD'
+  },
+  GMTBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'GMT',
+    quoteAsset: 'BUSD'
+  },
+  APEBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'APE',
+    quoteAsset: 'BUSD'
+  },
+  GALBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'GAL',
+    quoteAsset: 'BUSD'
+  },
+  FTMBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'FTM',
+    quoteAsset: 'BUSD'
+  },
+  DODOBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'DODO',
+    quoteAsset: 'BUSD'
+  },
+  ANCBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'ANC',
+    quoteAsset: 'BUSD'
+  },
+  GALABUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'GALA',
+    quoteAsset: 'BUSD'
+  },
+  TRXBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'TRX',
+    quoteAsset: 'BUSD'
+  },
+  '1000LUNCBUSD': {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: '1000LUNC',
+    quoteAsset: 'BUSD'
+  },
+  LUNA2BUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'LUNA2',
+    quoteAsset: 'BUSD'
+  },
+  OPUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'OP',
+    quoteAsset: 'USDT'
+  },
+  DOTBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'DOT',
+    quoteAsset: 'BUSD'
+  },
+  TLMBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'TLM',
+    quoteAsset: 'BUSD'
+  },
+  ICPBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'ICP',
+    quoteAsset: 'BUSD'
+  },
+  WAVESBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'WAVES',
+    quoteAsset: 'BUSD'
+  },
+  LINKBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'LINK',
+    quoteAsset: 'BUSD'
+  },
+  SANDBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'SAND',
+    quoteAsset: 'BUSD'
+  },
+  LTCBUSD: {
+    quantityPrecision: 2,
+    pricePrecision: 6,
+    baseAsset: 'LTC',
+    quoteAsset: 'BUSD'
+  },
+  MATICBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'MATIC',
+    quoteAsset: 'BUSD'
+  },
+  CVXBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'CVX',
+    quoteAsset: 'BUSD'
+  },
+  FILBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'FIL',
+    quoteAsset: 'BUSD'
+  },
+  '1000SHIBBUSD': {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: '1000SHIB',
+    quoteAsset: 'BUSD'
+  },
+  LEVERBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'LEVER',
+    quoteAsset: 'BUSD'
+  },
+  ETCBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 6,
+    baseAsset: 'ETC',
+    quoteAsset: 'BUSD'
+  },
+  LDOBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 6,
+    baseAsset: 'LDO',
+    quoteAsset: 'BUSD'
+  },
+  UNIBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 6,
+    baseAsset: 'UNI',
+    quoteAsset: 'BUSD'
+  },
+  AUCTIONBUSD: {
+    quantityPrecision: 1,
+    pricePrecision: 7,
+    baseAsset: 'AUCTION',
+    quoteAsset: 'BUSD'
+  },
+  INJUSDT: {
+    quantityPrecision: 1,
+    pricePrecision: 6,
+    baseAsset: 'INJ',
+    quoteAsset: 'USDT'
+  },
+  STGUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'STG',
+    quoteAsset: 'USDT'
+  },
+  FOOTBALLUSDT: {
+    quantityPrecision: 2,
+    pricePrecision: 5,
+    baseAsset: 'FOOTBALL',
+    quoteAsset: 'USDT'
+  },
+  SPELLUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'SPELL',
+    quoteAsset: 'USDT'
+  },
+  '1000LUNCUSDT': {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: '1000LUNC',
+    quoteAsset: 'USDT'
+  },
+  LUNA2USDT: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'LUNA2',
+    quoteAsset: 'USDT'
+  },
+  AMBBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'AMB',
+    quoteAsset: 'BUSD'
+  },
+  PHBBUSD: {
+    quantityPrecision: 0,
+    pricePrecision: 7,
+    baseAsset: 'PHB',
+    quoteAsset: 'BUSD'
+  },
+  LDOUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'LDO',
+    quoteAsset: 'USDT'
+  },
+  CVXUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'CVX',
+    quoteAsset: 'USDT'
+  },
+  BTCUSDT_221230: {
+    quantityPrecision: 3,
+    pricePrecision: 1,
+    baseAsset: 'BTC',
+    quoteAsset: 'USDT'
+  },
+  ETHUSDT_221230: {
+    quantityPrecision: 3,
+    pricePrecision: 2,
+    baseAsset: 'ETH',
+    quoteAsset: 'USDT'
+  },
+  ICPUSDT: {
+    quantityPrecision: 0,
+    pricePrecision: 6,
+    baseAsset: 'ICP',
+    quoteAsset: 'USDT'
+  }
+}
+ ```
+</details>
+
 
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
