@@ -976,7 +976,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp;
     }
 
-    this.futuresLeverage = (symbol, leverage, opts = {}) => {
+    this.futuresLeverage = async (symbol, leverage, findHighest = false, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/leverage',
@@ -993,7 +993,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         Object.assign(options, opts);
 
-        return request(params, options, 'SIGNED');
+        if (!findHighest) return request(params, options, 'SIGNED');
+
+        let response = await request(params, options, 'SIGNED');
+        if (response.error) {
+            if (response.error.code == -4028) {
+                leverage = lowerBracket(leverage);
+                return this.futuresLeverage(symbol, leverage, findHighest, opts);
+            }
+        }
+        return response;
     }
 
     this.futuresMarginType = (symbol, marginType, opts = {}) => {
@@ -1325,6 +1334,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         return variable;
+    }
+
+    const lowerBracket = (lev) => {
+        if (lev <= 20) return lev; // impossible basically
+        if (lev <= 25) return 20;
+        if (lev <= 50) return 25;
+        if (lev <= 75) return 50;
+        if (lev <= 100) return 75;
+        if (lev <= 125) return 100;
+        return 125;
     }
 
     const ERR = (msg, errType = false, requiredType = false, possibilities = []) => {
