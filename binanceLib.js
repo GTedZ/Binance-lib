@@ -17,6 +17,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const incomeTypes = ['TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE']
     const contractTypes = ["PERPETUAL", "CURRENT_MONTH", "NEXT_MONTH", "CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL_DELIVERING"]
     const shortenedContractTypes = ["PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"]
+    const periods = ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"];
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
@@ -452,7 +453,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (symbol == undefined) return ERR('symbol', 'required');
         if (period == undefined) return ERR('period', 'required');
-        if (!equal(period, "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d")) return ERR('period', 'value', false, ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"])
+        if (!equal(period, periods)) return ERR('period', 'value', false, periods)
 
 
         let options = {
@@ -482,7 +483,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (symbol == undefined) return ERR('symbol', 'required');
         if (period == undefined) return ERR('period', 'required');
-        if (!equal(period, "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d")) return ERR('period', 'value', false, ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"])
+        if (!equal(period, periods)) return ERR('period', 'value', false, periods)
 
 
         let options = {
@@ -512,7 +513,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (symbol == undefined) return ERR('symbol', 'required');
         if (period == undefined) return ERR('period', 'required');
-        if (!equal(period, "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d")) return ERR('period', 'value', false, ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"])
+        if (!equal(period, periods)) return ERR('period', 'value', false, periods)
 
 
         let options = {
@@ -535,7 +536,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (symbol == undefined) return ERR('symbol', 'required');
         if (period == undefined) return ERR('period', 'required');
-        if (!equal(period, "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d")) return ERR('period', 'value', false, ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"])
+        if (!equal(period, periods)) return ERR('period', 'value', false, periods)
 
 
         let options = {
@@ -549,7 +550,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options);
     }
 
-    this.futuresTakerlongshortRatio = async (symbol, period, limit = 30, startTime = 0, endTime = 0) => {
+    this.futuresTakerLongShortRatio = async (symbol, period, limit = 30, startTime = 0, endTime = 0) => {
         let params = {
             baseURL: fapi,
             path: '/futures/data/takerlongshortRatio',
@@ -558,7 +559,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (symbol == undefined) return ERR('symbol', 'required');
         if (period == undefined) return ERR('period', 'required');
-        if (!equal(period, "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d")) return ERR('period', 'value', false, ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"])
+        if (!equal(period, periods)) return ERR('period', 'value', false, periods)
 
 
         let options = {
