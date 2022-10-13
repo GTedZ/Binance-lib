@@ -247,7 +247,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 <details>
  <summary>View Response</summary>
- ```js
+ ```
 {
     "timezone": "UTC",
     "serverTime": 1665626426405,
@@ -423,7 +423,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 <details>
  <summary>View Response</summary>
- ```js
+ ```
  {
   BTCUSDT: {
     quantityPrecision: 3,
