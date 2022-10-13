@@ -221,14 +221,14 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 <details>
  <summary>View Error Response</summary>
  ```js
- {
-  error: {
-    status: 408,
-    statusText: 'Request Timeout',
-    code: -2,
-    msg: 'No connection'
-  }
-}
+ {  
+  error: {  
+    status: 408,  
+    statusText: 'Request Timeout',  
+    code: -2,  
+    msg: 'No connection'  
+  }  
+}  
  ```
 </details>
 
@@ -248,127 +248,127 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 <details>
  <summary>View Response</summary>
  ```js
- {
-  timezone: 'UTC',
-  serverTime: 1665626426404,
-  futuresType: 'U_MARGINED',
-  rateLimits: [
-    {
-      rateLimitType: 'REQUEST_WEIGHT',
-      interval: 'MINUTE',
-      intervalNum: 1,
-      limit: 2400
-    },
-    {
-      rateLimitType: 'ORDERS',
-      interval: 'MINUTE',
-      intervalNum: 1,
-      limit: 1200
-    },
-    {
-      rateLimitType: 'ORDERS',
-      interval: 'SECOND',
-      intervalNum: 10,
-      limit: 300
-    }
-  ],
-  exchangeFilters: [],
-  assets: [
-    {
-      asset: 'USDT',
-      marginAvailable: true,
-      autoAssetExchange: '-10000'
-    },
-    {
-      asset: 'BTC',
-      marginAvailable: true,
-      autoAssetExchange: '-0.00100000'
-    },
-    { asset: 'BNB', marginAvailable: true, autoAssetExchange: '-10' },
-    { asset: 'ETH', marginAvailable: true, autoAssetExchange: '-5' },
-    { asset: 'XRP', marginAvailable: true, autoAssetExchange: '0' },
-    { asset: 'ADA', marginAvailable: true, autoAssetExchange: '0' },
-    { asset: 'DOT', marginAvailable: true, autoAssetExchange: '0' },
-    { asset: 'SOL', marginAvailable: true, autoAssetExchange: '0' },
-    {
-      asset: 'BUSD',
-      marginAvailable: true,
-      autoAssetExchange: '-10000'
-    }
-  ],
-  symbols: [
-    {
-      symbol: 'BTCUSDT',
-      pair: 'BTCUSDT',
-      contractType: 'PERPETUAL',
-      deliveryDate: 4133404800000,
-      onboardDate: 1569398400000,
-      status: 'TRADING',
-      maintMarginPercent: '2.5000',
-      requiredMarginPercent: '5.0000',
-      baseAsset: 'BTC',
-      quoteAsset: 'USDT',
-      marginAsset: 'USDT',
-      pricePrecision: 2,
-      quantityPrecision: 3,
-      baseAssetPrecision: 8,
-      quotePrecision: 8,
-      underlyingType: 'COIN',
-      underlyingSubType: [ 'PoW' ],
-      settlePlan: 0,
-      triggerProtect: '0.0500',
-      liquidationFee: '0.017500',
-      marketTakeBound: '0.05',
-      filters: [
-        {
-          minPrice: '556.80',
-          maxPrice: '4529764',
-          filterType: 'PRICE_FILTER',
-          tickSize: '0.10'
-        },
-        {
-          stepSize: '0.001',
-          filterType: 'LOT_SIZE',
-          maxQty: '1000',
-         minQty: '0.001'
-        },
-        {
-          stepSize: '0.001',
-          filterType: 'MARKET_LOT_SIZE',
-          maxQty: '120',
-          minQty: '0.001'
-        },
-        { limit: 200, filterType: 'MAX_NUM_ORDERS' },
-        { limit: 10, filterType: 'MAX_NUM_ALGO_ORDERS' },
-        { notional: '5', filterType: 'MIN_NOTIONAL' },
-        {
-          multiplierDown: '0.9500',
-          multiplierUp: '1.0500',
-          multiplierDecimal: '4',
-          filterType: 'PERCENT_PRICE'
-        }
-      ],
-      orderTypes: [
-        'LIMIT',
-        'MARKET',
-        'STOP',
-        'STOP_MARKET',
-        'TAKE_PROFIT',
-        'TAKE_PROFIT_MARKET',
-        'TRAILING_STOP_MARKET'
-      ],
-      timeInForce: [ 'GTC', 'IOC', 'FOK', 'GTX' ]
-    },
-    {
-      symbol: 'ETHUSDT',
-      ...
-    },
-    {
-      symbol: 'XRPBUSD',
-      ...
-    }
-  ]
-}
+ {  
+  timezone: 'UTC',  
+  serverTime: 1665626426404,  
+  futuresType: 'U_MARGINED',  
+  rateLimits: [  
+    {  
+      rateLimitType: 'REQUEST_WEIGHT',  
+      interval: 'MINUTE',  
+      intervalNum: 1,  
+      limit: 2400  
+    },  
+    {  
+      rateLimitType: 'ORDERS',  
+      interval: 'MINUTE',  
+      intervalNum: 1,  
+      limit: 1200  
+    },  
+    {  
+      rateLimitType: 'ORDERS',  
+      interval: 'SECOND',  
+      intervalNum: 10,  
+      limit: 300  
+    }  
+  ],  
+  exchangeFilters: [],  
+  assets: [  
+    {  
+      asset: 'USDT',  
+      marginAvailable: true,  
+      autoAssetExchange: '-10000'  
+    },  
+    {  
+      asset: 'BTC',  
+      marginAvailable: true,  
+      autoAssetExchange: '-0.00100000'  
+    },  
+    { asset: 'BNB', marginAvailable: true, autoAssetExchange: '-10' },  
+    { asset: 'ETH', marginAvailable: true, autoAssetExchange: '-5' },  
+    { asset: 'XRP', marginAvailable: true, autoAssetExchange: '0' },  
+    { asset: 'ADA', marginAvailable: true, autoAssetExchange: '0' },  
+    { asset: 'DOT', marginAvailable: true, autoAssetExchange: '0' },  
+    { asset: 'SOL', marginAvailable: true, autoAssetExchange: '0' },  
+    {  
+      asset: 'BUSD',  
+      marginAvailable: true,  
+      autoAssetExchange: '-10000'  
+    }  
+  ],  
+  symbols: [  
+    {  
+      symbol: 'BTCUSDT',  
+      pair: 'BTCUSDT',  
+      contractType: 'PERPETUAL',  
+      deliveryDate: 4133404800000,  
+      onboardDate: 1569398400000,  
+      status: 'TRADING',  
+      maintMarginPercent: '2.5000',  
+      requiredMarginPercent: '5.0000',  
+      baseAsset: 'BTC',  
+      quoteAsset: 'USDT',  
+      marginAsset: 'USDT',  
+      pricePrecision: 2,  
+      quantityPrecision: 3,  
+      baseAssetPrecision: 8,  
+      quotePrecision: 8,  
+      underlyingType: 'COIN',  
+      underlyingSubType: [ 'PoW' ],  
+      settlePlan: 0,  
+      triggerProtect: '0.0500',  
+      liquidationFee: '0.017500',  
+      marketTakeBound: '0.05',  
+      filters: [  
+        {  
+          minPrice: '556.80',  
+          maxPrice: '4529764',  
+          filterType: 'PRICE_FILTER',  
+          tickSize: '0.10'  
+        },  
+        {  
+          stepSize: '0.001',  
+          filterType: 'LOT_SIZE',  
+          maxQty: '1000',  
+         minQty: '0.001'  
+        },  
+        {  
+          stepSize: '0.001',  
+          filterType: 'MARKET_LOT_SIZE',  
+          maxQty: '120',  
+          minQty: '0.001'  
+        },  
+        { limit: 200, filterType: 'MAX_NUM_ORDERS' },  
+        { limit: 10, filterType: 'MAX_NUM_ALGO_ORDERS' },  
+        { notional: '5', filterType: 'MIN_NOTIONAL' },  
+        {  
+          multiplierDown: '0.9500',  
+          multiplierUp: '1.0500',  
+          multiplierDecimal: '4',  
+          filterType: 'PERCENT_PRICE'  
+        }  
+      ],  
+      orderTypes: [  
+        'LIMIT',  
+        'MARKET',  
+        'STOP',  
+        'STOP_MARKET',  
+        'TAKE_PROFIT',  
+        'TAKE_PROFIT_MARKET',  
+        'TRAILING_STOP_MARKET'  
+      ],  
+      timeInForce: [ 'GTC', 'IOC', 'FOK', 'GTX' ]  
+    },  
+    {  
+      symbol: 'ETHUSDT',  
+      ...  
+    },  
+    {  
+      symbol: 'XRPBUSD',  
+      ...  
+    }  
+  ]  
+}  
  ```
 </details>
 
