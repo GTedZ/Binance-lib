@@ -7,3 +7,8 @@ logErr.txt
 test.js
 test
 test.*
+
+inlineAdder
+inlineAdder.txt
+inlineAdder.js
+inlineAdder.bat
