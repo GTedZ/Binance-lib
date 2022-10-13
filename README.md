@@ -220,6 +220,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 <details>
  <summary>View Error Response</summary>
+ 
  ```js
  {  
   error: {  
@@ -271,6 +272,7 @@ Or using the options parameters:
 ```
 <details>
  <summary>View Response</summary>
+
  ```js
  {
   "lastUpdateId": 2024769942883,
@@ -298,6 +300,7 @@ Or using the options parameters:
   ]
 }
  ```
+
 </details>
 
 ### .futuresRecentTrades():
