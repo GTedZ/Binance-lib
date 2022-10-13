@@ -259,6 +259,78 @@ Or using the options parameters:
 ```
 //TODO add view response
 
+### .futuresOrderBook():
+```js
+  let orderBook = await binance.futuresOrderBook('BTCUSDT');      // <= returns the newest 500 orders
+  console.log(orderBook);
+
+  // OR
+
+  let orderBook = await binance.futuresOrderBook('BTCUSDT', 200); // <= returns only the newest 500 orders
+  console.log(orderBook);
+```
+<details>
+ <summary>View Response</summary>
+ ```js
+ {
+  "lastUpdateId": 2024769942883,
+  "E": 1665634634384,
+  "T": 1665634634371,
+  "bids": [
+    [
+      "19082.00",
+      "49.046"
+    ],
+    [
+      "19081.90",
+      "1.761"
+    ],
+    [
+      "19081.80",
+      "2.735"
+    ],
+    [
+      "19081.70",
+      "0.410"
+    ],
+    [
+      "19081.60",
+      "1.655"
+    ]
+  ],
+  "asks": [
+    [
+      "19082.10",
+      "0.729"
+    ],
+    [
+      "19082.20",
+      "0.056"
+    ],
+    [
+      "19082.30",
+      "0.025"
+    ],
+    [
+      "19082.40",
+      "4.052"
+    ],
+    [
+      "19082.50",
+      "0.001"
+    ]
+  ]
+}
+ ```
+</details>
+
+### .futuresRecentTrades():
+```js
+  let recentTrades = await binance.futuresRecentTrades('ETHUSDT');      // <= 500 newest executed trades
+  // OR
+  let recentTrades = await binance.futuresRecentTrades('ETHUSDT', 10); // <= 10 newest trades
+```
+//TODO add view response
 
 
 # *CONTACT ME*
