@@ -19,6 +19,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
+    if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
     if (options.extraResponseInfo && options.extraResponseInfo == true) this.extraResponseInfo = true; else this.extraResponseInfo = false;
 
@@ -41,7 +42,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         );
         let endTime = Date.now();
-        console.log(tries);
+
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
@@ -154,7 +155,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp;
     }
 
-    this.futuresOrderBook = function (symbol, limit = 500) {
+    this.futuresOrderBook = async (symbol, limit = 500) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/depth',
@@ -175,7 +176,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     this.futuresRecentTrades = async (symbol, limit = 500) => {
         let params = {
             baseURL: fapi,
-            path: '/fapi/v1/depth',
+            path: '/fapi/v1/trades',
             method: 'get'
         }
 
@@ -399,9 +400,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {};
         if (symbol) options.symbol = symbol;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     /**
@@ -420,9 +419,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             symbol: symbol
         }
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     /**
@@ -452,9 +449,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     /**
@@ -484,9 +479,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     /**
@@ -516,9 +509,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     this.futuresGlobalLongShortAccountRatio = async (symbol, period, limit = 30, startTime = 0, endTime = 0) => {
@@ -541,9 +532,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     this.futuresTakerlongshortRatio = async (symbol, period, limit = 30, startTime = 0, endTime = 0) => {
@@ -566,9 +555,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     /**
@@ -628,9 +615,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {};
         if (symbol) options.symbol = symbol;
 
-        let response = await request(params, options);
-        if (response.error) return response;
-        return parseAllPropertiesToFloat(response);
+        return request(params, options);
     }
 
     // futures Market DATA \\\\
@@ -787,7 +772,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
 
-        return response = bigInt.parse(bigInt.stringify(parseAllPropertiesToFloat(response)));
+        return response;
     }
 
     /**
@@ -953,7 +938,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
 
-        return parseAllPropertiesToFloat(resp);
+        return resp;
     }
 
     /**
@@ -973,7 +958,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (resp.error) return resp;
         if (activePositionsOnly == true) resp.positions = resp.positions.filter(position => position.positionAmt != 0);
         if (activeAssets == true) resp.assets = resp.assets.filter(asset => asset.walletBalance != 0 || asset.availableBalance != 0 || asset.marginBalance != 0);
-        return parseAllPropertiesToFloat(resp);
+        return resp;
     }
 
     this.futuresLeverage = (symbol, leverage, opts = {}) => {
@@ -1212,7 +1197,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 data.data = response.data;
                 return data;
             }
-            return response.data;
+
+            if (this.fetchFloats) return parseAllPropertiesToFloat(response.data); else return response.data;
 
         } catch (err) {
             let error;
@@ -1270,21 +1256,21 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     const parseAllPropertiesToFloat = (obj) => {
-        if (Array.isArray(obj)) obj.forEach(propertiesToFloat);
-        propertiesToFloat(obj);
+        if (Array.isArray(obj)) for (let index in obj) obj[index] = parseAllPropertiesToFloat(obj[index], index)
+        else if (typeof obj == 'object') for (let key of Object.keys(obj)) obj[key] = parseAllPropertiesToFloat(obj[key], key);
+        else obj = getNumberOrString(obj);
         return obj;
-    }
-
-    const propertiesToFloat = (obj) => {
-        for (let key of Object.keys(obj)) {
-            if (Array.isArray(obj[key])) obj[key] = parseAllPropertiesToFloat(obj[key]);
-            obj[key] = getNumberOrString(obj[key]);
-        }
     }
 
     const getNumberOrString = (item) => {
         let i = parseFloat(item);
-        return i == i ? i : item;
+        if (i == i) {
+            try {
+                return bigInt.parse(item);
+            } catch (err) {
+                return item;
+            }
+        } else return item;
     }
 
     const number = (num) => {
