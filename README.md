@@ -247,7 +247,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 <details>
  <summary>View Response</summary>
-```js
+ ```js
 
 {<br/>
   "timezone": "UTC",<br/>
@@ -409,10 +409,10 @@ and finally, market data functions also have a parameter 'tries' if you want to 
       ...<br/>
     }<br/>
   ]<br/>
-}<br/>
+}
 
  ```
-</details>
+ </details>
 
 ```js
   let exchangeInfo = await binance.futuresExchangeInfo(true, 0, {
