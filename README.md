@@ -54,6 +54,37 @@ if(order.error) {
 
 ### ERROR HANDLING:
 All requests can be handled via checking for an error with: 'if (response.error) {...}, there are no exceptions to this, you don't need any try and catch blocks
+All errors are like the following:
+```js
+let response = await binance.futuresMarketBuy('BTCUSDT'); // <= quantity is missing
+if(response.error) {
+  console.log(response);  
+}
+
+response => {
+              error: {
+                status: 400,
+                statusText: 'Local Error',
+                code: -1, // -1 is for locally rejected error (by the library)
+                msg: "Parameter 'quantity' is required for this request."
+              }
+            }
+// OR
+
+let response = await binance.futuresMarketBuy('BTCUSDT', 100); // <= not enough funds to buy 100 Bitcoins
+if(response.error) {
+  console.log(response);  
+}
+
+response => {
+              error: {
+                status: 400,
+                statusText: 'Bad Request',
+                code: -2019, // any error code that is 3-digits and above are from binance
+                msg: "Margin is insufficient."
+              }
+            }
+```
 
 ### OPTIONS = {}:
 In certain functions, there is a parameter called options or opts (= {} for object), the parameters that are considered as options should be wrapped inside this object parameter, they are often used for less-frequent parameters or local library parameters to tell the library what to do and what to fetch, an example for the usage:
