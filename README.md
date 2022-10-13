@@ -380,7 +380,7 @@ Or using the options parameters:
 
  ```js
  {
-  symbols: [
+  symbols: [  // because of { symbols: true } <= it is the only options parameter that returns as a seperate property in this response
     'BTCUSDT',  'ETHUSDT',   'BCHUSDT',   'XRPUSDT',   'EOSUSDT',
     'LTCUSDT',  'TRXUSDT',   'ETCUSDT',   'LINKUSDT',  'XLMUSDT',
     'ADAUSDT',  'XMRUSDT',   'DASHUSDT',  'ZECUSDT',   'XTZUSDT',
