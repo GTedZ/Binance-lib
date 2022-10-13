@@ -2128,6 +2128,559 @@ OR
 ```
 </details>
 
+### .futuresFundingRate():
+```js
+  let fundingRate = await binance.futuresFundingRate('BTCUSDT', 5); // last 5 fundings rates for BTCUSDT
+  console.log(fundingRate);
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+ [
+  {
+    symbol: 'BTCUSDT',
+    fundingTime: 1665532800014,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'BTCUSDT',
+    fundingTime: 1665561600000,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'BTCUSDT',
+    fundingTime: 1665590400000,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'BTCUSDT',
+    fundingTime: 1665619200013,
+    fundingRate: 0.00007466
+  },
+  {
+    symbol: 'BTCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  }
+]
+```
+</details>
+
+OR
+
+```js
+  let fundingRates = await binance.futuresFundingRate();  // the current funding rate of ALL symbols
+  console.log(fundingRate);
+```
+
+<details>
+ <summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'GMTBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00030958
+  },
+  {
+    symbol: 'GMTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00027327
+  },
+  {
+    symbol: 'GRTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00022077
+  },
+  {
+    symbol: 'GTCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'HBARUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'HNTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00004804
+  },
+  {
+    symbol: 'HOTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00005761
+  },
+  {
+    symbol: 'ICPBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00007392
+  },
+  {
+    symbol: 'ICPUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'ICXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00009071
+  },
+  {
+    symbol: 'IMXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00067867
+  },
+  {
+    symbol: 'INJUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0000545
+  },
+  {
+    symbol: 'IOSTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00015786
+  },
+  {
+    symbol: 'IOTAUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00037516
+  },
+  {
+    symbol: 'IOTXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00016294
+  },
+  {
+    symbol: 'JASMYUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00014876
+  },
+  {
+    symbol: 'KAVAUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00019346
+  },
+  {
+    symbol: 'KLAYUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'KNCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'KSMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00016096
+  },
+  {
+    symbol: 'LDOBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'LDOUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'LEVERBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'LINAUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00070546
+  },
+  {
+    symbol: 'LINKBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00012811
+  },
+  {
+    symbol: 'LINKUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00004702
+  },
+  {
+    symbol: 'LITUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'LPTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00044919
+  },
+  {
+    symbol: 'LRCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00004505
+  },
+  {
+    symbol: 'LTCBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002439
+  },
+  {
+    symbol: 'LTCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0000441
+  },
+  {
+    symbol: 'LUNA2BUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00002519
+  },
+  {
+    symbol: 'LUNA2USDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002105
+  },
+  {
+    symbol: 'MANAUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00021307
+  },
+  {
+    symbol: 'MASKUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00003529
+  },
+  {
+    symbol: 'MATICBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00003873
+  },
+  {
+    symbol: 'MATICUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002414
+  },
+  {
+    symbol: 'MKRUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'MTLUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00071467
+  },
+  {
+    symbol: 'NEARBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'NEARUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'NEOUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.000119
+  },
+  {
+    symbol: 'NKNUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00007982
+  },
+  {
+    symbol: 'OCEANUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00006114
+  },
+  {
+    symbol: 'OGNUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'OMGUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00006992
+  },
+  {
+    symbol: 'ONEUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00004123
+  },
+  {
+    symbol: 'ONTUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'OPUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002804
+  },
+  {
+    symbol: 'PEOPLEUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'PHBBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00030568
+  },
+  {
+    symbol: 'QTUMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00001128
+  },
+  {
+    symbol: 'RAYUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00019812
+  },
+  {
+    symbol: 'REEFUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00029447
+  },
+  {
+    symbol: 'RENUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'RLCUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00025606
+  },
+  {
+    symbol: 'ROSEUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.0001099
+  },
+  {
+    symbol: 'RSRUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'RUNEUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00006553
+  },
+  {
+    symbol: 'RVNUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002128
+  },
+  {
+    symbol: 'SANDBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00002414
+  },
+  {
+    symbol: 'SANDUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00012819
+  },
+  { 
+    symbol: 'SCUSDT',
+    fundingTime: 1665648000016, 
+    fundingRate: 0.0001 },
+  {
+    symbol: 'SFPUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'SKLUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00005072
+  },
+  {
+    symbol: 'SNXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00038103
+  },
+  {
+    symbol: 'SOLBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00005132
+  },
+  {
+    symbol: 'SOLUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.0000051
+  },
+  {
+    symbol: 'SPELLUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00000477
+  },
+  {
+    symbol: 'SRMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00041315
+  },
+  {
+    symbol: 'STGUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00044673
+  },
+  {
+    symbol: 'STMXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00001531
+  },
+  {
+    symbol: 'STORJUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00007707
+  },
+  {
+    symbol: 'SUSHIUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'SXPUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00023513
+  },
+  {
+    symbol: 'THETAUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00025688
+  },
+  {
+    symbol: 'TLMBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'TLMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'TOMOUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00010445
+  },
+  {
+    symbol: 'TRBUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'TRXBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00016423
+  },
+  {
+    symbol: 'TRXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00021583
+  },
+  {
+    symbol: 'UNFIUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00006893
+  },
+  {
+    symbol: 'UNIBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00008217
+  },
+  {
+    symbol: 'UNIUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00000561
+  },
+  {
+    symbol: 'VETUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.0000923
+  },
+  {
+    symbol: 'WAVESBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00017417
+  },
+  {
+    symbol: 'WAVESUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00011514
+  },
+  {
+    symbol: 'WOOUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'XEMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.0001
+  },
+  {
+    symbol: 'XLMUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00001744
+  },
+  {
+    symbol: 'XMRUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00017954
+  },
+  {
+    symbol: 'XRPBUSD',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00002319
+  },
+  {
+    symbol: 'XRPUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00000307
+  },
+  {
+    symbol: 'XTZUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00023095
+  },
+  {
+    symbol: 'YFIUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00012419
+  },
+  {
+    symbol: 'ZECUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00003292
+  },
+  {
+    symbol: 'ZENUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: 0.00007992
+  },
+  {
+    symbol: 'ZILUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00004449
+  },
+  {
+    symbol: 'ZRXUSDT',
+    fundingTime: 1665648000016,
+    fundingRate: -0.00002443
+  }
+]
+```
+</details>
 
 
 # *CONTACT ME*
