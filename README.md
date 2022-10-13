@@ -247,7 +247,8 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 ```
 <details>
  <summary>View Response</summary>
- ```js
+```js
+
 {<br/>
   "timezone": "UTC",<br/>
   "serverTime": 1665626426405,<br/>
@@ -409,6 +410,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
     }<br/>
   ]<br/>
 }<br/>
+
  ```
 </details>
 
