@@ -72,29 +72,31 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 ### Websockets<a href='#Futures-Websockets'><sup>ref</sup></a>
 
 ## FUTURES PARAMETER EXPLANATION:
-- side: *"BUY"* OR *"SELL"*.
-- *"type"*: *each comes with additional Mandatory Parameters*
-- - *"LIMIT"*: *"timeInForce", "quantity", "price"*.
-- - *"MARKET"*: *"quantity"*.
-- - *"STOP"*/*"TAKE_PROFIT"*: *"quantity", "price", "stopPrice"*.
-- - *"STOP_MARKET"/"TAKE_PROFIT_MARKET"*: *"stopPrice"*.
-- - *"TRAILING_STOP_MARKET"*: *"callbackRate"*.
-- positionSide: *"LONG"* OR *"SHORT"* - it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
-- newClientOrderId: A unique id among open orders (created automatically OR passed by the user). Can only be a string following the rule: ^[\.A-Z\:/a-z0-9_-]{1,36}$ <= meaning: maxLength is 35 - can contain all Numbers, Alphabetical Characters (upper and lowercase), '_', '-', '/', '.' and ':'.
-- origClientOrderId: A reference to the *'newClientOrderId'* that you created, or the one created automatically by binance.
-- stopPrice: Only used with orders of types *"STOP"/"STOP_MARKET" or *"TAKE_PROFIT"/"TAKE_PROFIT_MARKET"*.
-- activationPrice: *MUST AND ONLY* used with orders of type *"TRAILING_STOP_MARKET"*.
-- callbackRate: *MUST AND ONLY* used with orders of type *"TRAILING_STOP_MARKET"*, minValue is 0.1 and maxValue is 4, where 1 for 1%.
-- workingType: Only used when you want to specify that you want the stopPrice to be triggered by either *"MARK_PRICE"* OR *"CONTRACT_PRICE"*, default is *"CONTRACT_PRICE"*.
-- newOrderRespType: ***VERY IMPORTANT TO KNOW*** Defines the response type (LIBRARY DEFAULT IS **"RESULT"**):
+- ***side***: *"BUY"* OR *"SELL"*.
+- ***type***: *each comes with additional Mandatory Parameters*:
+- - **"LIMIT"**: *"timeInForce", "quantity", "price"*.
+- - **"MARKET"**: *"quantity"*.
+- - **"STOP"**/**"TAKE_PROFIT"**: *"quantity", "price", "stopPrice"*.
+- - **"STOP_MARKET"/"TAKE_PROFIT_MARKET"**: *"stopPrice"*.
+- - **"TRAILING_STOP_MARKET"**: *"callbackRate"*.
+- ***type_2***: *'1' or 'increase'* or *'2' or 'reduce'*.
+- ***marginType***: *"ISOLATED"* or *"CROSSED"*.
+- ***positionSide***: *"LONG"* OR *"SHORT"* - it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
+- ***newClientOrderId***: A unique id among open orders (created automatically OR passed by the user). Can only be a string following the rule: ^[\.A-Z\:/a-z0-9_-]{1,36}$ <= meaning: maxLength is 35 - can contain all Numbers, Alphabetical Characters (upper and lowercase), '_', '-', '/', '.' and ':'.
+- ***origClientOrderId***: A reference to the *'newClientOrderId'* that you created, or the one created automatically by binance.
+- ***stopPrice***: Only used with orders of types *"STOP"/"STOP_MARKET" or *"TAKE_PROFIT"/"TAKE_PROFIT_MARKET"*.
+- ***activationPrice***: *MUST AND ONLY* used with orders of type *"TRAILING_STOP_MARKET"*.
+- ***callbackRate***: *MUST AND ONLY* used with orders of type *"TRAILING_STOP_MARKET"*, minValue is 0.1 and maxValue is 4, where 1 for 1%.
+- ***workingType***: Only used when you want to specify that you want the stopPrice to be triggered by either *"MARK_PRICE"* OR *"CONTRACT_PRICE"*, default is *"CONTRACT_PRICE"*.
+- ***newOrderRespType***: ***VERY IMPORTANT TO KNOW*** Defines the response type (LIBRARY DEFAULT IS **"RESULT"**):
 - - **"ACK"**: new Orders will have a response with minimal information, meaning the executedPrice and other information about order fills will not be sent (orderId and other order identity information will be sent).
 - - **"RESULT"**: Binance will wait until full execution of your trade before sending the response with the full information (like the average Entry Price and all other info about your order fills).
-- interval: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"*.
-- contractType: *"PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"*.
-- startTime & endTime (INTEGERS): *mostly* should be sent together, you can transform any date into UNIX time via the following: *'new Date().getTime();'* OR *'new Date('10/12/2022, 10:52:26 PM').getTime();'* (since binance uses the UNIX time system).
-- dualSidePosition: *"true"* or *"false"* for hedgeMode if turned on or not.
-- multiAssetMargin: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
-- incomeType: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
+- ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"*.
+- ***contractType***: *"PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"*.
+- ***startTime*** & ***endTime*** (INTEGERS): *mostly* should be sent together, you can transform any date into UNIX time via the following: *'new Date().getTime();'* OR *'new Date('10/12/2022, 10:52:26 PM').getTime();'* (since binance uses the UNIX time system).
+- ***dualSidePosition***: *"true"* or *"false"* for hedgeMode if turned on or not.
+- ***multiAssetMargin***: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
+- ***incomeType***: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
 
 ## ALL FUTURES FUNCTIONS:
 |FUNCTIONS                                                                                           |REQUIRED PARAMETERS<a href='#futures-Parameters-Explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS<a href='#fParameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
@@ -146,7 +148,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresAccount()                                        <a href='#futuresAccount'><sup>ref</sup></a>|                                                                         |(BOOLS ONLY): activePositionsOnly, activeAssets                        |recvWindow      |
 |futuresLeverage()                                      <a href='#futuresLeverage'><sup>ref</sup></a>|symbol, leverage                                                         |                                                         |recvWindow      |
 |futuresLeverageBrackets()                      <a href='#futuresLeverageBrackets'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresMarginType()                                  <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |recvWindow      |
+|futuresMarginType()                                  <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, marginType                                               |                                                         |recvWindow      |
 |futuresPositionMargin()                          <a href='#futuresPositionMargin'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |positionSide, recvWindow|
 |futuresPositionMarginHistory()            <a href='#futuresPositionMarginHistory'><sup>ref</sup></a>|symbol                                                                   |limit, type_2, startTime, endTime                        |recvWindow      |
 |futuresPositionRisk()                              <a href='#futuresPositionRisk'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
