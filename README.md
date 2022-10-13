@@ -70,12 +70,14 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 ## FUTURES PARAMETER EXPLANATION:
 - ***side***: *"BUY"* OR *"SELL"*.
-- ***type***: *each comes with additional Mandatory Parameters*
+- ***type***: *each comes with additional Mandatory Parameters*:
 - - **"LIMIT"**: *"timeInForce", "quantity", "price"*.
 - - **"MARKET"**: *"quantity"*.
 - - **"STOP"**/**"TAKE_PROFIT"**: *"quantity", "price", "stopPrice"*.
 - - **"STOP_MARKET"/"TAKE_PROFIT_MARKET"**: *"stopPrice"*.
 - - **"TRAILING_STOP_MARKET"**: *"callbackRate"*.
+- ***type_2***: *'1' or 'increase'* or *'2' or 'reduce'*.
+- ***marginType***: *"ISOLATED"* or *"CROSSED"*.
 - ***positionSide***: *"LONG"* OR *"SHORT"* - it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
 - ***newClientOrderId***: A unique id among open orders (created automatically OR passed by the user). Can only be a string following the rule: ^[\.A-Z\:/a-z0-9_-]{1,36}$ <= meaning: maxLength is 35 - can contain all Numbers, Alphabetical Characters (upper and lowercase), '_', '-', '/', '.' and ':'.
 - ***origClientOrderId***: A reference to the *'newClientOrderId'* that you created, or the one created automatically by binance.
@@ -143,7 +145,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresAccount()                                        <a href='#futuresAccount'><sup>ref</sup></a>|                                                                         |(BOOLS ONLY): activePositionsOnly, activeAssets                        |recvWindow      |
 |futuresLeverage()                                      <a href='#futuresLeverage'><sup>ref</sup></a>|symbol, leverage                                                         |                                                         |recvWindow      |
 |futuresLeverageBrackets()                      <a href='#futuresLeverageBrackets'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresMarginType()                                  <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |recvWindow      |
+|futuresMarginType()                                  <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, marginType                                               |                                                         |recvWindow      |
 |futuresPositionMargin()                          <a href='#futuresPositionMargin'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |positionSide, recvWindow|
 |futuresPositionMarginHistory()            <a href='#futuresPositionMarginHistory'><sup>ref</sup></a>|symbol                                                                   |limit, type_2, startTime, endTime                        |recvWindow      |
 |futuresPositionRisk()                              <a href='#futuresPositionRisk'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
