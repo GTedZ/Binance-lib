@@ -1923,7 +1923,7 @@ OR
 
 ### .futuresIndexPriceCandlesticks():
 ```js
-  let indexPriceCandlesticks = await binance.futuresIndexPriceCandlesticks('BTCUP', '1m', 5);
+  let indexPriceCandlesticks = await binance.futuresIndexPriceCandlesticks('BTCUSDT', '1m', 5);
   console.log(indexPriceCandlesticks);
 ```
 <details>
