@@ -124,7 +124,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - - **"RESULT"**: Binance will wait until full execution of your trade before sending the response with the full information (like the average Entry Price and all other info about your order fills).
 - ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"*.
 - ***contractType***: *"PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"*.
-- ***startTime*** & ***endTime***<a href='#Using-startTime-and-endTime'><sup>ref</sup></a> (INTEGERS): *mostly* should be sent together, you can transform any date into UNIX time via the following: *'new Date().getTime();'* OR *'new Date('10/12/2022, 10:52:26 PM').getTime();'* (since binance uses the UNIX time system).
+- ***startTime*** & ***endTime***<a href='#Using-startTime-and-endTime'><sup>how to use</sup></a> (INTEGERS): *mostly* should be sent together, you can transform any date into UNIX time via the following: *'new Date().getTime();'* OR *'new Date('10/12/2022, 10:52:26 PM').getTime();'* (since binance uses the UNIX time system).
 - ***dualSidePosition***: *"true"* or *"false"* for hedgeMode if turned on or not.
 - ***multiAssetMargin***: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
 - ***incomeType***: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
@@ -2070,7 +2070,7 @@ OR
 
 <details>
  <summary>View Response</summary>
- 
+
  ```js
 [
   {
