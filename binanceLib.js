@@ -15,7 +15,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"];
     const incomeTypes = ['TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE']
-    this.APIKEY = APIKEY;
+    const contractTypes = ["PERPETUAL", "CURRENT_MONTH", "NEXT_MONTH", "CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL_DELIVERING"]
+    const shortenedContractTypes = ["PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"]
+    this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
@@ -234,7 +236,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let resp = await request(params, options);
         if (resp.error) return resp;
-        
+
         return renameObjectProperties(resp, ['tradeId', 'price', 'qty', 'first_tradeId', 'last_tradeId', 'timestamp', 'maker'])
     }
 
@@ -252,6 +254,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         if (symbol == undefined) return ERR('symbol', 'required');
         if (!number(limit)) return ERR('limit', 'type', 'Number');
+        if (!equal(interval, intervals)) return ERR('interval', 'value', false, intervals)
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
         if (fromId) options.fromId = fromId;
@@ -277,6 +280,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         if (pair == undefined) return ERR('pair', 'required');
         if (!number(limit)) return ERR('limit', 'type', 'Number');
+        if (!equal(interval, intervals)) return ERR('interval', 'value', false, intervals);
+        if (!equal(contractType, shortenedContractTypes)) return ERR('contractType', 'value', false, shortenedContractTypes)
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
@@ -300,6 +305,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         if (pair == undefined) return ERR('pair', 'required');
         if (!number(limit)) return ERR('limit', 'type', 'Number');
+        if (!equal(interval, intervals)) return ERR('interval', 'value', 'intervals');
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
 
@@ -1303,7 +1309,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return parseFloat(num) == parseFloat(num);
     }
 
-    const equal = (variable, ...possibilities) => {
+    const equal = (variable, possibilities) => {
         return possibilities.filter(a => variable == a).length != 0;
     }
 
