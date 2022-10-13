@@ -245,6 +245,7 @@ and finally, market data functions also have a parameter 'tries' if you want to 
   let exchangeInfo = await binance.futuresExchangeInfo(true); // function parameters: (reconnect, tries, options {})
   console.log(exchangeInfo);
 ```
+//TODO add view response
 
 Or using the options parameters:
 ```js
@@ -256,6 +257,8 @@ Or using the options parameters:
   });
   console.log(exchangeInfo);
 ```
+//TODO add view response
+
 
 
 # *CONTACT ME*
