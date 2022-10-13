@@ -9,7 +9,7 @@
 
  #### If you need help or any of my services or maybe looking for someone to implement your strategies <a href='#contact-me'>contact me via e-mail</a>
  
- 
+
  *STILL UNDER FREQUENT UPDATES AND DEVELOPMENT (Working on making every aspect of the library as intuitive as it can be, meaning no try/catch blocks whatsoever, meaning I'd rather have the code do all the heavy lifting while the user just copy and pastes from this page while only doing minimal changes)*
  *This is no way shape or form a library to be used in any professional project, this is just to simplify small projects*
  *If you have any issues/requests for this project, please do create a new 'issue' on github, and I will promptly get to work on implementing it*
@@ -194,6 +194,6 @@ and finally, market data functions also have a parameter 'tries' if you want to 
   console.log(exchangeInfo);
 ```
 
-# CONTACT ME
-## Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
-## 
+# *CONTACT ME*
+### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
+### 
