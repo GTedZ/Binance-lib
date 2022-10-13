@@ -170,7 +170,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             limit: limit
         }
 
-        return request(params, options);
+        let resp = await request(params, options);
+        if (resp.error) return resp;
+        resp.bids = handleArrayResponse(resp.bids, ['price', 'qty'])
+        resp.asks = handleArrayResponse(resp.asks, ['price', 'qty'])
+
+        return resp;
     }
 
     this.futuresRecentTrades = async (symbol, limit = 500) => {
