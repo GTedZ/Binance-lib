@@ -1679,6 +1679,80 @@ Or using the options parameters:
  ```
 </details>
 
+### .futuresAggTrades():
+```js
+  let aggTrades = await binance.futuresAggTrades('BTCUSDT', 5);
+  console.log(aggTrades);
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+[
+  {
+    tradeId: 1488689111,
+    price: 18278.2,
+    qty: 0.286,
+    first_tradeId: 2950259470,
+    last_tradeId: 2950259472,
+    timestamp: 1665667203902,
+    maker: false
+  },
+  {
+    tradeId: 1488689112,
+    price: 18278.4,
+    qty: 1,
+    first_tradeId: 2950259473,
+    last_tradeId: 2950259473,
+    timestamp: 1665667203902,
+    maker: false
+  },
+  {
+    tradeId: 1488689113,
+    price: 18278.5,
+    qty: 1.077,
+    first_tradeId: 2950259474,
+    last_tradeId: 2950259475,
+    timestamp: 1665667203902,
+    maker: false
+  },
+  {
+    tradeId: 1488689114,
+    price: 18278.4,
+    qty: 0.018,
+    first_tradeId: 2950259476,
+    last_tradeId: 2950259476,
+    timestamp: 1665667203952,
+    maker: true
+  },
+  {
+    tradeId: 1488689115,
+    price: 18278.5,
+    qty: 2.225,
+    first_tradeId: 2950259477,
+    last_tradeId: 2950259498,
+    timestamp: 1665667204008,
+    maker: false
+  }
+]
+ ```
+</details>
+
+#### Using startTime and endTime:
+```js
+  let startTime = new Date('10/13/2022, 3:22:55 PM').getTime();
+  let endTime = new Date('10/13/2022, 4:23:55 PM').getTime(); // all trades within a minute
+  let aggTrades = await binance.futuresAggTrades('BTCUSDT', 500, startTime, endTime);
+  console.log(aggTrades);
+```
+OR
+```js
+  let startTime = new Date('10/13/2022, 3:22:55 PM').getTime();
+  endTime = startTime + 500;  // within a timeframe of 500 milliseconds, should be about 10-20 trades
+  let aggTrades = await binance.futuresAggTrades('BTCUSDT', 500, startTime, endTime);
+  console.log(aggTrades);
+```
+
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
 ### 
