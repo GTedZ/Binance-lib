@@ -2118,7 +2118,7 @@ OR
   msg: 'success' 
 }
 ```
-
+</details>
 
 ### .futuresGetPositionSide():
 ```js
