@@ -2379,19 +2379,11 @@ OR
 ### .futuresTakeProfit():
 ```js
   // for LONG positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000); // the fourth parameter 'quantity' is optional, if it is not sent, it will be a closePosition order
-
-  // OR
-
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
   // for LONG positions /
 
   // for SHORT positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000);
-
-  // OR
-
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
   // for SHORT positions /
 ```
 
@@ -2399,19 +2391,11 @@ OR
 ### .futuresStopLoss():
 ```js
   // for LONG positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000);
-
-  // OR
-
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, ) // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
   // for LONG positions /
 
   // for SHORT positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000);
-
-  // OR
-
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, 0.001); // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
   // for SHORT positions /
 ```
 

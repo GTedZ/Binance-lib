@@ -744,23 +744,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return this.futuresCreateOrder(symbol, side, 'LIMIT', options);
     }
 
-    this.futuresTakeProfit = async (symbol, side, stopPrice, quantity = 0, options = {}) => {
+    this.futuresTakeProfit = async (symbol, side, stopPrice, options = {}) => {
         if (stopPrice == undefined) return ERR('stopPrice', 'required');
         if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
-        if (!quantity) options.closePosition = true;
-        else if (!number(quantity)) return ERR('quantity', 'type', 'Number');
-        else options.quantity = quantity;
+        options.closePosition = true;
         options.stopPrice = stopPrice;
 
         return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
     }
 
-    this.futuresStopLoss = async (symbol, side, stopPrice, quantity = 0, options = {}) => {
+    this.futuresStopLoss = async (symbol, side, stopPrice, options = {}) => {
         if (stopPrice == undefined) return ERR('stopPrice', 'required');
         if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
-        if (!quantity) options.closePosition = true;
-        else if (!number(quantity)) return ERR('quantity', 'type', 'Number');
-        else options.quantity = quantity;
+        options.closePosition = true;
         options.stopPrice = stopPrice;
 
         return this.futuresCreateOrder(symbol, side, 'STOP_MARKET', options);
