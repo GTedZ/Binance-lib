@@ -755,7 +755,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
         }
-        return this.futuresCreateOrder(symbol, side, 'STOP_MARKET', options);
+        return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
     }
 
     this.futuresStopLoss = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
@@ -769,7 +769,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
         }
-        return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
+        return this.futuresCreateOrder(symbol, side, 'STOP_MARKET', options);
     }
 
     this.futuresCreateOrder = async (symbol, side, type, opts = {}) => {
