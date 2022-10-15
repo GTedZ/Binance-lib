@@ -1,6 +1,6 @@
 {
   "name": "binance-lib",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "A JS library for binance, only the basic features.",
   "main": "binanceLib.js",
   "scripts": {
