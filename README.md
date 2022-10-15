@@ -2097,6 +2097,221 @@ OR
 ## **FUTURES ACCOUNT/TRADE DATA**
 
 
+### .futuresChangePositionSide():
+```js
+  let turn_ON_HedgeMode = await binance.futuresChangePositionSide(true); // for turning hedgeMode ON
+  console.log(turn_ON_HedgeMode);
+
+  // OR
+
+  let turn_OFF_HedgeMode = await binance.futuresChangePositionSide(false); // for turning hedgeMode OFF, or going back to One-Way Mode
+  console.log(turn_OFF_HedgeMode);
+```
+<details>
+<summary>View Responses</summary>
+
+```js
+{ 
+  code: 200,
+  msg: 'success' 
+}
+```
+
+
+### .futuresGetPositionSide():
+```js
+  let positionSide = await binance.futuresGetPositionSide();
+  console.log(positionSide);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  dualSidePosition: false   // for One-Way Mode
+}
+// OR
+{ 
+  dualSidePosition: true    // for hedgeMode
+}
+```
+</details>
+
+
+### .futuresChangeMultiAssetMargin():
+```js
+  let changeMultiAssetMargin = await binance.futuresChangeMultiAssetMargin();
+  console.log(changeMultiAssetMargin);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "code": 200,
+    "msg": "success"
+}
+```
+</details>
+
+### .futuresGetMultiAssetMargin():
+```js
+  let multiAssetMarginMode = await binance.futuresGetMultiAssetMargin();
+  console.log(multiAssetMarginMode)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "multiAssetsMargin": true // Multi-Assets Mode
+}
+
+OR
+
+{
+    "multiAssetsMargin": true // Single-Asset Mode
+}
+```
+</details>
+
+
+### .futuresMarketBuy():
+```js
+  let BTC_marketBuy_Order = await binance.futuresMarketBuy('BTCUSDT', 0.001, { positionSide: 'LONG' }); // it is recommended to keep 'positionSide' as an options parameter even if you are in One-Way mode, the library will strip it if your account isn't on hedgeMode
+  console.log(BTC_marketBuy_Order);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  orderId: 83829581691,
+  symbol: 'BTCUSDT',
+  status: 'FILLED',
+  clientOrderId: 'st6qVCSDtI5ZUCzEKNmytR',
+  price: 0,
+  avgPrice: 19179.2,
+  origQty: 0.001,
+  executedQty: 0.001,
+  cumQty: 0.001,
+  cumQuote: 19.1792,
+  timeInForce: 'GTC',
+  type: 'MARKET',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',          // 'BUYING' BTCUSDT
+  positionSide: 'BOTH', // <= "BOTH": One-Way Mode, and since I'm 'Buying' into BTCUSDT, I opened a position on BTCUSDT
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'MARKET',
+  updateTime: 1665809228639
+}
+
+// OR
+
+{
+  orderId: 83829581691,
+  symbol: 'BTCUSDT',
+  status: 'FILLED',
+  clientOrderId: 'st6qVCSDtI5ZUCzEKNmytR',
+  price: 0,
+  avgPrice: 19179.2,
+  origQty: 0.001,
+  executedQty: 0.001,
+  cumQty: 0.001,
+  cumQuote: 19.1792,
+  timeInForce: 'GTC',
+  type: 'MARKET',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',          // 'BUYING' BTCUSDT
+  positionSide: 'LONG', // <= "LONG": hedgeMode, and since I am 'BUYING' into a 'LONG' position meaning I opened a LONG position on BTCUSDT
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'MARKET',
+  updateTime: 1665809228639
+}
+```
+</details>
+
+
+### .futuresMarketSell():
+```js
+  let BTC_Sell_Order = await binance.futuresMarketSell('BTCUSDT', 0.001, { positionSide: 'SHORT' }); // it is recommended to keep 'positionSide' as an options parameter even if you are in One-Way mode, the library will strip it if your account isn't on hedgeMode
+  console.log(BTC_marketSell_Order)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  orderId: 83829607925,
+  symbol: 'BTCUSDT',
+  status: 'FILLED',
+  clientOrderId: 'cZv8BU3LDB6uCsWQjfZ6Va',
+  price: 0,
+  avgPrice: 19179,
+  origQty: 0.001,
+  executedQty: 0.001,
+  cumQty: 0.001,
+  cumQuote: 19.179,
+  timeInForce: 'GTC',
+  type: 'MARKET',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'SELL',         // 'SELLING' BTCUSDT
+  positionSide: 'BOTH', // <= "BOTH": One-Way Mode, and since I'm "SELLING" into it, I opened a SHORT position on BTCUSDT <==> and if you had a long position open on BTCUSDT, Selling into it means you are closing 0.001BTCUSDT of this position (and it will turn into a short position if you had a LONG position open on less than 0.001BTCUSDT)
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'MARKET',
+  updateTime: 1665809241565
+}
+
+// OR
+
+{
+  orderId: 83829581691,
+  symbol: 'BTCUSDT',
+  status: 'FILLED',
+  clientOrderId: 'st6qVCSDtI5ZUCzEKNmytR',
+  price: 0,
+  avgPrice: 19179.2,
+  origQty: 0.001,
+  executedQty: 0.001,
+  cumQty: 0.001,
+  cumQuote: 19.1792,
+  timeInForce: 'GTC',
+  type: 'MARKET',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'SELL',          // 'SELLING' BTCUSDT
+  positionSide: 'SHORT', // <= "SHORT": hedgeMode, and since I'm 'SELLING' BTCUSDT, I closed a SHORT position on BTCUSDT
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'MARKET',
+  updateTime: 1665809228639
+}
+```
+</details>
+
+
+### .futuresBuy():
+```js
+  let order = await binance.futuresBuy('BTCUSDT', 0.001, 18000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
+  console.log(order);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+  
+```
+</details>
 
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>

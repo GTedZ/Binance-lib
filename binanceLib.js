@@ -763,15 +763,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (!side) return ERR('side', 'required');
         side = fixValue(side, "BUY", ['long', 'buy']);
         side = fixValue(side, "BUY", ['short', 'sell']);
-        if (!equal(side, 'BUY', 'SELL')) return ERR('side', 'value', false, ['BUY', 'SELL'])
+        if (!equal(side, ['BUY', 'SELL'])) return ERR('side', 'value', false, ['BUY', 'SELL'])
         if (!type) return ERR('type', 'required');
         if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
-        if (options.positionSide) {
+        if (this.hedgeMode && options.positionSide) {
             if (number(options.positionSide)) return ERR('positionSide', 'type', 'String');
             options.positionSide = fixValue(options.positionSide, 'LONG', ['long', 'buy']);
             options.positionSide = fixValue(options.positionSide, 'SHORT', ['short', 'sell']);
-
-            if (!equal(options.positionSide, 'LONG', 'SHORT')) return ERR('positionSide', 'value', false, ['LONG', 'SHORT']);
+            console.log('positionSide:', options.positionSide)
+            if (!equal(options.positionSide, ['LONG', 'SHORT'])) return ERR('positionSide', 'value', false, ['LONG', 'SHORT']);
         }
         if (!this.hedgeMode) delete options.positionSide;
 
@@ -1021,7 +1021,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (options.symbol == undefined) return ERR('symbol', 'required');
         options.marginType = fixValue(options.marginType, 'ISOLATED', ['iso', 'isolated']);
         options.marginType = fixValue(options.marginType, 'CROSSED', ['cross', 'crossed']);
-        if (!equal(options.marginType, 'ISOLATED', 'CROSSED')) return ERR('marginType', 'value', false, ['ISOLATED', 'CROSSED']);
+        if (!equal(options.marginType, ['ISOLATED', 'CROSSED'])) return ERR('marginType', 'value', false, ['ISOLATED', 'CROSSED']);
 
         return request(params, options, 'SIGNED');
     }
@@ -1049,7 +1049,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
         options.type = fixValue(options.type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
         options.type = fixValue(options.type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
-        if (!equal(options.type, '1', '2')) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+        if (!equal(options.type, ['1', '2'])) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
 
         return request(params, options, 'SIGNED');
     }
@@ -1072,7 +1072,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (options.type) {
             options.type = fixValue(options.type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
             options.type = fixValue(options.type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
-            if (!equal(options.type, '1', '2')) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+            if (!equal(options.type, ['1', '2'])) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
         }
         if (startTime) options.startTime = startTime;
         if (endTime) options.endTime = endTime;
@@ -1325,10 +1325,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const fixValue = (variable, end_value, possibilities) => {
         if (variable == undefined) return variable;
-        variable = variable.toLowerCase();
         possibilities.push(end_value.toLowerCase());
-        let lower = variable.toLowerCase();
 
+        let lower = variable.toLowerCase();
         if (possibilities.filter(a => lower == a.toLowerCase()).length != 0) {
             return end_value;
         }
