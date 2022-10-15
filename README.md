@@ -1768,7 +1768,7 @@ OR
   ]
 }
 ```
-<details>
+</details>
 
 OR
 
