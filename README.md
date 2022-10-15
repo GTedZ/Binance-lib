@@ -112,7 +112,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - - **"TRAILING_STOP_MARKET"**: *"callbackRate"*.
 - ***type_2***: *'1' or 'increase'* OR *'2' or 'reduce'*.
 - ***marginType***: *"ISOLATED"* or *"CROSSED"*.
-- ***positionSide***: *"LONG"* OR *"SHORT"* - it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
+- ***positionSide***: *"LONG"* OR *"SHORT"* (for hedgeMode) - but it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
 - ***orderId***: *Created by binance, and assigned to every order, used to retrieve information about a specific order via .futuresOrder() function.*
 - ***newClientOrderId***: A unique id among open orders (created automatically OR passed by the user). Can only be a string following the rule: ^[\.A-Z\:/a-z0-9_-]{1,36}$ <= meaning: maxLength is 35 - can contain all Numbers, Alphabetical Characters (upper and lowercase), '_', '-', '/', '.' and ':'.
 - ***origClientOrderId***: A reference to the *'newClientOrderId'* that you created, or the one created automatically by binance.
@@ -168,6 +168,8 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresMarketSell()                                  <a href='#futuresMarketSell'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
 |futuresBuy()                                                <a href='#futuresBuy'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
 |futuresSell()                                              <a href='#futuresSell'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresTakeProfit()                                  <a href='#futuresTakeProfit'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresStopLoss()                                      <a href='#futuresStopLoss'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
 |futuresCreateOrder()                                <a href='#futuresCreateOrder'><sup>ref</sup></a>|symbol, side, type                                                       |                                                         |positionSide, reduceOnly, closePosition, quantity, price, stopPrice, activationPrice, callbackRate, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
 |futuresMultipleOrders()                          <a href='#futuresMultipleOrders'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
 |futuresOrder()                                            <a href='#futuresOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
@@ -2302,6 +2304,7 @@ OR
 
 ### .futuresBuy():
 ```js
+  // BTC price currently at 19xxx.x
   let order = await binance.futuresBuy('BTCUSDT', 0.001, 18000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
   console.log(order);
 ```
@@ -2309,9 +2312,216 @@ OR
 <summary>View Response</summary>
 
 ```js
-  
+{
+  orderId: 83913355604,
+  symbol: 'BTCUSDT',
+  status: 'NEW',
+  clientOrderId: 'kcg5WNwhBDkdEXvwzdbtcO',
+  price: 18000,
+  avgPrice: 0,
+  origQty: 0.003,
+  executedQty: 0,
+  cumQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  updateTime: 1665844166659
+}
 ```
 </details>
+
+
+### .futuresSell():
+```js
+  // BTC price currently at 19xxx.x
+  let order = await binance.futuresSell('BTCUSDT', 0.001, 20000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
+  console.log(order);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  orderId: 83913415163,
+  symbol: 'BTCUSDT',
+  status: 'NEW',
+  clientOrderId: 'dllor2nUwUnNo408IeJRld',
+  price: 20000,
+  avgPrice: 0,
+  origQty: 0.003,
+  executedQty: 0,
+  cumQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'SELL',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  updateTime: 1665844193051
+}
+```
+</details>
+
+
+### .futuresTakeProfit():
+```js
+  // for LONG positions \
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, true);          // this is to close the whole position
+
+  // OR
+
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, false, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  // for LONG positions /
+
+  // for SHORT positions \
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, true);
+
+  // OR
+
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, false, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  // for SHORT positions /
+```
+
+
+### .futuresStopLoss():
+```js
+  // for LONG positions \
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, true);
+
+  // OR
+
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, false, 0.001) // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  // for LONG positions /
+
+  // for SHORT positions \
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, true);
+
+  // OR
+
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, true); // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  // for SHORT positions /
+```
+
+### .futuresCreateOrder():
+```
+  futuresCreateOrder() is your playground of creating orders, the library offers some error messages for some parameters missing, it mostly handles LIMIT orders, TP and SL orders and market orders
+  If you are SURE that the library cannot handle some of your more advanced orders, please do raise an issue on github and I will fix the error, my vision is for this function to handle all user errors and help the user set up his order easily (and of course, futuresMarketBuy/Sell, futuresBuy/Sell, and futuresTakeProfit/StopLoss and maybe in the future 'futuresTrailing' use this function as a backbone)
+```
+#### Mandatory parameters for ALL order requests:
+- ***symbol***
+- ***side***: *"BUY" or "SELL"*
+- ***type***: *"LIMIT", "MARKET", "STOP", "TAKE_PROFIT", "STOP_MARKET", "TAKE_PROFIT_MARKET", "TRAILING_STOP_MARKET"*
+  
+#### Types of orders that you can use and the parameters that are mandatory for each: 
+- ***LIMIT***:	*"timeInForce", "quantity", "price"*
+- ***MARKET***: *"quantity"*
+- ***STOP/TAKE_PROFIT***: *"quantity", "price", "stopPrice"*
+- ***STOP_MARKET/TAKE_PROFIT_MARKET***: *"stopPrice"*
+- ***TRAILING_STOP_MARKET***: *"callbackRate"*
+  
+
+### .futuresMultipleOrders():
+```
+  Not yet implemented, the limit on binance's side is 5 orders per batch, I want to make it so that the array of orders passed by the user will be chopped up into groups of 5 and sent to binance
+  If you are interested in helping out, please fork this project and make a pull request with the necessary changes (Once .futuresCreateOrder() has all the necessary error checks for all, we can then take the batch, pass it into a duplicate function that ONLY checks for errors and return 'true' if there is no error, and returns 'false' along with the errors which then we can return to the user to fix all his orders)
+  Maybe I'm going too far into this whole "checking for errors" thing, but I think it's what I would've wanted when I started using public libraries (we can also have a parameter in the futuresMultipleOrders() function where the user can disable checking for errors)
+```
+
+
+### .futuresOrder():
+```js
+  let orderId = '83913355604'
+  let order1 = await binance.futuresOrder('BTCUSDT', orderId);
+
+  // SAME AS
+
+  let origClientOrderId = 'kcg5WNwhBDkdEXvwzdbtcO';
+  let order2 = await binance.futuresOrder('BTCUSDT', false, origClientOrderId);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+order1 =>
+{
+  orderId: 83913355604,
+  symbol: 'BTCUSDT',
+  status: 'CANCELED',
+  clientOrderId: 'kcg5WNwhBDkdEXvwzdbtcO',
+  price: 18000,
+  avgPrice: 0,
+  origQty: 0.003,
+  executedQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  time: 1665844166659,
+  updateTime: 1665844189280
+}
+
+// SAME AS
+
+order2 =>
+{
+  orderId: 83913355604,
+  symbol: 'BTCUSDT',
+  status: 'CANCELED',
+  clientOrderId: 'kcg5WNwhBDkdEXvwzdbtcO',
+  price: 18000,
+  avgPrice: 0,
+  origQty: 0.003,
+  executedQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  time: 1665844166659,
+  updateTime: 1665844189280
+}
+```
+</details>
+
+
+### .futuresCancelOrder():
+```js
+  let orderId = '83913355604'
+  let order1 = await binance.futuresOrder('BTCUSDT', orderId);
+
+  let origClientOrderId = 'kcg5WNwhBDkdEXvwzdbtcO'
+  let order1 = await binance.futuresOrder('BTCUSDT', false, origClientOrderId);
+```
+
+
+
+
 
 # *CONTACT ME*
 ### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>

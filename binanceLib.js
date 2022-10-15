@@ -18,6 +18,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const contractTypes = ["PERPETUAL", "CURRENT_MONTH", "NEXT_MONTH", "CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL_DELIVERING"]
     const shortenedContractTypes = ["PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"]
     const periods = ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"];
+    const bools = [true, false];
+
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
@@ -698,11 +700,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresMarketBuy = async function (symbol, quantity, opts = {}) {
+    this.futuresMarketBuy = async (symbol, quantity, opts = {}) => {
         return futuresMarket(symbol, quantity, 'BUY', opts);
     }
 
-    this.futuresMarketSell = async function (symbol, quantity, opts = {}) {
+    this.futuresMarketSell = async (symbol, quantity, opts = {}) => {
         return futuresMarket(symbol, quantity, 'SELL', opts);
     }
 
@@ -719,11 +721,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return this.futuresCreateOrder(symbol, 'SELL', 'MARKET', options);
     }
 
-    this.futuresBuy = async function (symbol, quantity, price, opts = {}) {
+    this.futuresBuy = async (symbol, quantity, price, opts = {}) => {
         return futuresLimit(symbol, quantity, price, 'BUY', opts);
     }
 
-    this.futuresSell = async function (symbol, quantity, price, opts = {}) {
+    this.futuresSell = async (symbol, quantity, price, opts = {}) => {
         return futuresLimit(symbol, quantity, price, 'SELL', opts);
     }
 
@@ -740,6 +742,34 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (!number(price)) return ERR('price', 'type', 'Number');
 
         return this.futuresCreateOrder(symbol, side, 'LIMIT', options);
+    }
+
+    this.futuresTakeProfit = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
+        if (stopPrice == undefined) return ERR('stopPrice', 'required');
+        if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
+        options.stopPrice = stopPrice;
+        if (!equal(closePosition, bools)) return ERR('closePosition', 'value', false, bools);
+        if (closePosition) options.closePosition = closePosition;
+        if (!closePosition) {
+            if (!quantity) return ERR(`'quantity' is required when closePosition is 'false'`);
+            if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+            options.quantity = quantity;
+        }
+        return this.futuresCreateOrder(symbol, side, 'STOP_MARKET', options);
+    }
+
+    this.futuresStopLoss = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
+        if (stopPrice == undefined) return ERR('stopPrice', 'required');
+        if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
+        options.stopPrice = stopPrice;
+        if (!equal(closePosition, bools)) return ERR('closePosition', 'value', false, bools);
+        if (closePosition) options.closePosition = closePosition;
+        if (!closePosition) {
+            if (!quantity) return ERR(`'quantity' is required when closePosition is 'false'`);
+            if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+            options.quantity = quantity;
+        }
+        return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
     }
 
     this.futuresCreateOrder = async (symbol, side, type, opts = {}) => {
@@ -765,8 +795,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         side = fixValue(side, "BUY", ['short', 'sell']);
         if (!equal(side, ['BUY', 'SELL'])) return ERR('side', 'value', false, ['BUY', 'SELL'])
         if (!type) return ERR('type', 'required');
-        if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
-        if (this.hedgeMode && options.positionSide) {
+        if (this.hedgeMode) {
+            if (!options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
             if (number(options.positionSide)) return ERR('positionSide', 'type', 'String');
             options.positionSide = fixValue(options.positionSide, 'LONG', ['long', 'buy']);
             options.positionSide = fixValue(options.positionSide, 'SHORT', ['short', 'sell']);
@@ -814,7 +844,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (orderId) options.orderId = orderId;
         if (origClientOrderId) options.origClientOrderId = origClientOrderId;
         Object.assign(options, opts);
-        if (!opts.orderId && !opts.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
+        if (!options.orderId && !options.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
 
         return request(params, options, 'SIGNED');
     }
@@ -1199,7 +1229,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.signature = signature;
         }
 
-        // console.log(params.baseURL + params.path, options);
+        console.log(params.baseURL + params.path, options);
         let startTime = Date.now(), latency;
         try {
             let response = await axios({
