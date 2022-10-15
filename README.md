@@ -99,7 +99,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 # ***FUTURES DOCUMENTATION:***
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
 ### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>
-### Account/Trade<a href='##futures-accounttrade-data'><sup>ref</sup></a>
+### Account/Trade<a href='#Futures-AccountTrade-Data'><sup>ref</sup></a>
 ### Websockets<a href='#Futures-Websockets'><sup>ref</sup></a>
 
 ## FUTURES PARAMETER EXPLANATION:
