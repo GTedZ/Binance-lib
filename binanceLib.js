@@ -744,31 +744,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return this.futuresCreateOrder(symbol, side, 'LIMIT', options);
     }
 
-    this.futuresTakeProfit = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
+    this.futuresTakeProfit = async (symbol, side, stopPrice, quantity = 0, options = {}) => {
         if (stopPrice == undefined) return ERR('stopPrice', 'required');
         if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
+        if (quantity == undefined) options.closePosition = true;
+        else if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+        else options.quantity = quantity;
         options.stopPrice = stopPrice;
-        if (!equal(closePosition, bools)) return ERR('closePosition', 'value', false, bools);
-        if (closePosition) options.closePosition = closePosition;
-        if (!closePosition) {
-            if (!quantity) return ERR(`'quantity' is required when closePosition is 'false'`);
-            if (!number(quantity)) return ERR('quantity', 'type', 'Number');
-            options.quantity = quantity;
-        }
+        
         return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
     }
 
     this.futuresStopLoss = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
         if (stopPrice == undefined) return ERR('stopPrice', 'required');
         if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
+        if (quantity == undefined) options.closePosition = true;
+        else if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+        else options.quantity = quantity;
         options.stopPrice = stopPrice;
-        if (!equal(closePosition, bools)) return ERR('closePosition', 'value', false, bools);
-        if (closePosition) options.closePosition = closePosition;
-        if (!closePosition) {
-            if (!quantity) return ERR(`'quantity' is required when closePosition is 'false'`);
-            if (!number(quantity)) return ERR('quantity', 'type', 'Number');
-            options.quantity = quantity;
-        }
+
         return this.futuresCreateOrder(symbol, side, 'STOP_MARKET', options);
     }
 

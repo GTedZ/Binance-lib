@@ -2379,19 +2379,19 @@ OR
 ### .futuresTakeProfit():
 ```js
   // for LONG positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, true);          // this is to close the whole position
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000); // the fourth parameter 'quantity' is optional, if it is not sent, it will be a closePosition order
 
   // OR
 
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, false, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
   // for LONG positions /
 
   // for SHORT positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, true);
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000);
 
   // OR
 
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, false, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, 0.001);  // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
   // for SHORT positions /
 ```
 
@@ -2399,19 +2399,19 @@ OR
 ### .futuresStopLoss():
 ```js
   // for LONG positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, true);
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000);
 
   // OR
 
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, false, 0.001) // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, ) // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
   // for LONG positions /
 
   // for SHORT positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, true);
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000);
 
   // OR
 
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, true); // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
+  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 2000, 0.001); // this is to only sell a portion of your position, can also be sent with reduceOnly to make sure you only close part of the position and not accidentally open an opposite position
   // for SHORT positions /
 ```
 
