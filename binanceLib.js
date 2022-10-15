@@ -755,7 +755,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
     }
 
-    this.futuresStopLoss = async (symbol, side, stopPrice, closePosition, quantity = 0, options = {}) => {
+    this.futuresStopLoss = async (symbol, side, stopPrice, quantity = 0, options = {}) => {
         if (stopPrice == undefined) return ERR('stopPrice', 'required');
         if (!number(stopPrice)) return ERR('stopPrice', 'type', 'Number');
         if (!quantity) options.closePosition = true;
