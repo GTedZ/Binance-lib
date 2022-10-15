@@ -1229,7 +1229,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.signature = signature;
         }
 
-        console.log(params.baseURL + params.path, options);
+        // console.log(params.baseURL + params.path, options);
         let startTime = Date.now(), latency;
         try {
             let response = await axios({
