@@ -110,9 +110,10 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - - **"STOP"**/**"TAKE_PROFIT"**: *"quantity", "price", "stopPrice"*.
 - - **"STOP_MARKET"/"TAKE_PROFIT_MARKET"**: *"stopPrice"*.
 - - **"TRAILING_STOP_MARKET"**: *"callbackRate"*.
-- ***type_2***: *'1' or 'increase'* or *'2' or 'reduce'*.
+- ***type_2***: *'1' or 'increase'* OR *'2' or 'reduce'*.
 - ***marginType***: *"ISOLATED"* or *"CROSSED"*.
 - ***positionSide***: *"LONG"* OR *"SHORT"* - it is recommended to always include it when creating new Orders, and the library will take care of removing it automatically if your account isn't on hedgeMode.
+- ***orderId***: *Created by binance, and assigned to every order, used to retrieve information about a specific order via .futuresOrder() function.*
 - ***newClientOrderId***: A unique id among open orders (created automatically OR passed by the user). Can only be a string following the rule: ^[\.A-Z\:/a-z0-9_-]{1,36}$ <= meaning: maxLength is 35 - can contain all Numbers, Alphabetical Characters (upper and lowercase), '_', '-', '/', '.' and ':'.
 - ***origClientOrderId***: A reference to the *'newClientOrderId'* that you created, or the one created automatically by binance.
 - ***stopPrice***: Only used with orders of types *"STOP"/"STOP_MARKET" or *"TAKE_PROFIT"/"TAKE_PROFIT_MARKET"*.
@@ -123,7 +124,9 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - - **"ACK"**: new Orders will have a response with minimal information, meaning the executedPrice and other information about order fills will not be sent (orderId and other order identity information will be sent).
 - - **"RESULT"**: Binance will wait until full execution of your trade before sending the response with the full information (like the average Entry Price and all other info about your order fills).
 - ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"*.
+- ***period***: *"5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"*
 - ***contractType***: *"PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"*.
+- ***ALL contractTypes***: *"PERPETUAL", "CURRENT_MONTH", "NEXT_MONTH", "CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL_DELIVERING"*
 - ***startTime*** & ***endTime***<a href='#Using-startTime-and-endTime'><sup>how to use</sup></a> (INTEGERS): *mostly* should be sent together, you can transform any date into UNIX time via the following: *'new Date().getTime();'* OR *'new Date('10/12/2022, 10:52:26 PM').getTime();'* (since binance uses the UNIX time system).
 - ***dualSidePosition***: *"true"* or *"false"* for hedgeMode if turned on or not.
 - ***multiAssetMargin***: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
@@ -188,7 +191,8 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresADLQuantileEstimation()            <a href='#futuresADLQuantileEstimation'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
 
 ## **FUTURES MARKET DATA**
- 
+
+
 ### .futuresPing():
 ```js
   let ping = await binance.futuresPing();
@@ -236,11 +240,13 @@ and finally, market data functions also have a parameter 'tries' if you want to 
 
 **PLEASE READ THE DOCUMENTATION FOR EVERY FUNCTION YOU EVER USE, AS I SPECIFICALLY ADD SOME FUNCTIONS THAT YOU MAY USE INSTEAD OF HAVING TO CREATE ONE YOURSELF AND RUN INTO TROUBLES. EVERY FUNCTION HAS A UNIQUE DOCUMENTATION, YOU CAN CHECK IT OUT IN VSCode BY HOVERING OVER THE FUNCTION NAME, OR CHECK IT HERE**
 
+
 ### .futuresServerTime():
 ```js
   let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
   console.log(serverTime); // <= 1665491953938
 ```
+
 
 ### .futuresExchangeInfo():
 ```js
@@ -432,6 +438,7 @@ Or using the options parameters:
  ```
 </details>
 
+
 ### .futuresOrderBook():
 ```js
   let orderBook = await binance.futuresOrderBook('BTCUSDT');      // <= returns the newest 500 orders
@@ -469,6 +476,7 @@ Or using the options parameters:
 
 </details>
 
+
 ### .futuresRecentTrades():
 ```js
   let recentTrades = await binance.futuresRecentTrades('ETHUSDT');      // <= 500 newest executed trades
@@ -502,6 +510,7 @@ Or using the options parameters:
 ]
  ```
 </details>
+
 
 ### .futuresHistoricalTrades():
 ```js
@@ -557,6 +566,7 @@ Or using the options parameters:
 ]
  ```
 </details>
+
 
 ### .futuresAggTrades():
 ```js
@@ -617,6 +627,7 @@ Or using the options parameters:
  ```
 </details>
 
+
 #### Using startTime and endTime:
 ```js
   let startTime = new Date('10/13/2022, 3:22:55 PM').getTime();
@@ -631,6 +642,7 @@ OR
   let aggTrades = await binance.futuresAggTrades('BTCUSDT', 500, startTime, endTime);
   console.log(aggTrades);
 ```
+
 
 ### .futuresCandlesticks():
 ```js
@@ -716,6 +728,7 @@ OR
 ```
 </details>
 
+
 ### .futuresContinuousCandlesticks():
 ```js
   let contCandlesticks = await binance.futuresContinuousCandlesticks('BTCUP', '1m');
@@ -800,6 +813,7 @@ OR
 ```
 </details>
 
+
 ### .futuresIndexPriceCandlesticks():
 ```js
   let indexPriceCandlesticks = await binance.futuresIndexPriceCandlesticks('BTCUSDT', '1m', 5);
@@ -859,6 +873,7 @@ OR
  ```
  </details>
 
+
 ### .futuresMarkPriceCandlesticks():
 ```js
   let markPriceCandlesticks = await binance.futuresMarkPriceCandlesticks('BTCUSDT', '1m', 5);
@@ -917,6 +932,7 @@ OR
 ]
  ```
  </details>
+
 
 ### .futuresMarkPrice():
 ```js
@@ -982,30 +998,11 @@ OR
     nextFundingTime: 1665676800000,
     time: 1665669251005
   },
-  {
-    symbol: 'CVCUSDT',
-    markPrice: 0.11247608,
-    indexPrice: 0.11247845,
-    estimatedSettlePrice: 0.11114315,
-    lastFundingRate: -0.00003552,
-    interestRate: 0.0001,
-    nextFundingTime: 1665676800000,
-    time: 1665669251005
-  },
-  {
-    symbol: 'BTSUSDT',
-    markPrice: 0.00909415,
-    indexPrice: 0.00909403,
-    estimatedSettlePrice: 0,
-    lastFundingRate: 0.0001,
-    interestRate: 0.0001,
-    nextFundingTime: 1665676800000,
-    time: 1665669251005
-  },
   ...
 ]
 ```
 </details>
+
 
 ### .futuresFundingRate():
 ```js
@@ -1082,6 +1079,7 @@ OR
 ]
 ```
 </details>
+
 
 ### .futures24hrTicker():
 ```js
@@ -1200,6 +1198,7 @@ OR
 ]
 ```
 </details>
+
 
 ### .futuresPrices():
 ```js
@@ -1423,6 +1422,7 @@ OR
 ```
 </details>
 
+
 ### .futuresBookTicker():
 ```js
   let btc_bookTicker = await binance.futuresBookTicker('BTCUSDT');
@@ -1479,6 +1479,7 @@ OR
 ```
 </details>
 
+
 ### .futuresOpenInterest():
 ```js
   let BTCUSDT_openInterest = await binance.futuresOpenInterest('BTCUSDT');
@@ -1495,6 +1496,7 @@ OR
 }
 ```
 </details>
+
 
 ### .futuresOpenInterestStatistics():
 ```js
@@ -1529,6 +1531,7 @@ OR
 ]
 ```
 </details>
+
 
 ### .futuresTopLongShortAccountRatio():
 ```js
@@ -1566,6 +1569,7 @@ OR
 ```
 </details>
 
+
 ### .futuresTopLongShortPositionRatio():
 ```js
   let topLongShortPositionRatio_BTC = await binance.futuresTopLongShortPositionRatio('BTCUSDT','5m');
@@ -1601,6 +1605,7 @@ OR
 ]
 ```
 </details>
+
 
 ### .futuresGlobalLongShortAccountRatio():
 ```js
@@ -1638,6 +1643,7 @@ OR
 ```
 </details>
 
+
 ### .futuresTakerLongShortRatio():
 ```js
   let takerLongShortRatio = await binance.futuresTakerLongShortRatio('BTCUSDT','5m');
@@ -1671,6 +1677,424 @@ OR
 </details>
 
 
+### .futuresBLVTCandlesticks():
+```js
+  let BLVTCandlesticks = await binance.futuresBLVTCandlesticks('BTCUP', '5m');
+  console.log(BLVTCandlesticks);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    open_time: 1665804900000,
+    open: 3.76141354,
+    high: 3.76241238,
+    low: 3.75766791,
+    close: 3.75791761,
+    real_leverage: 1.82063595,
+    close_time: 1665805199999,
+    ignore: 0,
+    NAV_updates_count: 542
+  },
+  {
+    open_time: 1665805200000,
+    open: 3.75791761,
+    high: 3.76241238,
+    low: 3.75748954,
+    close: 3.76034336,
+    real_leverage: 1.82010657,
+    close_time: 1665805499999,
+    ignore: 0,
+    NAV_updates_count: 543
+  },
+  {
+    open_time: 1665805500000,
+    open: 3.76034336,
+    high: 3.76034336,
+    low: 3.75816732,
+    close: 3.75816732,
+    real_leverage: 1.82058143,
+    close_time: 1665805799999,
+    ignore: 0,
+    NAV_updates_count: 543
+  },
+  ...
+]
+```
+</details>
+
+
+### .futuresIndexInfo():
+```js
+  let indexInfo = await binance.futuresIndexInfo('DEFIUSDT');
+  console.log(indexInfo);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'DEFIUSDT',
+  time: 1665806723000,
+  component: 'baseAsset',
+  baseAssetList: [
+    {
+      baseAsset: '1INCH',
+      quoteAsset: 'USDT',
+      weightInQuantity: 43.6850196,
+      weightInPercentage: 0.038948
+    },
+    {
+      baseAsset: 'AAVE',
+      quoteAsset: 'USDT',
+      weightInQuantity: 0.42680104,
+      weightInPercentage: 0.04676
+    },
+    {
+      baseAsset: 'ALGO',
+      quoteAsset: 'USDT',
+      weightInQuantity: 139.31950896,
+      weightInPercentage: 0.066682
+    },
+    {
+      baseAsset: 'ALPHA',
+      quoteAsset: 'USDT',
+      weightInQuantity: 101.78411435,
+      weightInPercentage: 0.017368
+    },
+    ...
+  ]
+}
+```
+<details>
+
+OR
+
+```js
+  let indexInfo = await binance.futuresIndexInfo();
+  console.log(indexInfo);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'METAVERSEUSDT',
+    time: 1665806857006,
+    component: 'baseAsset',
+    baseAssetList: [
+      {
+       baseAsset: 'ALICE',
+        quoteAsset: 'USDT',
+        weightInQuantity: 7.42311532,
+       weightInPercentage: 0.011794
+     },
+     {
+        baseAsset: 'AXS',
+       quoteAsset: 'USDT',
+        weightInQuantity: 20.53368238,
+        weightInPercentage: 0.238923
+     },
+     {
+       baseAsset: 'GALA',
+        quoteAsset: 'USDT',
+       weightInQuantity: 1697.67830568,
+        weightInPercentage: 0.067185
+      },
+      {
+       baseAsset: 'GMT',
+        quoteAsset: 'USDT',
+        weightInQuantity: 147.45888153,
+        weightInPercentage: 0.093047
+      },
+     {
+       baseAsset: 'MANA',
+       quoteAsset: 'USDT',
+       weightInQuantity: 453.93653119,
+       weightInPercentage: 0.297873
+     },
+     {
+       baseAsset: 'SAND',
+       quoteAsset: 'USDT',
+       weightInQuantity: 369.17874218,
+       weightInPercentage: 0.291179
+     }
+   ]
+  },
+  {
+    symbol: 'INFRAUSDT',
+    time: 1665806945005,
+    component: 'baseAsset',
+    baseAssetList: [
+      {
+        baseAsset: 'ANKR',
+        quoteAsset: 'USDT',
+        weightInQuantity: 6230.2814769,
+       weightInPercentage: 0.177368
+      },
+      {
+       baseAsset: 'CTK',
+        quoteAsset: 'USDT',
+        weightInQuantity: 54.2498447,
+        weightInPercentage: 0.046215
+     },
+      {
+        baseAsset: 'CVC',
+       quoteAsset: 'USDT',
+       weightInQuantity: 646.95340264,
+       weightInPercentage: 0.079766
+     },
+     {
+       baseAsset: 'DENT',
+       quoteAsset: 'USDT',
+       weightInQuantity: 64618.64765845,
+       weightInPercentage: 0.05758
+      },
+      {
+        baseAsset: 'GAL',
+        quoteAsset: 'USDT',
+        weightInQuantity: 22.93084918,
+       weightInPercentage: 0.05566
+      },
+      {
+        baseAsset: 'GTC',
+        quoteAsset: 'USDT',
+        weightInQuantity: 9.24650591,
+       weightInPercentage: 0.015633
+     },
+     {
+       baseAsset: 'HNT',
+       quoteAsset: 'USDT',
+       weightInQuantity: 79.38445084,
+       weightInPercentage: 0.367425
+     },
+     {
+       baseAsset: 'JASMY',
+        quoteAsset: 'USDT',
+       weightInQuantity: 3085.9019791,
+       weightInPercentage: 0.017441
+     },
+     {
+       baseAsset: 'LPT',
+       quoteAsset: 'USDT',
+       weightInQuantity: 16.02965753,
+       weightInPercentage: 0.14373
+     },
+     {
+       baseAsset: 'NKN',
+       quoteAsset: 'USDT',
+       weightInQuantity: 453.84938228,
+       weightInPercentage: 0.039181
+     }
+   ]
+  },
+  {
+    symbol: 'LAYER1USDT',
+    time: 1665807025000,
+    component: 'baseAsset',
+    baseAssetList: [
+      {
+        baseAsset: 'ADA',
+        quoteAsset: 'USDT',
+        weightInQuantity: 156.40317095,
+        weightInPercentage: 0.061916
+      },
+      ...
+    ]
+  },
+  {
+    symbol: 'DEXUSDT',
+    time: 1665807086002,
+    component: 'baseAsset',
+    baseAssetList: [
+      ...
+    ]
+  },
+  {
+    symbol: 'STORAGEUSDT',
+    ...
+  },
+  ...
+]
+```
+</details>
+
+
+### .futuresMultiAssetModeIndex():
+```js
+  let multiAssetModeIndex = await binance.futuresMultiAssetModeIndex('ADAUSD');
+  console.log(multiAssetModeIndex)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'ADAUSD',
+  time: 1665807232009,
+  index: 0.3685843,
+  bidBuffer: 0.1,
+  askBuffer: 0.1,
+  bidRate: 0.33172587,
+  askRate: 0.40544273,
+  autoExchangeBidBuffer: 0.05,
+  autoExchangeAskBuffer: 0.05,
+  autoExchangeBidRate: 0.35015508,
+  autoExchangeAskRate: 0.38701351
+}
+```
+</details>
+
+OR
+
+```js
+  let multiAssetModeIndex = await binance.futuresMultiAssetModeIndex();
+  console.log(multiAssetModeIndex)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'ADAUSD',
+    time: 1665807334012,
+    index: 0.36855,
+    bidBuffer: 0.1,
+    askBuffer: 0.1,
+    bidRate: 0.331695,
+    askRate: 0.405405,
+    autoExchangeBidBuffer: 0.05,
+    autoExchangeAskBuffer: 0.05,
+    autoExchangeBidRate: 0.3501225,
+    autoExchangeAskRate: 0.3869775
+  },
+  {
+    symbol: 'USDTUSD',
+    time: 1665807334012,
+    index: 1.000075,
+    bidBuffer: 0.0001,
+    askBuffer: 0.0001,
+    bidRate: 0.99997499,
+    askRate: 1.00017501,
+    autoExchangeBidBuffer: 0.0001,
+    autoExchangeAskBuffer: 0.0001,
+    autoExchangeBidRate: 0.99997499,
+    autoExchangeAskRate: 1.00017501
+  },
+  {
+    symbol: 'XRPUSD',
+    time: 1665807334012,
+    index: 0.48776458,
+    bidBuffer: 0.1,
+    askBuffer: 0.1,
+    bidRate: 0.43898812,
+    askRate: 0.53654104,
+    autoExchangeBidBuffer: 0.05,
+    autoExchangeAskBuffer: 0.05,
+    autoExchangeBidRate: 0.46337635,
+    autoExchangeAskRate: 0.51215281
+  },
+  {
+    symbol: 'DOTUSD',
+    time: 1665807334012,
+    index: 6.06341148,
+    bidBuffer: 0.1,
+    askBuffer: 0.1,
+    bidRate: 5.45707034,
+    askRate: 6.66975263,
+    autoExchangeBidBuffer: 0.05,
+    autoExchangeAskBuffer: 0.05,
+    autoExchangeBidRate: 5.76024091,
+    autoExchangeAskRate: 6.36658206
+  },
+  {
+    symbol: 'USDCUSD',
+    time: 1665807334012,
+    index: 1,
+    bidBuffer: 0.0001,
+    askBuffer: 0.0001,
+    bidRate: 0.9999,
+    askRate: 1.0001,
+    autoExchangeBidBuffer: 0.0001,
+    autoExchangeAskBuffer: 0.0001,
+    autoExchangeBidRate: 0.9999,
+    autoExchangeAskRate: 1.0001
+  },
+  {
+    symbol: 'SOLUSD',
+    time: 1665807334012,
+    index: 30.12532906,
+    bidBuffer: 0.1,
+    askBuffer: 0.1,
+    bidRate: 27.11279616,
+    askRate: 33.13786197,
+    autoExchangeBidBuffer: 0.05,
+    autoExchangeAskBuffer: 0.05,
+    autoExchangeBidRate: 28.61906261,
+    autoExchangeAskRate: 31.63159552
+  },
+  {
+    symbol: 'BTCUSD',
+    time: 1665807334012,
+    index: 19198.02872727,
+    bidBuffer: 0.05,
+    askBuffer: 0.05,
+    bidRate: 18238.12729091,
+    askRate: 20157.93016364,
+    autoExchangeBidBuffer: 0.025,
+    autoExchangeAskBuffer: 0.025,
+    autoExchangeBidRate: 18718.07800909,
+    autoExchangeAskRate: 19677.97944545
+  },
+  {
+    symbol: 'BNBUSD',
+    time: 1665807334012,
+    index: 270.51029617,
+    bidBuffer: 0.05,
+    askBuffer: 0.05,
+    bidRate: 256.98478136,
+    askRate: 284.03581098,
+    autoExchangeBidBuffer: 0.05,
+    autoExchangeAskBuffer: 0.05,
+    autoExchangeBidRate: 256.98478136,
+    autoExchangeAskRate: 284.03581098
+  },
+  {
+    symbol: 'BUSDUSD',
+    time: 1665807334012,
+    index: 1,
+    bidBuffer: 0,
+    askBuffer: 0,
+    bidRate: 1,
+    askRate: 1,
+    autoExchangeBidBuffer: 0,
+    autoExchangeAskBuffer: 0,
+    autoExchangeBidRate: 1,
+    autoExchangeAskRate: 1
+  },
+  {
+    symbol: 'ETHUSD',
+    time: 1665807334012,
+    index: 1299.68023945,
+    bidBuffer: 0.05,
+    askBuffer: 0.05,
+    bidRate: 1234.69622748,
+    askRate: 1364.66425143,
+    autoExchangeBidBuffer: 0.025,
+    autoExchangeAskBuffer: 0.025,
+    autoExchangeBidRate: 1267.18823347,
+    autoExchangeAskRate: 1332.17224544
+  }
+]
+```
+</details>
+
+
+## **FUTURES ACCOUNT/TRADE DATA**
 
 
 

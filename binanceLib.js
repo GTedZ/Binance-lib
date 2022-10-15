@@ -588,7 +588,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         if (symbol == undefined) return ERR('symbol', 'required');
-        if (!equal(interval, ...intervals)) return ERR('interval', 'value', false, intervals);
+        if (!equal(interval, intervals)) return ERR('interval', 'value', false, intervals);
         if (!number(limit)) return ERR('limit', 'type', 'Number');
 
         let options = {
