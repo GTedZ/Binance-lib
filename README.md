@@ -2178,7 +2178,9 @@ OR
 </details>
 
 
-### .futuresMarketBuy(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+### .futuresMarketBuy():
+<a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+
 ```js
   let BTC_marketBuy_Order = await binance.futuresMarketBuy('BTCUSDT', 0.001);
   console.log(BTC_marketBuy_Order)
@@ -2269,7 +2271,9 @@ OR
 </details>
 
 
-### .futuresMarketSell(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+### .futuresMarketSell():
+<a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+
 ```js
   let BTC_Sell_Order = await binance.futuresMarketSell('BTCUSDT', 0.001);
   console.log(BTC_marketSell_Order)
@@ -2334,7 +2338,9 @@ OR
 </details>
 
 
-### .futuresBuy(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+### .futuresBuy():
+<a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+
 ```js
   // BTC price currently at 19xxx.x
   let order = await binance.futuresBuy('BTCUSDT', 0.001, 18000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
@@ -2371,7 +2377,9 @@ OR
 </details>
 
 
-### .futuresSell(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+### .futuresSell():
+<a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
+
 ```js
   // BTC price currently at 19xxx.x
   let order = await binance.futuresSell('BTCUSDT', 0.001, 20000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
@@ -2441,7 +2449,9 @@ OR
 ```
 
 
-### .futuresTakeProfit():<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
+### .futuresTakeProfit():
+<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
+
 ```js
   // current BTCUSDT price: 19xxx.x
 
@@ -2480,7 +2490,9 @@ OR
 ```
 
 
-### .futuresStopLoss():<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
+### .futuresStopLoss():
+<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
+
 ```js
   // for LONG positions \
   let SL_reduce = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, 0.001); => will reduce position at 18000 by 0.001BTC
