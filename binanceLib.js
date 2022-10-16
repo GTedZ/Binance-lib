@@ -26,6 +26,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
+    if (options.query) this.query = true; else this.query = false;
     if (options.extraResponseInfo && options.extraResponseInfo == true) this.extraResponseInfo = true; else this.extraResponseInfo = false;
 
     // public functions ////
@@ -1227,7 +1228,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.signature = signature;
         }
 
-        console.log(params.baseURL + params.path, options);
+        if (this.query) console.log(params.baseURL + params.path, options);
         let startTime = Date.now(), latency;
         try {
             let response = await axios({
