@@ -2389,10 +2389,10 @@ OR
   // FOR One-Way Mode \
 
   .futuresMarketBuy()   => OPENS position or increases your LONG position if no prior SHORT position is open.
-  .futuresMarketBuy()   => DECREASES your SHORT position <=> CLOSES it if quantity is same <=> CLOSES and opens a LONG position if quantity is higher than the SHORT position quantity
+  .futuresMarketBuy()   => DECREASES your SHORT position *OR* CLOSES it if quantity is same *OR* CLOSES and opens a LONG position if quantity is higher than the SHORT position quantity
 
   .futuresMarketSell()  => OPENS position or increases your SHORT position if no prior LONG position is open.
-  .futuresMarketSell()  => DECREASES your LONG position <=> CLOSES it if quantity is same <=> CLOSES and opens a SHORT position if quantity is higher than the LONG position quantity
+  .futuresMarketSell()  => DECREASES your LONG position *OR* CLOSES it if quantity is same *OR* CLOSES and opens a SHORT position if quantity is higher than the LONG position quantity
 
   // FOR One-Way Mode /
 
@@ -2402,12 +2402,12 @@ OR
 
     // for positionSide "LONG" \
     .futuresMarketBuy()   => OPENS a position or increases your LONG position no matter if you have a SHORT position or not.
-    .futuresMarketSell()  => CLOSES or DECREASES your LONG position <=> REJECTS it if there are no LONG positions open.
+    .futuresMarketSell()  => CLOSES or DECREASES your LONG position *OR* REJECTS it if there are no LONG positions open.
     // for positionSide "LONG" /
 
 
     // for positionSide "SHORT" \
-    .futuresMarketBuy()   => CLOSES a position your SHORT position  <=> REJECTS it if there are no SHORT positions open.
+    .futuresMarketBuy()   => CLOSES a position your SHORT position  *OR* REJECTS it if there are no SHORT positions open.
     .futuresMarketSell()  => OPENS or increases your SHORT position no matter if you have a LONG position or not.
     // for positionSide "SHORT" /
 
