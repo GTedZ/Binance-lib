@@ -2206,7 +2206,7 @@ OR
   reduceOnly: false,
   closePosition: false,
   side: 'BUY',
-  positionSide: 'BOTH',
+  positionSide: 'BOTH',  // "BOTH" indicating One-Way Mode
   stopPrice: 0,
   workingType: 'CONTRACT_PRICE',
   priceProtect: false,
@@ -2231,13 +2231,39 @@ OR
   type: 'MARKET',
   reduceOnly: false,
   closePosition: false,
-  side: 'BUY',
-  positionSide: 'LONG',
+  side: 'BUY',          
+  positionSide: 'LONG', // "LONG" indicating hedgeMode is enabled and that it is of side 'LONG'
   stopPrice: 0,
   workingType: 'CONTRACT_PRICE',
   priceProtect: false,
   origType: 'MARKET',
   updateTime: 1665809228639
+}
+
+// OR
+
+{
+  orderId: 84110202517,
+  symbol: 'BTCUSDT',
+  status: 'FILLED',
+  clientOrderId: 'k2aN6vP9HtDGnkzvlHorjR',
+  price: 0,
+  avgPrice: 19105.6,
+  origQty: 0.001,
+  executedQty: 0.001,
+  cumQty: 0.001,
+  cumQuote: 19.1056,
+  timeInForce: 'GTC',
+  type: 'MARKET',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'SELL',
+  positionSide: 'SHORT', // "SHORT" indicating hedgeMode is enabled and that it is of side 'SHORT'
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'MARKET',
+  updateTime: 1665931149668
 }
 ```
 </details>
