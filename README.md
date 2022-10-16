@@ -2180,8 +2180,11 @@ OR
 
 ### .futuresMarketBuy():
 ```js
-  let BTC_marketBuy_Order = await binance.futuresMarketBuy('BTCUSDT', 0.001, { positionSide: 'LONG' }); // it is recommended to keep 'positionSide' as an options parameter even if you are in One-Way mode, the library will strip it if your account isn't on hedgeMode
-  console.log(BTC_marketBuy_Order);
+  let BTC_marketBuy_Order = await binance.futuresMarketBuy('BTCUSDT', 0.001);
+  console.log(BTC_marketBuy_Order)
+
+  let BTC_marketBuy_Order_hedgeMode = await binance.futuresMarketBuy('BTCUSDT', 0.001, { positionSide: 'LONG' }); // it is recommended to keep 'positionSide' as an options parameter even if you are in One-Way mode, the library will strip it if your account isn't on hedgeMode
+  console.log(BTC_marketBuy_Order_hedgeMode);                                                     //or 'SHORT'
 ```
 <details>
 <summary>View Response</summary>
@@ -2202,8 +2205,8 @@ OR
   type: 'MARKET',
   reduceOnly: false,
   closePosition: false,
-  side: 'BUY',          // 'BUYING' BTCUSDT
-  positionSide: 'BOTH', // <= "BOTH": One-Way Mode, and since I'm 'Buying' into BTCUSDT, I opened a position on BTCUSDT
+  side: 'BUY',
+  positionSide: 'BOTH',
   stopPrice: 0,
   workingType: 'CONTRACT_PRICE',
   priceProtect: false,
@@ -2228,8 +2231,8 @@ OR
   type: 'MARKET',
   reduceOnly: false,
   closePosition: false,
-  side: 'BUY',          // 'BUYING' BTCUSDT
-  positionSide: 'LONG', // <= "LONG": hedgeMode, and since I am 'BUYING' into a 'LONG' position meaning I opened a LONG position on BTCUSDT
+  side: 'BUY',
+  positionSide: 'LONG',
   stopPrice: 0,
   workingType: 'CONTRACT_PRICE',
   priceProtect: false,
@@ -2242,6 +2245,9 @@ OR
 
 ### .futuresMarketSell():
 ```js
+  let BTC_Sell_Order = await binance.futuresMarketSell('BTCUSDT', 0.001);
+  console.log(BTC_marketSell_Order)
+
   let BTC_Sell_Order = await binance.futuresMarketSell('BTCUSDT', 0.001, { positionSide: 'SHORT' }); // it is recommended to keep 'positionSide' as an options parameter even if you are in One-Way mode, the library will strip it if your account isn't on hedgeMode
   console.log(BTC_marketSell_Order)
 ```
@@ -2300,6 +2306,22 @@ OR
 }
 ```
 </details>
+
+#### Rules for futuresMarketBuying/Selling():
+```js
+  // FOR One-Way Mode \
+  .futuresMarketBuy()   => Opens position or increases your LONG position if no prior SHORT position is open.
+  .futuresMarketBuy()   => Decreases your SHORT position <=> Closes it if quantity is same <=> Closes and opens a LONG position if quantity is higher than the SHORT position quantity
+
+  .futuresMarketSell()  => Opens position or increases your SHORT position if no prior LONG position is open.
+  .futuresMarketSell()  => Decreases your LONG position <=> Closes it if quantity is same <=> Closes and opens a SHORT position if quantity is higher than the LONG position quantity
+  // FOR One-Way Mode /
+
+  // FOR hedgeMode \
+
+
+  // FOR hedgeMode /
+```
 
 
 ### .futuresBuy():
