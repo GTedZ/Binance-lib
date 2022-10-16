@@ -2307,40 +2307,8 @@ OR
 ```
 </details>
 
-#### Rules for futuresMarketBuying/Selling():
-```js
-  // SAME RULES FOR .futuresBuy()/futuresSell() and futuresCreateOrder()
 
-  // FOR One-Way Mode \
-
-  .futuresMarketBuy()   => OPENS position or increases your LONG position if no prior SHORT position is open.
-  .futuresMarketBuy()   => DECREASES your SHORT position <=> CLOSES it if quantity is same <=> CLOSES and opens a LONG position if quantity is higher than the SHORT position quantity
-
-  .futuresMarketSell()  => OPENS position or increases your SHORT position if no prior LONG position is open.
-  .futuresMarketSell()  => DECREASES your LONG position <=> CLOSES it if quantity is same <=> CLOSES and opens a SHORT position if quantity is higher than the LONG position quantity
-
-  // FOR One-Way Mode /
-
-  //
-
-  // FOR hedgeMode \
-
-    // for positionSide "LONG" \
-    .futuresMarketBuy()   => OPENS a position or increases your LONG position no matter if you have a SHORT position or not.
-    .futuresMarketSell()  => CLOSES or DECREASES your LONG position <=> REJECTS it if there are no LONG positions open.
-    // for positionSide "LONG" /
-    
-
-    // for positionSide "SHORT" \
-    .futuresMarketBuy()   => CLOSES a position your SHORT position  <=> REJECTS it if there are no SHORT positions open.
-    .futuresMarketSell()  => OPENS or increases your SHORT position no matter if you have a LONG position or not.
-    // for positionSide "SHORT" /
-
-  // FOR hedgeMode /
-```
-
-
-### .futuresBuy():
+### .futuresBuy(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
 ```js
   // BTC price currently at 19xxx.x
   let order = await binance.futuresBuy('BTCUSDT', 0.001, 18000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
@@ -2377,7 +2345,7 @@ OR
 </details>
 
 
-### .futuresSell():
+### .futuresSell(): <a href='#rules-for-futuresmarketbuyingselling'><sup>hedgeMode rules</sup></a>
 ```js
   // BTC price currently at 19xxx.x
   let order = await binance.futuresSell('BTCUSDT', 0.001, 20000, { positionSide: 'LONG' });  // current BTCUSDT price is 19xxx.x, so the limit order won't trigger
@@ -2412,6 +2380,39 @@ OR
 }
 ```
 </details>
+
+
+#### Rules for futuresMarketBuying/Selling:
+```js
+  // SAME RULES FOR .futuresBuy()/futuresSell() and futuresCreateOrder()
+
+  // FOR One-Way Mode \
+
+  .futuresMarketBuy()   => OPENS position or increases your LONG position if no prior SHORT position is open.
+  .futuresMarketBuy()   => DECREASES your SHORT position <=> CLOSES it if quantity is same <=> CLOSES and opens a LONG position if quantity is higher than the SHORT position quantity
+
+  .futuresMarketSell()  => OPENS position or increases your SHORT position if no prior LONG position is open.
+  .futuresMarketSell()  => DECREASES your LONG position <=> CLOSES it if quantity is same <=> CLOSES and opens a SHORT position if quantity is higher than the LONG position quantity
+
+  // FOR One-Way Mode /
+
+  //
+
+  // FOR hedgeMode \
+
+    // for positionSide "LONG" \
+    .futuresMarketBuy()   => OPENS a position or increases your LONG position no matter if you have a SHORT position or not.
+    .futuresMarketSell()  => CLOSES or DECREASES your LONG position <=> REJECTS it if there are no LONG positions open.
+    // for positionSide "LONG" /
+
+
+    // for positionSide "SHORT" \
+    .futuresMarketBuy()   => CLOSES a position your SHORT position  <=> REJECTS it if there are no SHORT positions open.
+    .futuresMarketSell()  => OPENS or increases your SHORT position no matter if you have a LONG position or not.
+    // for positionSide "SHORT" /
+
+  // FOR hedgeMode /
+```
 
 
 ### .futuresTakeProfit():
