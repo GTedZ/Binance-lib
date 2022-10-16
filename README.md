@@ -2543,7 +2543,8 @@ OR
     // for One-Way Mode /
     // for hedgeMode \
       
-      if parameter 'side' == 'BUY'
+      if parameter 'side' == 'BUY' and positionSide as 'LONG' are not allowed
+      if parameter 'side' == 'SELL' and positionSide as 'LONG' are not allowed
 
     // for hedgeMode /
 
