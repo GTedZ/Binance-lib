@@ -2441,27 +2441,102 @@ OR
 ```
 
 
-### .futuresTakeProfit():
+### .futuresTakeProfit():<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
 ```js
+  // current BTCUSDT price: 19xxx.x
+
   // for LONG positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
+  let TP_reduce = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, 0.001); => will reduce position at 20000 by 0.001BTC
+  let TP_close = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000);         => will sell the position at 20000
   // for LONG positions /
 
   // for SHORT positions \
-  let TP = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
+  let TP_reduce = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, 0.001);  => will reduce position at 18000 by 0.001BTC
+  let TP_close = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000);          => will sell the position at 20000
+  // for SHORT positions /
+
+
+  // for hedgeMode
+
+  // for LONG positions \
+
+  let TP_reduce = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, 0.001, {positionSide: 'LONG'}) => will reduce the position at 20000 bt 0.001BTC
+  let TP_close = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 20000, false, {positionSide: 'LONG'})  => will close the position at 20000
+
+  let illegal_1 = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 20000, 0.001, {positionSide: 'LONG'}) => futuresTakeProfit for side 'BUY' is illegal and will be rejected
+  let illegal_2 = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 20000, false, {positionSide: 'LONG'}) => futuresTakeProfit for side 'BUY' is illegal and will be rejected
+
+  // for LONG positions /
+
+  // for SHORT positions \
+
+  let TP_reduce = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, 0.001, {positionSide: 'SHORT'}) => will reduce the position at 18000 bt 0.001BTC
+  let TP_close = await binance.futuresTakeProfit('BTCUSDT', 'BUY', 18000, false, {positionSide: 'SHORT'})  => will close the position at 18000
+
+  let illegal_1 = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 18000, 0.001, {positionSide: 'SHORT'}) => futuresTakeProfit for side 'SELL' is illegal and will be rejected
+  let illegal_2 = await binance.futuresTakeProfit('BTCUSDT', 'SELL', 18000, false, {positionSide: 'SHORT'}) => futuresTakeProfit for side 'SELL' is illegal and will be rejected
+
   // for SHORT positions /
 ```
 
 
-### .futuresStopLoss():
+### .futuresStopLoss():<a href='#Rules-for-TPSL'><sup>TP/SL rules</sup></a>
 ```js
   // for LONG positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
+  let SL_reduce = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, 0.001); => will reduce position at 18000 by 0.001BTC
+  let SL_close = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000);         => will sell the position at 18000
   // for LONG positions /
 
   // for SHORT positions \
-  let SL = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000); // beware if you do not have hedgeMode set to true, because then BUY means you are increasing your position whether it was 'LONG' or 'SHORT', and SELL means you are reducing your position whether it was 'LONG' or 'SHORT'
+  let SL_reduce = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000, 0.001);  => will reduce position at 20000 by 0.001BTC
+  let SL_close = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000);         => will sell the position at 20000
   // for SHORT positions /
+
+
+  // for hedgeMode
+
+  // for LONG positions \
+
+  let SL_reduce = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, 0.001, {positionSide: 'LONG'}) => will reduce the position at 18000 bt 0.001BTC
+  let SL_close = await binance.futuresStopLoss('BTCUSDT', 'SELL', 18000, false, {positionSide: 'LONG'})  => will close the position at 18000
+
+  let illegal_1 = await binance.futuresStopLoss('BTCUSDT', 'BUY', 18000, 0.001, {positionSide: 'LONG'}) => futuresTakeProfit for side 'BUY' is illegal and will be rejected
+  let illegal_2 = await binance.futuresStopLoss('BTCUSDT', 'BUY', 18000, false, {positionSide: 'LONG'}) => futuresTakeProfit for side 'BUY' is illegal and will be rejected
+
+  // for LONG positions /
+
+  // for SHORT positions \
+
+  let SL_reduce = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000, 0.001, {positionSide: 'SHORT'}) => will reduce the position at 18000 bt 0.001BTC
+  let SL_close = await binance.futuresStopLoss('BTCUSDT', 'BUY', 20000, false, {positionSide: 'SHORT'})  => will close the position at 18000
+
+  let illegal_1 = await binance.futuresStopLoss('BTCUSDT', 'SELL', 20000, 0.001, {positionSide: 'SHORT'}) => futuresTakeProfit for side 'SELL' is illegal and will be rejected
+  let illegal_2 = await binance.futuresStopLoss('BTCUSDT', 'SELL', 20000, false, {positionSide: 'SHORT'}) => futuresTakeProfit for side 'SELL' is illegal and will be rejected
+
+  // for SHORT positions /
+```
+
+#### Rules for TP/SL:
+```js
+  'closePosition=true' can be send with any of those orders, but 'quantity' and 'reduceOnly' should be omitted when doing so.
+
+  // for futuresTakeProfit() \
+
+    // for One-Way Mode \
+
+      if parameter 'side' == 'BUY':   current_price <= stopPrice, if not then it will be rejected
+
+      if parameter 'side' == 'SHORT': current_price >= stopPrice, if not then it will be rejected
+
+    // for One-Way Mode /
+    // for hedgeMode \
+      
+      if parameter 'side' == 'BUY'
+
+    // for hedgeMode /
+
+  // for futuresTakeProfit() /
+
 ```
 
 ### .futuresCreateOrder():
