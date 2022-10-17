@@ -2589,7 +2589,7 @@ OR
   let order2 = await binance.futuresOrder('BTCUSDT', false, origClientOrderId);
 ```
 <details>
-<summary>View Response</summary>
+<summary>View Responses</summary>
 
 ```js
 order1 =>
@@ -2655,6 +2655,439 @@ order2 =>
   let origClientOrderId = 'kcg5WNwhBDkdEXvwzdbtcO'
   let order1 = await binance.futuresOrder('BTCUSDT', false, origClientOrderId);
 ```
+<details>
+<summary>View Responses</summary>
+
+```js
+{
+  orderId: 84237713406,
+  symbol: 'BTCUSDT',
+  status: 'CANCELED',
+  clientOrderId: 'nuasZzBQ2Hry54Kr75Xs9y',
+  price: 18000,
+  avgPrice: 0,
+  origQty: 0.001,
+  executedQty: 0,
+  cumQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  updateTime: 1665977280395
+}
+
+// SAME AS
+
+{
+  orderId: 84237713406,
+  symbol: 'BTCUSDT',
+  status: 'CANCELED',
+  clientOrderId: 'nuasZzBQ2Hry54Kr75Xs9y',
+  price: 18000,
+  avgPrice: 0,
+  origQty: 0.001,
+  executedQty: 0,
+  cumQty: 0,
+  cumQuote: 0,
+  timeInForce: 'GTC',
+  type: 'LIMIT',
+  reduceOnly: false,
+  closePosition: false,
+  side: 'BUY',
+  positionSide: 'BOTH',
+  stopPrice: 0,
+  workingType: 'CONTRACT_PRICE',
+  priceProtect: false,
+  origType: 'LIMIT',
+  updateTime: 1665977280395
+}
+```
+</details>
+
+
+### .futuresCancelAll():
+```js
+  let cancelAllOrder = await binance.futuresCancelAll('BTCUSDT'); // TODO will include a 'cancelAll' for all symbols (not natively supported by binance)
+  console.log(cancelAllOrder)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "code": "200", 
+    "msg": "The operation of cancel all open order is done."
+}
+```
+</details>
+
+
+### .futuresCancelBatchOrders():
+```js
+  let orderIdList = [84237713406, 84237714515, 84237714598]; // TODO current max is 10 orders per request (binance limit), need to support unlimited amount
+  let batchOrderIdCancel = await binance.futuresCancelBatchOrders('BTCUSDT', orderIdList);
+
+  let clientOrderIdList = ['kMsiXpzWq91237xX', 'IwnaKlMyslf'];
+  let batchClientOrderIdList = await binance.futuresCancelBatchOrders('BTCUSDT', batchClientOrderIdList);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+    {
+        "clientOrderId": "myOrder1",
+        "cumQty": "0",
+        "cumQuote": "0",
+        "executedQty": "0",
+        "orderId": 283194212,
+        "origQty": "11",
+        "origType": "TRAILING_STOP_MARKET",
+        "price": "0",
+        "reduceOnly": false,
+        "side": "BUY",
+        "positionSide": "SHORT",
+        "status": "CANCELED",
+        "stopPrice": "9300",                // please ignore when order type is TRAILING_STOP_MARKET
+        "closePosition": false,   // if Close-All
+        "symbol": "BTCUSDT",
+        "timeInForce": "GTC",
+        "type": "TRAILING_STOP_MARKET",
+        "activatePrice": "9020",            // activation price, only returned with TRAILING_STOP_MARKET order
+        "priceRate": "0.3",                 // callback rate, only returned with TRAILING_STOP_MARKET order
+        "updateTime": 1571110484038,
+        "workingType": "CONTRACT_PRICE",
+        "priceProtect": false            // if conditional order trigger is protected   
+    },
+    {
+        "code": -2011,
+        "msg": "Unknown order sent."
+    }
+]
+```
+</details>
+
+
+### .futuresCountdownCancelAll():
+```js
+  let countDown = await binance.futuresCountdownCancelAll('BTCUSDT', 60 * 1000); // 60 second countdown, if I want to get the timer to get overridden, I can just send another function with another time (or same time), and the timer will reset to the new time
+```
+
+
+### .futuresOpenOrder():
+```js
+  let latestOpenOrder = await binance.futuresOpenOrder('BTCUSDT');
+  let latestOpenOrder_orderId = await binance.futuresOpenOrder('BTCUSDT', orderId);
+  let latestOpenOrder_clientOrderId = await binance.futuresOpenOrder('BTCUSDT', false, origClientOrderId);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+  {
+    "avgPrice": "0.00000",              
+    "clientOrderId": "abc",             
+    "cumQuote": "0",                        
+    "executedQty": "0",                 
+    "orderId": 1917641,                 
+    "origQty": "0.40",                      
+    "origType": "TRAILING_STOP_MARKET",
+    "price": "0",
+    "reduceOnly": false,
+    "side": "BUY",
+    "positionSide": "SHORT",
+    "status": "NEW",
+    "stopPrice": "9300",                // please ignore when order type is TRAILING_STOP_MARKET
+    "closePosition": false,             // if Close-All
+    "symbol": "BTCUSDT",
+    "time": 1579276756075,              // order time
+    "timeInForce": "GTC",
+    "type": "TRAILING_STOP_MARKET",
+    "activatePrice": "9020",            // activation price, only return with TRAILING_STOP_MARKET order
+    "priceRate": "0.3",                 // callback rate, only return with TRAILING_STOP_MARKET order                       
+    "updateTime": 1579276756075,        
+    "workingType": "CONTRACT_PRICE",
+    "priceProtect": false            // if conditional order trigger is protected           
+}
+
+// OR
+
+{
+  msg: "Order does not exist"
+}
+```
+</details>
+
+
+### .futuresOpenOrders():
+```js
+  let allOpenOrders = await binance.futuresOpenOrders();
+  let allOpenOrders_BTC = await binance.futuresOpenOrders('BTCUSDT');
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    "avgPrice": "0.00000",
+    "clientOrderId": "abc",
+    "cumQuote": "0",
+    "executedQty": "0",
+    "orderId": 1917641,
+    "origQty": "0.40",
+    "origType": "TRAILING_STOP_MARKET",
+    "price": "0",
+    "reduceOnly": false,
+    "side": "BUY",
+    "positionSide": "SHORT",
+    "status": "NEW",
+    "stopPrice": "9300",                // please ignore when order type is TRAILING_STOP_MARKET
+    "closePosition": false,   // if Close-All
+    "symbol": "BTCUSDT",
+    "time": 1579276756075,              // order time
+    "timeInForce": "GTC",
+    "type": "TRAILING_STOP_MARKET",
+    "activatePrice": "9020",            // activation price, only return with TRAILING_STOP_MARKET order
+    "priceRate": "0.3",                 // callback rate, only return with TRAILING_STOP_MARKET order
+    "updateTime": 1579276756075,        // update time
+    "workingType": "CONTRACT_PRICE",
+    "priceProtect": false            // if conditional order trigger is protected   
+  },
+  ...
+]
+```
+</details>
+
+
+### .futuresAllOrders():
+```js
+  let allOrders = await binance.futuresAllOrders('BTCUSDT', 5);
+  console.log(allOrders);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    "avgPrice": "0.00000",
+    "clientOrderId": "abc",
+    "cumQuote": "0",
+    "executedQty": "0",
+    "orderId": 1917641,
+    "origQty": "0.40",
+    "origType": "TRAILING_STOP_MARKET",
+    "price": "0",
+    "reduceOnly": false,
+    "side": "BUY",
+    "positionSide": "SHORT",
+    "status": "NEW",
+    "stopPrice": "9300",                // please ignore when order type is TRAILING_STOP_MARKET
+    "closePosition": false,   // if Close-All
+    "symbol": "BTCUSDT",
+    "time": 1579276756075,              // order time
+    "timeInForce": "GTC",
+    "type": "TRAILING_STOP_MARKET",
+    "activatePrice": "9020",            // activation price, only return with TRAILING_STOP_MARKET order
+    "priceRate": "0.3",                 // callback rate, only return with TRAILING_STOP_MARKET order
+    "updateTime": 1579276756075,        // update time
+    "workingType": "CONTRACT_PRICE",
+    "priceProtect": false            // if conditional order trigger is protected   
+  },
+  ...,
+  ...,
+  ...,
+  ....
+]
+```
+</details>
+
+
+### .futuresBalance():
+```js
+  let balance = await binance.futuresBalance();
+  console.log(balance);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+    {
+        "accountAlias": "SgsR",    // unique account code
+        "asset": "USDT",    // asset name
+        "balance": "122607.35137903", // wallet balance || OBVIOUSLY not my account
+        "crossWalletBalance": "23.72469206", // crossed wallet balance
+        "crossUnPnl": "0.00000000"  // unrealized profit of crossed positions
+        "availableBalance": "23.72469206",       // available balance
+        "maxWithdrawAmount": "23.72469206",     // maximum amount for transfer out
+        "marginAvailable": true,    // whether the asset can be used as margin in Multi-Assets mode
+        "updateTime": 1617939110373
+    },
+    ...
+]
+```
+</details>
+
+
+### .futuresAccount():
+```js
+  let futuresAccount = await binance.futuresAccount();  // returns usual account info, and an array of account assets and positions (all of them, open and not)
+  console.log(futuresAccount);
+
+  // alternatively we can set 'activePositionsOnly' and/or 'activeAssets' parameters as 'true', like the following
+  let futuresAccount_activePositionsOnly = await binance.futuresAccount(true);
+  let futuresAccount_activeAssetsOnly = await binance.futuresAccount(false, true);
+  let futuresAccount_activePositions_activeAssets = await binance.futuresAccount(true, true);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{   
+    "feeTier": 0,       // account commission tier 
+    "canTrade": true,   // if can trade
+    "canDeposit": true,     // if can transfer in asset
+    "canWithdraw": true,    // if can transfer out asset
+    "updateTime": 0,        // reserved property, please ignore 
+    "totalInitialMargin": "0.00000000",    // total initial margin required with current mark price (useless with isolated positions), only for USDT asset
+    "totalMaintMargin": "0.00000000",     // total maintenance margin required, only for USDT asset
+    "totalWalletBalance": "23.72469206",     // total wallet balance, only for USDT asset
+    "totalUnrealizedProfit": "0.00000000",   // total unrealized profit, only for USDT asset
+    "totalMarginBalance": "23.72469206",     // total margin balance, only for USDT asset
+    "totalPositionInitialMargin": "0.00000000",    // initial margin required for positions with current mark price, only for USDT asset
+    "totalOpenOrderInitialMargin": "0.00000000",   // initial margin required for open orders with current mark price, only for USDT asset
+    "totalCrossWalletBalance": "23.72469206",      // crossed wallet balance, only for USDT asset
+    "totalCrossUnPnl": "0.00000000",      // unrealized profit of crossed positions, only for USDT asset
+    "availableBalance": "23.72469206",       // available balance, only for USDT asset
+    "maxWithdrawAmount": "23.72469206"     // maximum amount for transfer out, only for USDT asset
+    "assets": [
+        {
+            "asset": "USDT",            // asset name
+            "walletBalance": "23.72469206",      // wallet balance
+            "unrealizedProfit": "0.00000000",    // unrealized profit
+            "marginBalance": "23.72469206",      // margin balance
+            "maintMargin": "0.00000000",        // maintenance margin required
+            "initialMargin": "0.00000000",    // total initial margin required with current mark price 
+            "positionInitialMargin": "0.00000000",    //initial margin required for positions with current mark price
+            "openOrderInitialMargin": "0.00000000",   // initial margin required for open orders with current mark price
+            "crossWalletBalance": "23.72469206",      // crossed wallet balance
+            "crossUnPnl": "0.00000000"       // unrealized profit of crossed positions
+            "availableBalance": "23.72469206",       // available balance
+            "maxWithdrawAmount": "23.72469206",     // maximum amount for transfer out
+            "marginAvailable": true,    // whether the asset can be used as margin in Multi-Assets mode
+            "updateTime": 1625474304765 // last update time 
+        },
+        {
+            "asset": "BUSD",            // asset name
+            "walletBalance": "103.12345678",      // wallet balance
+            "unrealizedProfit": "0.00000000",    // unrealized profit
+            "marginBalance": "103.12345678",      // margin balance
+            "maintMargin": "0.00000000",        // maintenance margin required
+            "initialMargin": "0.00000000",    // total initial margin required with current mark price 
+            "positionInitialMargin": "0.00000000",    //initial margin required for positions with current mark price
+            "openOrderInitialMargin": "0.00000000",   // initial margin required for open orders with current mark price
+            "crossWalletBalance": "103.12345678",      // crossed wallet balance
+            "crossUnPnl": "0.00000000"       // unrealized profit of crossed positions
+            "availableBalance": "103.12345678",       // available balance
+            "maxWithdrawAmount": "103.12345678",     // maximum amount for transfer out
+            "marginAvailable": true,    // whether the asset can be used as margin in Multi-Assets mode
+            "updateTime": 1625474304765 // last update time
+        },
+        ...
+    ],
+    "positions": [  // positions of all symbols in the market are returned
+        // only "BOTH" positions will be returned with One-way mode
+        // only "LONG" and "SHORT" positions will be returned with Hedge mode
+        {
+            "symbol": "BTCUSDT",    // symbol name
+            "initialMargin": "0",   // initial margin required with current mark price 
+            "maintMargin": "0",     // maintenance margin required
+            "unrealizedProfit": "0.00000000",  // unrealized profit
+            "positionInitialMargin": "0",      // initial margin required for positions with current mark price
+            "openOrderInitialMargin": "0",     // initial margin required for open orders with current mark price
+            "leverage": "100",      // current initial leverage
+            "isolated": true,       // if the position is isolated
+            "entryPrice": "0.00000",    // average entry price
+            "maxNotional": "250000",    // maximum available notional with current leverage
+            "bidNotional": "0",  // bids notional, ignore
+            "askNotional": "0",  // ask notional, ignore
+            "positionSide": "BOTH",     // position side
+            "positionAmt": "0",         // position amount
+            "updateTime": 0           // last update time
+        },
+        ...
+    ]
+}
+```
+</details>
+
+
+### .futuresLeverage():
+```js
+  let levResponse = await binance.futuresLeverage('BTCUSDT', 5);
+  console.log(levResponse);
+
+  // alternatively, if you do not know the max leverage of a symbol, and are afraid to get your request rejected, use the third parameter 'findHighestWorkingLeverage' as true
+  let XRPBUSD_lev = await binance.futuresLeverage('XRPBUSD', 125); // even tho XRPBUSD's max lev is x20
+  console.log(XRPBUSD_lev)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "leverage": 5,
+    "maxNotionalValue": "50000000",
+    "symbol": "BTCUSDT"
+}
+
+// and for XRPBUSD
+{
+    "leverage": 20,
+    "maxNotionalValue": "100000",
+    "symbol": "XRPBUSD"
+}
+```
+</details>
+
+
+### .futuresMarginType():
+```js
+  let changeMarginToISO = await binance.futuresMarginType('BTCUSDT', 'ISOLATED');
+
+  let changeMarginToCROSS = await binance.futuresMarginType('XRPBUSD', 'CROSSED');
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "code": 200,
+    "msg": "success"
+}
+
+// and
+
+{
+    "code": 200,
+    "msg": "success"
+}
+```
+</details>
+
+
+
+
+
 
 
 

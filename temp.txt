@@ -1,0 +1,7 @@
+<details>
+<summary>View Response</summary>
+
+```js
+
+```
+</details>

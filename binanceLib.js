@@ -33,9 +33,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
 
 
-    // futures ////
+    // futures \\\\
 
-    // futures Market DATA ////
+    // futures Market DATA \\\\
 
     this.futuresPing = async (reconnect = false, tries = -1) => {
         let resp;
@@ -636,9 +636,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options);
     }
 
-    // futures Market DATA \\\\
+    // futures Market DATA ////
 
-    // futures Account/Trade Endpoints ////
+    // futures Account/Trade Endpoints \\\\
 
     this.futuresChangePositionSide = function (dualSidePosition, opts = {}) {
         let params = {
@@ -862,8 +862,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         Object.assign(options, opts);
         if (orderId) options.orderId = orderId;
         if (origClientOrderId) options.origClientOrderId = origClientOrderId;
-        if (!opts.orderId && !opts.origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
-
+        if (!orderId && !origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
+        // if (orderId && origClientOrderId)
         return request(params, options, 'SIGNED');
     }
 
@@ -883,8 +883,26 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresCancelBatchOrders = async () => {
-        // TODO
+    this.futuresCancelBatchOrders = async (symbol, orderIdList, origClientOrderIdList, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/batchOrders',
+            method: 'delete'
+        }
+
+        let options = {
+            symbol: symbol
+        }
+        if (!orderIdList && !origClientOrderIdList) return ERR(`Either 'orderIdList' or 'origClientOrderIdList' need to be sent for this request.`);
+        if (orderIdList) {
+            if (!Array.isArray(orderIdList)) return ERR('orderIdList', 'type', 'Array');
+            options.orderIdList = orderIdList;
+        } else if (origClientOrderIdList) {
+            if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
+            options.origClientOrderIdList = origClientOrderIdList;
+        }
+
+        return request(params, options, 'SIGNED');
     }
 
     /**
@@ -944,7 +962,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresAllOrders = (symbol, orderId = 0, limit = 500, startTime = 0, endTime = 0, opts = {}) => {
+    this.futuresAllOrders = (symbol, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/allOrders',
@@ -965,24 +983,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresBalance = async (reconnect = false, tries = -1, options = {}) => {
+    this.futuresBalance = async (options = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v2/balance',
             method: 'get'
         }
 
-        let resp = await request(params, options, 'SIGNED');
-        if (resp.error) {
-            tries--;
-            if (reconnect == false || tries == 0) return resp;
-            else {
-                await delay(50);
-                return this.futuresBalance(reconnect, tries, options);
-            }
-        }
-
-        return resp;
+        return request(params, options, 'SIGNED');
     }
 
     /**
@@ -1005,7 +1013,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp;
     }
 
-    this.futuresLeverage = async (symbol, leverage, findHighest = false, opts = {}) => {
+    this.futuresLeverage = async (symbol, leverage, findHighestWorkingLeverage = false, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/leverage',
@@ -1022,13 +1030,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
         Object.assign(options, opts);
 
-        if (!findHighest) return request(params, options, 'SIGNED');
+        if (!findHighestWorkingLeverage) return request(params, options, 'SIGNED');
 
         let response = await request(params, options, 'SIGNED');
         if (response.error) {
             if (response.error.code == -4028) {
                 leverage = lowerBracket(leverage);
-                return this.futuresLeverage(symbol, leverage, findHighest, opts);
+                return this.futuresLeverage(symbol, leverage, findHighestWorkingLeverage, opts);
             }
         }
         return response;
@@ -1205,10 +1213,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    // TODO
-    // futures Account/Trade Endpoints \
+    // futures Account/Trade Endpoints ////
 
-    // private functions ////
+    // private functions \\\\
 
     request = async (params, options = {}, type = 'default') => {
         if (!options.recvWindow) options.recvWindow = this.recvWindow;
