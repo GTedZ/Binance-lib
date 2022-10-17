@@ -5,6 +5,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (!new.target) return new api(options); // Legacy support for calling the constructor without 'new';
     const axios = require('axios')
     const crypto = require('crypto');
+    const ws = require('ws')
     const bigInt = require('json-bigint')({ storeAsString: true });
 
     const base = 'https://api.binance.com';
@@ -12,6 +13,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const sapi = 'https://api.binance.com';
     const fapi = 'https://fapi.binance.com';
     const dapi = 'https://dapi.binance.com';
+
+    const fWSS = 'wss://fstream.binance.com';
+
 
     const intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"];
     const incomeTypes = ['TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE']
@@ -1230,10 +1234,115 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         return request(params, options, 'SIGNED');
     }
-    
+
     // TODO theres 3 or more functions left to include
 
     // futures Account/Trade Endpoints ////
+
+    // websockets \\\\
+
+    this.websockets = {
+
+        // futures websocket \\\\
+        futures: {
+
+            aggTrade: function (symbol, callback) {
+                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!callback) { ERROR('callback', 'required'); return; }
+
+                symbol = symbol.toLowerCase();
+                let params = {
+                    baseURL: fWSS,
+                    path: `${symbol}@aggTrade`
+                }
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        [
+                            'event',
+                            'time',
+                            'symbol',
+                            'tradeId',
+                            'price',
+                            'qty',
+                            'firstTradeId',
+                            'lastTradeId',
+                            'timestamp',
+                            'maker'
+                        ]);
+                    callback(msg);
+                };
+                return connect(params, this.format);
+            }
+
+        }
+
+    }
+
+    // futures websocket ////
+
+
+    // functions necessary for websocket
+
+    connect = (params, callback) => {
+        if (!params.path) { ERROR('streamName', 'required'); return; }
+        if (!callback) { ERROR('callback', 'required'); return; }
+        const object = {
+            unsubscribe: () => {
+                object.alive = false;
+                object.socket.close();
+            },
+            close: () => {
+                object.alive = false;
+                object.socket.close();
+            },
+            alive: true,
+            socket: {}
+        }
+
+        new newSocket(params, callback, object);
+
+        return object;
+    }
+
+    newSocket = function (params, callback, object) {
+        object.socket = new ws(params.baseURL + '/ws/' + params.path);
+        let socket = object.socket;
+
+        socket.on('open', () => {
+            // TODO add conditions to add the correct subscriptions to the right futures/spot object
+        })
+
+        socket.on('message', (msg) => {
+            callback(parseSocketMessage(msg));
+        })
+
+        socket.on('error', () => {
+            console.log('error!');
+            if (object.alive) newSocket(params, callback, object);
+        })
+
+        socket.on('close', () => {
+            console.log('closed!');
+            if (object.alive) newSocket(params, callback, object);
+        })
+
+        socket.on('ping', () => {
+            console.log('ping!!');
+            socket.pong();
+        })
+
+        socket.on('pong', () => {
+            console.log('pong!!');
+        })
+    }
+
+    parseSocketMessage = (msg) => {
+        return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
+    }
+
+    // websockets ////
 
     // private functions \\\\
 
@@ -1417,6 +1526,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 msg: msg
             }
         }
+    }
+
+    const ERROR = (msg, errType = false, possibilities = []) => {
+        if (errType) {
+            if (errType.toLowerCase() == 'required') msg = `${msg == 'callback' ? 'A callback function' : `Parameter '${msg}'`} is required for this request.`;
+
+            if (errType.toLowerCase() == 'type') msg = `Parameter '${msg}' should be of type '${requiredType}'.`;
+            if (errType.toLowerCase() == 'value') msg = `Parameter '${msg}' is invalid.`
+            if (possibilities.length != 0) msg += ` Possible options:${possibilities.map(a => ` '${a}'`)}.`
+        }
+
+        console.error({
+            error: {
+                status: 400,
+                statusText: 'Websocket Parameter Error',
+                code: -3,
+                msg: msg
+            }
+        });
     }
 
     const delay = (ms) => new Promise(r => setTimeout(r, ms));

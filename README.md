@@ -585,8 +585,8 @@ Or using the options parameters:
     tradeId: 1488689111,
     price: 18278.2,
     qty: 0.286,
-    first_tradeId: 2950259470,
-    last_tradeId: 2950259472,
+    firstTradeId: 2950259470,
+    lastTradeId: 2950259472,
     timestamp: 1665667203902,
     maker: false
   },
@@ -594,8 +594,8 @@ Or using the options parameters:
     tradeId: 1488689112,
     price: 18278.4,
     qty: 1,
-    first_tradeId: 2950259473,
-    last_tradeId: 2950259473,
+    firstTradeId: 2950259473,
+    lastTradeId: 2950259473,
     timestamp: 1665667203902,
     maker: false
   },
@@ -603,8 +603,8 @@ Or using the options parameters:
     tradeId: 1488689113,
     price: 18278.5,
     qty: 1.077,
-    first_tradeId: 2950259474,
-    last_tradeId: 2950259475,
+    firstTradeId: 2950259474,
+    lastTradeId: 2950259475,
     timestamp: 1665667203902,
     maker: false
   },
@@ -612,8 +612,8 @@ Or using the options parameters:
     tradeId: 1488689114,
     price: 18278.4,
     qty: 0.018,
-    first_tradeId: 2950259476,
-    last_tradeId: 2950259476,
+    firstTradeId: 2950259476,
+    lastTradeId: 2950259476,
     timestamp: 1665667203952,
     maker: true
   },
@@ -621,8 +621,8 @@ Or using the options parameters:
     tradeId: 1488689115,
     price: 18278.5,
     qty: 2.225,
-    first_tradeId: 2950259477,
-    last_tradeId: 2950259498,
+    firstTradeId: 2950259477,
+    lastTradeId: 2950259498,
     timestamp: 1665667204008,
     maker: false
   }
@@ -3707,6 +3707,24 @@ order2 =>
 // TODO theres 3 or more functions left to include
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Websockets:
 
 
 
