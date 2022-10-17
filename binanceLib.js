@@ -1075,8 +1075,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let options = {
             symbol: symbol,
-            amount: amount,
-            type: type
+            amount: amount
         }
 
         Object.assign(options, opts);
@@ -1084,9 +1083,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (!amount) return ERR('amount', 'required');
         if (!number(amount)) return ERR('amount', 'type', 'Number');
         if (this.hedgeMode && !options.positionSide) return ERR('positionSide', 'required', false, ['LONG', 'SHORT']);
-        options.type = fixValue(options.type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
-        options.type = fixValue(options.type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
-        if (!equal(options.type, ['1', '2'])) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+        type = fixValue(type, '1', ['1', 'add', 'ADD', 'increase', 'INCREASE', 'buy', 'long']);
+        type = fixValue(type, '2', ['2', 'reduce', 'REDUCE', 'sell', 'short']);
+        if (!equal(type, ['1', '2'])) return ERR('type', 'value', false, ['INCREASE', 'REDUCE']);
+        options.type = type;
 
         return request(params, options, 'SIGNED');
     }
@@ -1122,9 +1122,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @param {string} symbol - optional
      * @options The parameters below should be wrapped in an object
      * @param {number} recvWindow - number
-     * @returns Arrays of 1 Object for One-way-mode
-     * @or 
-     * @returns Arrays of 2 Objects for hedgeMode
+     * @returns Arrays of Objects (each is a seperate position, 1pos per symbol for One-Way Mode, 2 for hedgeMode)
      */
     this.futuresPositionRisk = (symbol = false, opts = {}) => {
         let params = {
@@ -1141,8 +1139,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresUserTrades = (symbol, limit = 500, opts = {}) => {
+    /**
+     * returns your current futures positions/position information
+     * @param {string} symbol - optional
+     * @options The parameters below should be wrapped in an object
+     * @param {number} recvWindow - number
+     * @returns Arrays of 1 Object for One-way-mode
+     * @or 
+     * @returns Arrays of 2 Objects for hedgeMode
+     */
+    this.futuresOpenPositions = (symbol = false, opts = {}) => {
+        return futuresPositionRisk(symbol, opts);
+    }
 
+    this.futuresUserTrades = (symbol, limit = 500, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/userTrades',
@@ -1185,7 +1195,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    this.futuresLeverageBrackets = (symbol = undefined, opts = {}) => {
+    this.futuresLeverageBrackets = async (symbol = undefined, opts = {}) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/leverageBracket',
@@ -1196,7 +1206,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (symbol) options.symbol = symbol;
         Object.assign(options, opts);
 
-        return request(params, options, 'SIGNED');
+        let response = await request(params, options, 'SIGNED');
+        if (response.error) return response;
+        if (symbol) return response[0];
+        let levBracketObject = {};
+        response.forEach(bracket => {
+            levBracketObject[bracket.symbol] = bracket;
+        });
+
+        return levBracketObject;
     }
 
     this.futuresADLQuantileEstimation = (symbol = undefined, opts = {}) => {
@@ -1212,6 +1230,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         return request(params, options, 'SIGNED');
     }
+    
+    // TODO theres 3 or more functions left to include
 
     // futures Account/Trade Endpoints ////
 

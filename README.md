@@ -188,6 +188,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresPositionMargin()                          <a href='#futuresPositionMargin'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |positionSide, recvWindow|
 |futuresPositionMarginHistory()            <a href='#futuresPositionMarginHistory'><sup>ref</sup></a>|symbol                                                                   |limit, type_2, startTime, endTime                        |recvWindow      |
 |futuresPositionRisk()                              <a href='#futuresPositionRisk'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresOpenPositions()                            <a href='#futuresOpenPositions'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
 |futuresUserTrades()                                  <a href='#futuresUserTrades'><sup>ref</sup></a>|                                                                         |symbol, limit, incomeType, startTime, endTime            |recvWindow      |
 |futuresIncomeHistory()                            <a href='#futuresIncomeHistory'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
 |futuresADLQuantileEstimation()            <a href='#futuresADLQuantileEstimation'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
@@ -3060,6 +3061,129 @@ order2 =>
 </details>
 
 
+### .futuresLeverageBrackets():
+```js
+  let BTC_leverageBrackets = await binance.futuresLeverageBrackets('BTCUSDT');
+
+  let leverageBrackets = await binance.futuresLeverageBrackets();
+```
+<details>
+<summary>View Response</summary>
+
+```js
+// BTC_leverageBrackets
+{
+  symbol: 'BTCUSDT',
+  brackets: [
+    {
+      bracket: 1,
+      initialLeverage: 125,
+      notionalCap: 50000,
+      notionalFloor: 0,
+      maintMarginRatio: 0.004,
+      cum: 0
+    },
+    {
+      bracket: 2,
+      initialLeverage: 100,
+      notionalCap: 250000,
+      notionalFloor: 50000,
+      maintMarginRatio: 0.005,
+      cum: 50
+    },
+    {
+      bracket: 3,
+      initialLeverage: 50,
+      notionalCap: 1000000,
+      notionalFloor: 250000,
+      maintMarginRatio: 0.01,
+      cum: 1300
+    },
+    {
+      bracket: 4,
+      initialLeverage: 20,
+      notionalCap: 10000000,
+      notionalFloor: 1000000,
+      maintMarginRatio: 0.025,
+      cum: 16300
+    },
+    {
+      bracket: 5,
+      initialLeverage: 10,
+      notionalCap: 20000000,
+      notionalFloor: 10000000,
+      maintMarginRatio: 0.05,
+      cum: 266300
+    },
+    {
+      bracket: 6,
+      initialLeverage: 5,
+      notionalCap: 50000000,
+      notionalFloor: 20000000,
+      maintMarginRatio: 0.1,
+      cum: 1266300
+    },
+    {
+      bracket: 7,
+      initialLeverage: 4,
+      notionalCap: 100000000,
+      notionalFloor: 50000000,
+      maintMarginRatio: 0.125,
+      cum: 2516300
+    },
+    {
+      bracket: 8,
+      initialLeverage: 3,
+      notionalCap: 200000000,
+      notionalFloor: 100000000,
+      maintMarginRatio: 0.15,
+      cum: 5016300
+    },
+    {
+      bracket: 9,
+      initialLeverage: 2,
+      notionalCap: 300000000,
+      notionalFloor: 200000000,
+      maintMarginRatio: 0.25,
+      cum: 25016300
+    },
+    {
+      bracket: 10,
+      initialLeverage: 1,
+      notionalCap: '9223372036854776000',
+      notionalFloor: 300000000,
+      maintMarginRatio: 0.5,
+      cum: 100016300
+    }
+  ]
+}
+
+
+// for ALL leverage Brackets => it returns a map of the objects
+{
+  "BTCUSDT": {
+    symbol: "BTCUSDT",
+    brackets: [
+      ...,
+      ...
+    ] 
+  },
+
+  "ETHUSDT": {
+    symbol: "ETHUSDT",
+    brackets: [
+      ...,
+      ...
+    ]
+  },
+  "XRPBUSD": ...,
+  ...,
+  ...
+}
+```
+</details>
+
+
 ### .futuresMarginType():
 ```js
   let changeMarginToISO = await binance.futuresMarginType('BTCUSDT', 'ISOLATED');
@@ -3085,9 +3209,502 @@ order2 =>
 </details>
 
 
+### .futuresPositionMargin():
+```js
+  let increasePositionMargin = await binance.futuresPositionMargin('BTCUSDT', 0.002, 1); // '1' for 'increase': could also be 'ADD', 'INCREASE' or 'BUY'
+
+  let reducePositionMargin = await binance.futuresPositionMargin('BTCUSDT', 0.001, 2); // '2' for decrease: could also be 'REDUCE' or 'SELL'
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for INCREASE
+    "amount": 0.002,
+    "code": 200,
+    "msg": "Successfully modify position margin.",
+    "type": 1
+}
+
+{ // for DECREASE
+    "amount": 0.001,
+    "code": 200,
+    "msg": "Successfully modify position margin.",
+    "type": 2
+}
+```
+</details>
 
 
+### .futuresPositionMarginHistory():
+```js
+  let positionMarginHistory = await binance.futuresPositionMarginHistory('BTCUSDT', 5);  // returns both INCREASE and DECREASE history
+  let positionMarginHistory = await binance.futuresPositionMarginHistory('BTCUSDT', 5, 1); // '1' for 'increase': could also be 'ADD', 'INCREASE' or 'BUY'
+  let positionMarginHistory = await binance.futuresPositionMarginHistory('BTCUSDT', 5, 2); // '2' for decrease: could also be 'REDUCE' or 'SELL'
+```
+<details>
+<summary>View Response</summary>
 
+```js
+[
+    {
+        "amount": "23.36332311",
+        "asset": "USDT",
+        "symbol": "BTCUSDT",
+        "time": 1578047897183,
+        "type": 1,
+        "positionSide": "BOTH"
+    },
+    {
+        "amount": "100",
+        "asset": "USDT",
+        "symbol": "BTCUSDT",
+        "time": 1578047900425,
+        "type": 1,
+        "positionSide": "LONG"
+    },
+    ...
+]
+```
+</details>
+
+
+### .futuresPositionRisk():
+```js
+  let openBTC_positions = await binance.futuresPositionRisk('BTCUSDT');
+  console.log(openBTC_positions);
+
+  // OR
+
+  let allOpenPositions = await binance.futuresPositionRisk();
+  console.log(allOpenPositions);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+// for One-Way Mode:
+[
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "6679.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "BTCUSDT", 
+        "unRealizedProfit": "0.00000000", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    }
+]
+
+// for hedgeMode:
+[
+    {
+        "symbol": "BTCUSDT",
+        "positionAmt": "0.001",
+        "entryPrice": "22185.2",
+        "markPrice": "21123.05052574",
+        "unRealizedProfit": "-1.06214947",
+        "liquidationPrice": "19731.45529116",
+        "leverage": "4",
+        "maxNotionalValue": "100000000",
+        "marginType": "cross",
+        "isolatedMargin": "0.00000000",
+        "isAutoAddMargin": "false",
+        "positionSide": "LONG",
+        "notional": "21.12305052",
+        "isolatedWallet": "0",
+        "updateTime": 1655217461579
+    },
+    {
+        "symbol": "BTCUSDT",
+        "positionAmt": "0.000",
+        "entryPrice": "0.0",
+        "markPrice": "21123.05052574",
+        "unRealizedProfit": "0.00000000",
+        "liquidationPrice": "0",
+        "leverage": "4",
+        "maxNotionalValue": "100000000",
+        "marginType": "cross",
+        "isolatedMargin": "0.00000000",
+        "isAutoAddMargin": "false",
+        "positionSide": "SHORT",
+        "notional": "0",
+        "isolatedWallet": "0",
+        "updateTime": 0
+    }
+]
+
+// for allOpenPositions
+[
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "6679.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "BTCUSDT", 
+        "unRealizedProfit": "0.00000000", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    },
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "1400.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "ETHUSDT", 
+        "unRealizedProfit": "2.41424600", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    },
+    {
+      "symbol": "XRPUSDT",
+      ...
+    },
+    ...
+]
+```
+</details>
+
+
+### .futuresOpenPositions():
+```js
+  // same as .futuresPositionRisk(), but I guess it's just a better name than 'positionRisk'
+  let openBTC_positions = await binance.futuresOpenPositions('BTCUSDT');
+  console.log(openBTC_positions);
+
+  // OR
+
+  let allOpenPositions = await binance.futuresOpenPositions();
+  console.log(allOpenPositions);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+// for One-Way Mode:
+[
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "6679.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "BTCUSDT", 
+        "unRealizedProfit": "0.00000000", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    }
+]
+
+// for hedgeMode:
+[
+    {
+        "symbol": "BTCUSDT",
+        "positionAmt": "0.001",
+        "entryPrice": "22185.2",
+        "markPrice": "21123.05052574",
+        "unRealizedProfit": "-1.06214947",
+        "liquidationPrice": "19731.45529116",
+        "leverage": "4",
+        "maxNotionalValue": "100000000",
+        "marginType": "cross",
+        "isolatedMargin": "0.00000000",
+        "isAutoAddMargin": "false",
+        "positionSide": "LONG",
+        "notional": "21.12305052",
+        "isolatedWallet": "0",
+        "updateTime": 1655217461579
+    },
+    {
+        "symbol": "BTCUSDT",
+        "positionAmt": "0.000",
+        "entryPrice": "0.0",
+        "markPrice": "21123.05052574",
+        "unRealizedProfit": "0.00000000",
+        "liquidationPrice": "0",
+        "leverage": "4",
+        "maxNotionalValue": "100000000",
+        "marginType": "cross",
+        "isolatedMargin": "0.00000000",
+        "isAutoAddMargin": "false",
+        "positionSide": "SHORT",
+        "notional": "0",
+        "isolatedWallet": "0",
+        "updateTime": 0
+    }
+]
+
+// for allOpenPositions
+[
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "6679.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "BTCUSDT", 
+        "unRealizedProfit": "0.00000000", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    },
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "1400.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000",
+        "notional": "0",, 
+        "isolatedWallet": "0",
+        "symbol": "ETHUSDT", 
+        "unRealizedProfit": "2.41424600", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    },
+    {
+      "symbol": "XRPUSDT",
+      ...
+    },
+    ...
+]
+```
+</details>
+
+
+### .futuresUserTrades():
+```js
+  let last_5_BTC_Trades = await binance.futuresUserTrades('BTCUSDT', 5);
+  console.log(last_5_BTC_Trades)
+```
+<details>
+<summary>View Response</summary>
+
+```js
+  [
+  {
+    symbol: 'BTCUSDT',
+    id: 2961149985,
+    orderId: 84194677836,
+    side: 'BUY',
+    price: 19274.1,
+    qty: 0.004,
+    realizedPnl: -0.0508,
+    marginAsset: 'USDT',
+    quoteQty: 77.0964,
+    commission: 0.03083856,
+    commissionAsset: 'USDT',
+    time: 1665961810765,
+    positionSide: 'BOTH',
+    buyer: true,
+    maker: false
+  },
+  {
+    symbol: 'BTCUSDT',
+    id: 2961150750,
+    orderId: 84194766995,
+    side: 'BUY',
+    price: 19279.2,
+    qty: 0.004,
+    realizedPnl: 0,
+    marginAsset: 'USDT',
+    quoteQty: 77.1168,
+    commission: 0.03084672,
+    commissionAsset: 'USDT',
+    time: 1665961837679,
+    positionSide: 'BOTH',
+    buyer: true,
+    maker: false
+  },
+  {
+    symbol: 'BTCUSDT',
+    id: 2961151059,
+    orderId: 84194809331,
+    side: 'SELL',
+    price: 19279.6,
+    qty: 0.001,
+    realizedPnl: 0.0004,
+    marginAsset: 'USDT',
+    quoteQty: 19.2796,
+    commission: 0.00771184,
+    commissionAsset: 'USDT',
+    time: 1665961847666,
+    positionSide: 'BOTH',
+    buyer: false,
+    maker: false
+  },
+  {
+    symbol: 'BTCUSDT',
+    id: 2961151060,
+    orderId: 84194809331,
+    side: 'SELL',
+    price: 19279.6,
+    qty: 0.001,
+    realizedPnl: 0.0004,
+    marginAsset: 'USDT',
+    quoteQty: 19.2796,
+    commission: 0.00771184,
+    commissionAsset: 'USDT',
+    time: 1665961847666,
+    positionSide: 'BOTH',
+    buyer: false,
+    maker: false
+  },
+  {
+    symbol: 'BTCUSDT',
+    id: 2961151061,
+    orderId: 84194809331,
+    side: 'SELL',
+    price: 19279.6,
+    qty: 0.002,
+    realizedPnl: 0.0008,
+    marginAsset: 'USDT',
+    quoteQty: 38.5592,
+    commission: 0.01542368,
+    commissionAsset: 'USDT',
+    time: 1665961847666,
+    positionSide: 'BOTH',
+    buyer: false,
+    maker: false
+  }
+]
+```
+</details>
+
+
+### .futuresIncomeHistory():
+```js
+  let last_2_BTC_income_histories = await binance.futuresIncomeHistory('BTCUSDT', 2);
+
+  let last_5_income_histories = await binance.futuresIncomeHistory(false, 5);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'REALIZED_PNL',
+    income: 0.0008,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151061,
+    tranId: 900302961151061,
+    tradeId: -1333816235
+  },
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'COMMISSION',
+    income: -0.01542368,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151061,
+    tranId: 900302961151061,
+    tradeId: -1333816235
+  }
+]
+
+// and for all
+
+[
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'COMMISSION',
+    income: -0.00771184,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151059,
+    tranId: 900302961151059,
+    tradeId: -1333816237
+  },
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'REALIZED_PNL',
+    income: 0.0004,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151060,
+    tranId: 900302961151060,
+    tradeId: -1333816236
+  },
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'COMMISSION',
+    income: -0.00771184,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151060,
+    tranId: 900302961151060,
+    tradeId: -1333816236
+  },
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'REALIZED_PNL',
+    income: 0.0008,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151061,
+    tranId: 900302961151061,
+    tradeId: -1333816235
+  },
+  {
+    symbol: 'BTCUSDT',
+    incomeType: 'COMMISSION',
+    income: -0.01542368,
+    asset: 'USDT',
+    time: 1665961847000,
+    info: 2961151061,
+    tranId: 900302961151061,
+    tradeId: -1333816235
+  }
+]
+```
+</details>
+
+
+### .futuresADLQuantileEstimation():
+```js
+  // TODO
+```
+
+// TODO theres 3 or more functions left to include
 
 
 
