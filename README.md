@@ -3725,7 +3725,64 @@ order2 =>
 
 
 ## Websockets:
+### How To Use<a href='#How-To-Use'><sup>ref</sup></a>
+### How To Subscribe<a href='#How-To-Subscribe'><sup>ref</sup></a>
+### How To Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
 
+### How to use:
+- All websockets are divided into 'blocks' for '*SPOT*', '*FUTURES*', etc...
+```js
+  binance.websockets.spot     // 'spot' is a block, containing all of the spot-related websocket connections
+
+  binance.websockets.futures  // 'futures' is a block, containing all of the futures-related websocket connections
+```
+- All websocket streams are accessed via the binance.websockets property:
+```js
+  binance.websockets.spot.'<streamFunctionName>'
+  // OR
+  binance.websockets.futures.'<streamFunctionName>'
+```
+- Each websocket block contains it's own subscriptions property that contains its currently active websocket connections:
+```js
+  let futuresSubscriptions = binance.websockets.spot.subscriptions;
+
+  let spotSubscriptions = binance.websockets.futures.subscriptions;
+```
+
+
+### How to subscribe:
+There are two main ways to subscribe:
+- You can either use the built-in library functions (that you can see inside your editor when typing the general path like 'binance.websockets.futures.': when you type the final dot '.', your editor will most likely show you all the options you have)
+```js
+  let aggTrade = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
+
+  function handleAggTrades(data) { // <= this is your 'callback' function, which is called everytime there is new data sent by binance
+    console.log(data);
+  }
+```
+- Or you can subscribe youself via the .subscribe() method of each websocket block:
+
+
+### How to unsubscribe:
+- Any websocket function returns an object that you can use to unsubscribe from the connection, just like the following:
+```js
+  const aggTrades = binance.websockets.futures.aggTrade("BTCUSDT", (msg) => {
+    console.log(msg);
+  });
+
+  // 'aggTrades' here is the object which contains a .unsubscribe() method
+  aggTrades.unsubscribe(); // This here is how you unsubscribe from it
+```
+
+- Or you can unsubscribe using the binance.websockets.spot/futures.subscriptions:
+```js
+  let subscriptions = binance.websockets.futures.subscriptions;
+
+  binance.websockets.futures.unsubscribe(subscriptions);
+  // OR
+  // for example: subscriptions = ['btcusdt@aggTrade', ...];
+  binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
+```
 
 
 # *CONTACT ME*
