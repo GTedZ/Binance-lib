@@ -3767,7 +3767,7 @@ There are two main ways to subscribe:
 - Any websocket function returns an object that you can use to unsubscribe from the connection, just like the following:
 ```js
   const aggTrades = binance.websockets.futures.aggTrade("BTCUSDT", (msg) => {
-    console.log(msg);
+    // to something here with the data
   });
 
   // 'aggTrades' here is the object which contains a .unsubscribe() method
