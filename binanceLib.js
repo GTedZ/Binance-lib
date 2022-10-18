@@ -1248,7 +1248,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             aggTrade: function (symbol, callback) {
                 if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                 if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 symbol = symbol.toLowerCase();
                 let params = {
@@ -1256,24 +1258,140 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol}@aggTrade`
                 }
 
+                let newKeys =
+                    [
+                        'event',
+                        'time',
+                        'symbol',
+                        'tradeId',
+                        'price',
+                        'qty',
+                        'firstTradeId',
+                        'lastTradeId',
+                        'timestamp',
+                        'maker'
+                    ]
+
                 this.format = (msg) => {
                     msg = renameObjectProperties(
                         msg,
-                        [
-                            'event',
-                            'time',
-                            'symbol',
-                            'tradeId',
-                            'price',
-                            'qty',
-                            'firstTradeId',
-                            'lastTradeId',
-                            'timestamp',
-                            'maker'
-                        ]);
+                        newKeys
+                    );
                     callback(msg);
                 };
                 return connect(params, this.format);
+            },
+
+            markPrice: function (callback, symbol = false, slow = false) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: `!markPrice@arr@1s`
+                }
+
+                if (symbol) params.path = `${symbol.toLowerCase()}@markPrice@1s`
+                if (slow) params.path = params.path.slice(0, -3);
+
+                let newKeys = [
+                    'event',
+                    'time',
+                    'symbol',
+                    'markPrice',
+                    'indexPrice',
+                    'estimatedSettlePrice',
+                    'fundingRate',
+                    'nextFundingTime'
+                ]
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+
+                    callback(msg);
+                }
+
+                connect(params, this.format);
+            },
+
+            /**
+             * @param {String} symbol - required
+             * @param {String} interval - required: "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M" 
+             * @param {Function} callback - required
+             */
+            candlesticks: function (symbol, interval, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                symbol = symbol.toLowerCase();
+                if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
+                if (!callback) return ERROR('symbol', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: `${symbol}@kline_${interval}`
+                }
+
+                let newKeys = [
+                    'event',
+                    'time',
+                    'symbol',
+                    'candle',
+                    [
+                        'startTime',
+                        'closeTime',
+                        'symbol',
+                        'interval',
+                        'firstTradeId',
+                        'lastTradeId',
+                        'open',
+                        'close',
+                        'high',
+                        'low',
+                        'baseAssetVolume',
+                        'tradesCount',
+                        'trades_count',
+                        'closed',
+                        'quoteAssetVolume',
+                        'takerBuy_baseAssetVolume',
+                        'takerBuy_quoteAssetVolume',
+                        'ignore'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                connect(params, this.format)
+            },
+
+            lastPrice: function (symbol, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                symbol = symbol.toLowerCase();
+                if (!callback) return ERROR('symbol', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: `${symbol}@kline_1m`
+                }
+
+                this.format = (msg) => {
+                    let obj = {};
+                    obj[msg.s] = msg.k.c;
+                    callback(obj);
+                }
+
+                connect(params, this.format)
             }
 
         }
@@ -1452,10 +1570,17 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         } else {
             let oldKeys = Object.keys(obj);
             let newObj = {};
+            let prevOldKey;
+            let prevNewKey;
+
             for (let x in keys) {
                 let newKey = keys[x];
+                if (newKey == 'ignore') continue;
                 let oldKey = oldKeys[x];
-                newObj[newKey] = obj[oldKey];
+                if (Array.isArray(newKey)) newObj[prevNewKey] = renameObjectProperties(obj[prevOldKey], newKey)
+                else newObj[newKey] = obj[oldKey];
+                prevOldKey = oldKey;
+                prevNewKey = newKey;
             }
             obj = newObj;
         }
@@ -1528,7 +1653,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
     }
 
-    const ERROR = (msg, errType = false, possibilities = []) => {
+    const ERROR = (msg, errType = false, requiredType = false, possibilities = []) => {
         if (errType) {
             if (errType.toLowerCase() == 'required') msg = `${msg == 'callback' ? 'A callback function' : `Parameter '${msg}'`} is required for this request.`;
 
