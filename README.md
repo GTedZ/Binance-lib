@@ -3846,6 +3846,7 @@ There are two main ways to subscribe:
 
 
 ### .aggTrade():
+**Update Speed**: 100ms
 ```js
   let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
     // do something with the data
@@ -3882,6 +3883,7 @@ There are two main ways to subscribe:
 ### .markPrice():
 'markPrice' is NOT the price with which binance executes your order with, instead use 'lastPrice()'
 ```js
+// Update Speed: 100ms
   function handleMarkPrices(data) {
     // do something with the data
   }

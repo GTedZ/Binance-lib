@@ -1255,12 +1255,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 symbol = symbol.toLowerCase();
-                let params = {
+                const params = {
                     baseURL: fWSS,
                     path: `${symbol}@aggTrade`
                 }
 
-                let newKeys =
+                const newKeys =
                     [
                         'event',
                         'time',
@@ -1288,7 +1288,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
-                let params = {
+                const params = {
                     baseURL: fWSS,
                     path: `!markPrice@arr@1s`
                 }
@@ -1296,7 +1296,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (symbol) params.path = `${symbol.toLowerCase()}@markPrice@1s`
                 if (slow) params.path = params.path.slice(0, -3);
 
-                let newKeys = [
+                const newKeys = [
                     'event',
                     'time',
                     'symbol',
@@ -1329,15 +1329,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                 symbol = symbol.toLowerCase();
                 if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
-                if (!callback) return ERROR('symbol', 'required');
+                if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
-                let params = {
+                const params = {
                     baseURL: fWSS,
                     path: `${symbol}@kline_${interval}`
                 }
 
-                let newKeys = [
+                const newKeys = [
                     'event',
                     'time',
                     'symbol',
@@ -1355,7 +1355,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         'low',
                         'baseAssetVolume',
                         'tradesCount',
-                        'trades_count',
                         'closed',
                         'quoteAssetVolume',
                         'takerBuy_baseAssetVolume',
@@ -1379,10 +1378,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                 symbol = symbol.toLowerCase();
-                if (!callback) return ERROR('symbol', 'required');
+                if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
-                let params = {
+                const params = {
                     baseURL: fWSS,
                     path: `${symbol}@kline_1m`
                 }
@@ -1393,6 +1392,62 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(obj);
                 }
 
+                connect(params, this.format)
+            },
+
+            continuousContractKline: function (pair, contractType, interval, callback) {
+                if (!pair) return ERROR('pair', 'required');
+                if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
+                pair = pair.toLowerCase();
+
+                if (!contractType) return ERROR('contractType', 'required');
+                if (!equal(contractType, shortenedContractTypes)) return ERROR('contractType', 'value', false, shortenedContractTypes);
+
+                if (!interval) return ERROR('contractType', 'required');
+                if (!equal(interval, intervals)) return ERROR('contractType', 'value', false, intervals);
+
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: `${pair}_${contractType.toLowerCase()}@continuousKline_${interval}`
+                }
+
+                const newKeys = [
+                    'event',
+                    'time',
+                    'pair',
+                    'contractType',
+                    'candle',
+                    [
+                        'startTime',
+                        'closeTime',
+                        'interval',
+                        'firstTradeId',
+                        'lastTradeId',
+                        'open',
+                        'close',
+                        'high',
+                        'low',
+                        'volume',
+                        'tradesCount',
+                        'closed',
+                        'quoteAssetVolume',
+                        'takerBuy_volume',
+                        'takerBuy_volume',
+                        'ignore'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+                
                 connect(params, this.format)
             }
 
@@ -1436,6 +1491,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('message', (msg) => {
+            if (binance.ws) console.log(params.path + ' new message')
             callback(parseSocketMessage(msg));
         })
 
