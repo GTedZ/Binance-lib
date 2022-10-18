@@ -7,6 +7,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const crypto = require('crypto');
     const ws = require('ws')
     const bigInt = require('json-bigint')({ storeAsString: true });
+    const binance = this;
 
     const base = 'https://api.binance.com';
     const wapi = 'https://api.binance.com';
@@ -1430,7 +1431,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let socket = object.socket;
 
         socket.on('open', () => {
-            if (this.ws) console.log(params.path + ' is open')
+            if (binance.ws) console.log(params.path + ' is open')
             // TODO add conditions to add the correct subscriptions to the right futures/spot object
         })
 
@@ -1439,22 +1440,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('error', () => {
-            if (this.ws) console.log(params.path + ' ERROR')
+            if (binance.ws) console.log(params.path + ' ERROR')
             if (object.alive) newSocket(params, callback, object);
         })
 
         socket.on('close', () => {
-            if (this.ws) console.log(params.path + ' Closed!')
+            if (binance.ws) console.log(params.path + ' Closed!')
             if (object.alive) newSocket(params, callback, object);
         })
 
         socket.on('ping', () => {
-            if (this.ws) console.log(params.path + ' pinged.')
+            if (binance.ws) console.log(params.path + ' pinged.')
             socket.pong();
         })
 
         socket.on('pong', () => {
-            if (this.ws) console.log(params.path + ' ponged.')
+            if (binance.ws) console.log(params.path + ' ponged.')
         })
     }
 
