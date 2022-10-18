@@ -30,10 +30,6 @@ const binance = new Binance(
     useServerTime: true,  // recommended for everyone, it syncs time to the server's time
     fetchFloats: true,    // <- **DOES NOT ALTER THE RESULTS** *HIGHLY RECOMMENDED AS IT FETCHES EVERYTHING AS INT (and obviously bigInts and strings to strings), always keep it on*
     hedgeMode: false,     // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
-    extraInfo: false      // <- this will return some extra data like your APIKeys' "Used Weight" and the Server Processing Time for your request and the latency (or total elapsed time from sending the request and receiving the response)
-  // if you set 'extraInfo' to true, you will have to access your response data via the .data property of the response variable => 
-  // let response = await binance.futuresUserTrades('BTCUSDT');
-  // console.log(response.data); <= your response data is in the '.data' property
    }
 );
 ```
@@ -3751,7 +3747,15 @@ order2 =>
 
   let spotSubscriptions = binance.websockets.futures.subscriptions;
 ```
+- Each function has AT LEAST 1 mandatory parameter ***callback***, and can have optional parameters:
+- - Mandatory parameters are always the first parameters to be passed to the function.
+- - But if there are other mandatory parameters than ***callback***, they will come first, that is the reason why ***callback*** sometimes comes first, and sometimes comes last
+- - Some examples:
+```js
+  binance.websockets.futures.candlesticks(symbol, interval, callback); <= callback comes last because all the others are mandatory
 
+  binance.websockets.futures.miniTicker(callback, [symbol]) <= callback comes first, because symbol is NOT mandatory
+```
 
 ## HOW TO SUBSCRIBE:
 There are two main ways to subscribe:
@@ -3814,33 +3818,33 @@ There are two main ways to subscribe:
 
 
 ## WEBSOCKET FUTURES:
-|FUNCTIONS                                           |REQUIRED PARAMETERS<a href='#Websocket-Parameters-Explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS            |
-|:---------------------------------------------------|:--------------------------------------------------------------------------------:|:-----------------------------:|
-|aggTrade()                      <a href='#aggTrade'>|symbol, callback                                                                  |                               |
-|markPrice()                    <a href='#markPrice'>|callback                                                                          |symbol, slow(bool)             |
-|lastPrice()                    <a href='#lastPrice'>|symbol, callback                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
-|                                                    |                                                                                  |                               |
+|FUNCTIONS                                                                                  |REQUIRED PARAMETERS<a href='#Websocket-Parameters-Explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS            |
+|:------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------:|:-----------------------------:|
+|aggTrade()                                           <a href='#aggTrade'><sup>ref</sup></a>|symbol, callback                                                                  |                               |
+|markPrice()                                         <a href='#markPrice'><sup>ref</sup></a>|callback                                                                          |symbol, slow(bool)             |
+|lastPrice()                                         <a href='#lastPrice'><sup>ref</sup></a>|symbol, callback                                                                  |                               |
+|candlesticks()                                   <a href='#candlesticks'><sup>ref</sup></a>|symbol, interval, callback                                                        |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
+|                                                                                           |                                                                                  |                               |
 
 
 
@@ -3881,9 +3885,9 @@ There are two main ways to subscribe:
 
 
 ### .markPrice():
+**Update Speed**: 1000ms or 3000ms
 'markPrice' is NOT the price with which binance executes your order with, instead use 'lastPrice()'
 ```js
-// Update Speed: 100ms
   function handleMarkPrices(data) {
     // do something with the data
   }
@@ -3949,6 +3953,7 @@ There are two main ways to subscribe:
 
 
 ### .lastPrice():
+**Update Speed**: 250ms
 ```js
   // this is using the candlesticks() websocket, but filtering out all the other data
   let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', console.log);
@@ -3960,6 +3965,311 @@ There are two main ways to subscribe:
 { BTCUSDT: 19849.1 }
 ```
 </details>
+
+
+### .candlesticks():
+**Update Speed**: 250ms
+```js
+  let candleSticks_1m = binance.websockets.futures.candlesticks('BTCUSDT', '1m', (data) => {
+    //  do something with the data
+  });
+  // OR
+  let candleSticks_3m = binance.websockets.futures.candlesticks('BTCUSDT', '3m', ...);
+  // OR
+  ...
+  // OR
+  let candleSticks_1w = binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  event: 'kline',
+  time: 1666106237760,
+  symbol: 'BTCUSDT',
+  candle: {
+    startTime: 1666106220000,
+    closeTime: 1666106279999,
+    symbol: 'BTCUSDT',
+    interval: '1m',
+    firstTradeId: 2966120155,
+    lastTradeId: 2966122134,
+    open: 19336.3,
+    close: 19334.3,
+    high: 19341.4,
+    low: 19330,
+    baseAssetVolume: 400.183,
+    tradesCount: 1980,
+    closed: false,
+    quoteAssetVolume: 7737017.6763,
+    takerBuy_baseAssetVolume: 149.955,
+    takerBuy_quoteAssetVolume: 2899194.6344
+  }
+}
+```
+</details>
+
+
+### .continuousContractKline():
+**Update Speed**: 250ms
+```js
+  let contractType = 'PERPETUAL' /*OR*/ 'CURRENT_QUARTER' /*OR*/ 'NEXT_QUARTER';  // PERPETUAL in this example
+
+  let contKline_stream = binance.websockets.futures.continuousContractKline('BTCUSDT', contractType, '1m', (data) => {
+    // do something with the data
+  })
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  event: 'continuous_kline',
+  time: 1666118290399,
+  pair: 'BTCUSDT',
+  contractType: 'PERPETUAL',
+  candle: {
+    startTime: 1666118280000,
+    closeTime: 1666118339999,
+    interval: '1m',
+    firstTradeId: 2044061809633,
+    lastTradeId: 2044062485620,
+    open: 19324.7,
+    close: 19337.5,
+    high: 19338.6,
+    low: 19324.7,
+    volume: 139.873,
+    tradesCount: 722,
+    closed: false,
+    quoteAssetVolume: 2704114.6268,
+    takerBuy_volume: 2248131.7085
+  }
+}
+```
+</details>
+
+
+### .miniTicker():
+**Update Speed**: 500ms with symbol, 1000ms without
+```js
+  let miniTicker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+
+  // OR
+
+  let miniTickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+
+  function handleMiniTicker(data) { 
+    /* Do something with data */ 
+  }
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  event: '24hrMiniTicker',
+  time: 1666119496218,
+  symbol: 'BTCUSDT',
+  close: 19202.4,
+  open: 19514.3,
+  high: 19706.4,
+  low: 19168.1,
+  totalTraded_baseAssetVolume: 558641.933,
+  totalTraded_quoteAsset: 10888962515.54
+}
+
+// for all symbols
+[
+  {
+    event: '24hrMiniTicker',
+    time: 1666119533798,
+    symbol: 'IOTXUSDT',
+    close: 0.02622,
+    open: 0.02693,
+    high: 0.0275,
+    low: 0.02615,
+    totalTraded_baseAssetVolume: 206315637,
+    totalTraded_quoteAsset: 5547764.12
+  },
+  {
+    event: '24hrMiniTicker',
+    time: 1666119534207,
+    symbol: 'BTCUSDT',
+    close: 19210,
+    open: 19514.3,
+    high: 19706.4,
+    low: 19168.1,
+    totalTraded_baseAssetVolume: 559208.14,
+    totalTraded_quoteAsset: 10899835981.56
+  },
+  {
+    event: '24hrMiniTicker',
+    time: 1666119534197,
+    symbol: 'ETHUSDT',
+    close: 1292.68,
+    open: 1320.85,
+    high: 1342,
+    low: 1289.85,
+    totalTraded_baseAssetVolume: 5987209.294,
+    totalTraded_quoteAsset: 7911413443.27
+  },
+  {
+    event: '24hrMiniTicker',
+    time: 1666119534138,
+    symbol: 'BCHUSDT',
+    close: 107.41,
+    open: 109.83,
+    high: 111.43,
+    low: 107.06,
+    totalTraded_baseAssetVolume: 803104.592,
+    totalTraded_quoteAsset: 88119710.86
+  },
+  {
+    event: '24hrMiniTicker',
+    time: 1666119534031,
+    symbol: 'C98USDT',
+    close: 0.3273,
+    open: 0.3372,
+    high: 0.3439,
+    low: 0.3264,
+    totalTraded_baseAssetVolume: 36659846,
+    totalTraded_quoteAsset: 12302196.56
+  },
+  ...,
+  ...
+```
+</details>
+
+
+### .ticker():
+**Update Speed**: 500ms with symbol, 1000ms without
+***Differs from .miniTicker() by the fact that it includes some extra info***
+```js
+  let ticker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+
+  // OR
+
+  let tickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+
+  function handleTicker(data) { 
+    /* Do something with data */ 
+  }
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  event: '24hrTicker',
+  time: 1666120161238,
+  symbol: 'BTCUSDT',
+  priceChange: -328.4,
+  percentChange: -1.685,
+  weightedAvgPrice: 19484.22,
+  lastPrice: 19160.5,
+  lastQty: 0.132,
+  open: 19488.9,
+  high: 19706.4,
+  low: 19120,
+  totalTraded_baseAssetVolume: 568874.014,
+  totalTraded_quoteAssetVolume: 11084066938.98,
+  stats_openTime: 1666033740000,
+  stats_closeTime: 1666120161232,
+  firstTradeId: 2963698045,
+  lastTradeId: 2966851613,
+  tradesCount: 3153559
+}
+
+// for ALL symbols
+[
+  {
+    event: '24hrTicker',
+    time: 1666120234860,
+    symbol: 'IOTXUSDT',
+    priceChange: -0.00067,
+    percentChange: -2.492,
+    weightedAvgPrice: 0.02688,
+    lastPrice: 0.02622,
+    lastQty: 1089,
+    open: 0.02689,
+    high: 0.0275,
+    low: 0.02615,
+    totalTraded_baseAssetVolume: 208375799,
+    totalTraded_quoteAssetVolume: 5601158.57,
+    stats_openTime: 1666033800000,
+    stats_closeTime: 1666120234855,
+    firstTradeId: 105814832,
+    lastTradeId: 105848644,
+    tradesCount: 33813
+  },
+  {
+    event: '24hrTicker',
+    time: 1666120235211,
+    symbol: 'DOGEBUSD',
+    priceChange: -0.00078,
+    percentChange: -1.312,
+    weightedAvgPrice: 0.059659,
+    lastPrice: 0.05867,
+    lastQty: 13898,
+    open: 0.05945,
+    high: 0.06111,
+    low: 0.0585,
+    totalTraded_baseAssetVolume: 322261316,
+    totalTraded_quoteAssetVolume: 19225848.87,
+    stats_openTime: 1666033800000,
+    stats_closeTime: 1666120235201,
+    firstTradeId: 58055156,
+    lastTradeId: 58105191,
+    tradesCount: 50036
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+
+### .bookTicker():
+**Update Speed**: *realtime*: approx 5000 updates/second for ALL symbols, but each symbol differs immensely, BTCUSDT averages 300 updates/second
+```js
+  let bookTicker_BTC_stream = binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
+
+  // OR
+
+  let bookTicker_stream = binance.websockets.futures.bookTicker(handleBookTicker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  event: 'bookTicker',
+  updateId: 2044205572092,
+  time: 'BTCUSDT',
+  transactionTime: 19100.8,
+  symbol: 11.605,
+  bestBidPrice: 19100.9,
+  bestBidQty: 8.721,
+  bestAskPrice: 1666120594200,
+  bestAskQty: 1666120594208
+}
+```
+</details>
+
+
+### .liquidationOrders():
+**Update Speed**: 1000ms
+```js
+  let liquidations_BTC_stream = binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT')
+```
+
+
+
+
+
+
+
 
 
 # *CONTACT ME*

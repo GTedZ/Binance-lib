@@ -28,12 +28,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
+    this.ping = 0;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
     if (options.query) this.query = true; else this.query = false;
     if (options.ws) this.ws = true; else this.ws = false;
-    if (options.extraResponseInfo && options.extraResponseInfo == true) this.extraResponseInfo = true; else this.extraResponseInfo = false;
 
     // public functions ////
 
@@ -64,6 +64,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
         resp.roundtrip_time_millis = endTime - startTime;
+        this.ping = roundtrip_time_millis;
         return resp;
     }
 
@@ -1341,26 +1342,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'event',
                     'time',
                     'symbol',
-                    'candle',
-                    [
-                        'startTime',
-                        'closeTime',
-                        'symbol',
-                        'interval',
-                        'firstTradeId',
-                        'lastTradeId',
-                        'open',
-                        'close',
-                        'high',
-                        'low',
-                        'baseAssetVolume',
-                        'tradesCount',
-                        'closed',
-                        'quoteAssetVolume',
-                        'takerBuy_baseAssetVolume',
-                        'takerBuy_quoteAssetVolume',
-                        'ignore'
-                    ]
+                    `candle[startTime
+                        closeTime
+                        symbol
+                        interval
+                        firstTradeId
+                        lastTradeId
+                        open
+                        close
+                        high
+                        low
+                        baseAssetVolume
+                        tradesCount
+                        closed
+                        quoteAssetVolume
+                        takerBuy_baseAssetVolume
+                        takerBuy_quoteAssetVolume]`
                 ];
 
                 this.format = (msg) => {
@@ -1419,25 +1416,21 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'time',
                     'pair',
                     'contractType',
-                    'candle',
-                    [
-                        'startTime',
-                        'closeTime',
-                        'interval',
-                        'firstTradeId',
-                        'lastTradeId',
-                        'open',
-                        'close',
-                        'high',
-                        'low',
-                        'volume',
-                        'tradesCount',
-                        'closed',
-                        'quoteAssetVolume',
-                        'takerBuy_volume',
-                        'takerBuy_volume',
-                        'ignore'
-                    ]
+                    `candle[startTime
+                        closeTime
+                        interval
+                        firstTradeId
+                        lastTradeId
+                        open
+                        close
+                        high
+                        low
+                        volume
+                        tradesCount
+                        closed
+                        quoteAssetVolume
+                        takerBuy_volume
+                        takerBuy_volume]`
                 ];
 
                 this.format = (msg) => {
@@ -1447,8 +1440,170 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     );
                     callback(msg);
                 }
-                
+
                 connect(params, this.format)
+            },
+
+            miniTicker: function (callback, symbol = false) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: '!miniTicker@arr'
+                }
+
+                if (symbol) {
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    params.path = `${symbol.toLowerCase()}@miniTicker`
+                }
+
+                const newKeys = [
+                    'event',
+                    'time',
+                    'symbol',
+                    'close',
+                    'open',
+                    'high',
+                    'low',
+                    'totalTraded_baseAssetVolume',
+                    'totalTraded_quoteAsset'
+                ]
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                connect(params, this.format);
+            },
+
+            ticker: function (callback, symbol = false) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: '!ticker@arr'
+                }
+
+                if (symbol) {
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    params.path = `${symbol.toLowerCase()}@ticker`
+                }
+
+                const newKeys = [
+                    'event',
+                    'time',
+                    'symbol',
+                    'priceChange',
+                    'percentChange',
+                    'weightedAvgPrice',
+                    'lastPrice',
+                    'lastQty',
+                    'open',
+                    'high',
+                    'low',
+                    'totalTraded_baseAssetVolume',
+                    'totalTraded_quoteAssetVolume',
+                    'stats_openTime',
+                    'stats_closeTime',
+                    'firstTradeId',
+                    'lastTradeId',
+                    'tradesCount'
+                ]
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                connect(params, this.format);
+            },
+
+            bookTicker: function (callback, symbol = false) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: '!bookTicker'
+                }
+
+                if (symbol) {
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    params.path = `${symbol.toLowerCase()}@bookTicker`
+                }
+
+                const newKeys = [
+                    'event',
+                    'updateId',
+                    'time',
+                    'transactionTime',
+                    'symbol',
+                    'bestBidPrice',
+                    'bestBidQty',
+                    'bestAskPrice',
+                    'bestAskQty',
+                ]
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                connect(params, this.format);
+            },
+
+            liquidationOrders: function (callback, symbol = false) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                let params = {
+                    baseURL: fWSS,
+                    path: '!forceOrder@arr'
+                }
+
+                if (symbol) {
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    params.path = `${symbol.toLowerCase()}@forceOrder`
+                }
+
+                const newKeys = [
+                    'event',
+                    'time',
+                    `order[
+                        symbol
+                        side
+                        orderType
+                        timeInForce
+                        Qty
+                        price
+                        avgPrice
+                        status
+                        order_lastFilledQty
+                        order_filledAccumulatedQty
+                        order_tradeTime`
+                ]
+
+                this.format = (msg) => {
+                    msg = renameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                connect(params, this.format);
             }
 
         }
@@ -1491,6 +1646,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('message', (msg) => {
+            console.log('hi')
             if (binance.ws) console.log(params.path + ' new message')
             callback(parseSocketMessage(msg));
         })
@@ -1629,17 +1785,18 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         } else {
             let oldKeys = Object.keys(obj);
             let newObj = {};
-            let prevOldKey;
-            let prevNewKey;
 
             for (let x in keys) {
-                let newKey = keys[x];
-                if (newKey == 'ignore') continue;
+                let newKey = keys[x].trim();
                 let oldKey = oldKeys[x];
-                if (Array.isArray(newKey)) newObj[prevNewKey] = renameObjectProperties(obj[prevOldKey], newKey)
-                else newObj[newKey] = obj[oldKey];
-                prevOldKey = oldKey;
-                prevNewKey = newKey;
+                if (newKey == 'ignore') continue;
+
+                if (newKey.includes('[')) {
+                    newKey = newKey.slice(0, -1).split('[');
+                    let newObjKey = newKey[0];
+                    let newObjKeys = newKey[1].replace(/\r/gm, '').split('\n');
+                    newObj[newObjKey] = renameObjectProperties(obj[oldKey], newObjKeys);
+                } else newObj[newKey] = obj[oldKey];
             }
             obj = newObj;
         }
