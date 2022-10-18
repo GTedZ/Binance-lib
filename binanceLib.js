@@ -31,6 +31,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
     if (options.query) this.query = true; else this.query = false;
+    if (options.ws) this.ws = true; else this.ws = false;
     if (options.extraResponseInfo && options.extraResponseInfo == true) this.extraResponseInfo = true; else this.extraResponseInfo = false;
 
     // public functions ////
@@ -1429,6 +1430,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let socket = object.socket;
 
         socket.on('open', () => {
+            if (this.ws) console.log(params.path + ' is open')
             // TODO add conditions to add the correct subscriptions to the right futures/spot object
         })
 
@@ -1437,22 +1439,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('error', () => {
-            console.log('error!');
+            if (this.ws) console.log(params.path + ' ERROR')
             if (object.alive) newSocket(params, callback, object);
         })
 
         socket.on('close', () => {
-            console.log('closed!');
+            if (this.ws) console.log(params.path + ' Closed!')
             if (object.alive) newSocket(params, callback, object);
         })
 
         socket.on('ping', () => {
-            console.log('ping!!');
+            if (this.ws) console.log(params.path + ' pinged.')
             socket.pong();
         })
 
         socket.on('pong', () => {
-            console.log('pong!!');
+            if (this.ws) console.log(params.path + ' ponged.')
         })
     }
 
