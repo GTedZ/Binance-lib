@@ -100,7 +100,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
 ### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>
 ### Account/Trade<a href='#Futures-AccountTrade-Data'><sup>ref</sup></a>
-### Websockets<a href='#Futures-Websockets'><sup>ref</sup></a>
+### Websockets<a href='#Websockets'><sup>ref</sup></a>
 
 ## FUTURES PARAMETER EXPLANATION:
 - ***side***: *"BUY"* OR *"SELL"*.
@@ -3724,12 +3724,15 @@ order2 =>
 
 
 
-## Websockets:
+# ***WEBSOCKETS***:
 ### How To Use<a href='#How-To-Use'><sup>ref</sup></a>
 ### How To Subscribe<a href='#How-To-Subscribe'><sup>ref</sup></a>
 ### How To Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
 
-### How to use:
+### SPOT<a href='#WebSocket-Spot'><sup>ref</sup></a>
+### FUTURES<a href='#WebSocket-Futures'><sup>ref</sup></a>
+
+## HOW TO USE:
 - All websockets are divided into 'blocks' for '*SPOT*', '*FUTURES*', etc...
 ```js
   binance.websockets.spot     // 'spot' is a block, containing all of the spot-related websocket connections
@@ -3750,7 +3753,7 @@ order2 =>
 ```
 
 
-### How to subscribe:
+## HOW TO SUBSCRIBE:
 There are two main ways to subscribe:
 - You can either use the built-in library functions (that you can see inside your editor when typing the general path like 'binance.websockets.futures.': when you type the final dot '.', your editor will most likely show you all the options you have)
 ```js
@@ -3761,12 +3764,14 @@ There are two main ways to subscribe:
   }
 ```
 - Or you can subscribe youself via the .subscribe() method of each websocket block:
+```js
+  let aggTrade = binance.websockets.futures.subscribe('btcusdt@aggTrade');
+```
 
-
-### How to unsubscribe:
+## HOW TO UNSUBSCRIBE:
 - Any websocket function returns an object that you can use to unsubscribe from the connection, just like the following:
 ```js
-  const aggTrades = binance.websockets.futures.aggTrade("BTCUSDT", (msg) => {
+  const aggTrades = binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
     // to something here with the data
   });
 
@@ -3780,9 +3785,179 @@ There are two main ways to subscribe:
 
   binance.websockets.futures.unsubscribe(subscriptions);
   // OR
-  // for example: subscriptions = ['btcusdt@aggTrade', ...];
+  // for example: subscriptions => ['btcusdt@aggTrade', ...];
   binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
 ```
+
+
+## Websocket Parameters Explanation:
+- ***callback***: It's a function that you define anywhere (can be a simple arrow function), that is passed to the websocket function, that will be called on every message received from the websocket connection, for example:
+```js
+  let callbackFunc = (msg) => {
+    console.log(msg);
+  }
+  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+
+  // OR
+
+  function callbackFunc(msg) {
+    console.log(msg)
+  }
+  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+
+  // OR SIMPLY
+
+  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', (msg) => {
+    console.log(msg)
+  }); // simple arrow function :D
+```
+
+
+## WEBSOCKET FUTURES:
+|FUNCTIONS                                           |REQUIRED PARAMETERS<a href='#Websocket-Parameters-Explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS            |
+|:---------------------------------------------------|:--------------------------------------------------------------------------------:|:-----------------------------:|
+|aggTrade()                      <a href='#aggTrade'>|symbol, callback                                                                  |                               |
+|markPrice()                    <a href='#markPrice'>|callback                                                                          |symbol, slow(bool)             |
+|lastPrice()                    <a href='#lastPrice'>|symbol, callback                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+|                                                    |                                                                                  |                               |
+
+
+
+
+### .aggTrade():
+```js
+  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
+    // do something with the data
+  });
+
+  // OR
+
+  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrade);
+
+  function handleAggTrade(data) {
+    // do something with the data
+  }
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  event: 'aggTrade',
+  time: 1666065747727,
+  symbol: 1492881301,
+  tradeId: 'BTCUSDT',
+  price: 19546.9,
+  qty: 0.003,
+  firstTradeId: 2964443439,
+  lastTradeId: 2964443441,
+  timestamp: 1666065747676,
+  maker: true
+}
+```
+</details>
+
+
+### .markPrice():
+'markPrice' is NOT the price with which binance executes your order with, instead use 'lastPrice()'
+```js
+  function handleMarkPrices(data) {
+    // do something with the data
+  }
+
+  let markPrice_BTC_stream = binance.websockets.futures.markPrice(handleMarkPrices, 'BTCUSDT');
+
+  // OR
+
+  let markPrices_stream = binance.websockets.futures.markPrice(handleMarkPrices);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  event: 'markPriceUpdate',
+  time: 1666065821008,
+  symbol: 'BTCUSDT',
+  markPrice: 19544.48555407,
+  indexPrice: 19524.91580127,
+  estimatedSettlePrice: 19551.29863959,
+  fundingRate: 0.0001,
+  nextFundingTime: 1666080000000
+}
+
+// OR for markPrices
+
+[
+  {
+    event: 'markPriceUpdate',
+    time: 1666065858000,
+    symbol: 'BTCUSDT',
+    markPrice: 19546.51780165,
+    indexPrice: 19525.45782647,
+    estimatedSettlePrice: 19553.14987671,
+    fundingRate: 0.0001,
+    nextFundingTime: 1666080000000
+  },
+  {
+    event: 'markPriceUpdate',
+    time: 1666065858000,
+    symbol: 'ETHUSDT',
+    markPrice: 1332.18367392,
+    indexPrice: 1331.70486451,
+    estimatedSettlePrice: 1332.77557051,
+    fundingRate: -5.7e-7,
+    nextFundingTime: 1666080000000
+  },
+  {
+    event: 'markPriceUpdate',
+    time: 1666065858000,
+    symbol: 'BCHUSDT',
+    markPrice: 110.55,
+    indexPrice: 110.23708497,
+    estimatedSettlePrice: 110.58666965,
+    fundingRate: 0.00002857,
+    nextFundingTime: 1666080000000
+  },
+  ...
+]
+```
+</details>
+
+
+### .lastPrice():
+```js
+  // this is using the candlesticks() websocket, but filtering out all the other data
+  let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', console.log);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ BTCUSDT: 19849.1 }
+```
+</details>
 
 
 # *CONTACT ME*
