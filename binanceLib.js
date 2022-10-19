@@ -1317,7 +1317,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format);
+                return connect(params, this.format);
             },
 
             /**
@@ -1368,7 +1368,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format)
+                return connect(params, this.format)
             },
 
             lastPrice: function (symbol, callback) {
@@ -1389,7 +1389,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(obj);
                 }
 
-                connect(params, this.format)
+                return connect(params, this.format)
             },
 
             continuousContractKline: function (pair, contractType, interval, callback) {
@@ -1441,7 +1441,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format)
+                return connect(params, this.format)
             },
 
             miniTicker: function (callback, symbol = false) {
@@ -1478,7 +1478,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format);
+                return connect(params, this.format);
             },
 
             ticker: function (callback, symbol = false) {
@@ -1524,7 +1524,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format);
+                return connect(params, this.format);
             },
 
             bookTicker: function (callback, symbol = false) {
@@ -1561,7 +1561,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format);
+                return connect(params, this.format);
             },
 
             liquidationOrders: function (callback, symbol = false) {
@@ -1581,8 +1581,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 const newKeys = [
                     'event',
                     'time',
-                    `order[
-                        symbol
+                    `order[symbol
                         side
                         orderType
                         timeInForce
@@ -1592,7 +1591,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         status
                         order_lastFilledQty
                         order_filledAccumulatedQty
-                        order_tradeTime`
+                        order_tradeTime]`
                 ]
 
                 this.format = (msg) => {
@@ -1603,7 +1602,44 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                connect(params, this.format);
+                return connect(params, this.format);
+            },
+
+            userData: async function (callback, tries = 2) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const reqParams = {
+                    baseURL: fapi,
+                    path: '/fapi/v1/listenKey'
+                }
+                const postParams = {
+                    ...reqParams,
+                    method: 'post'
+                }
+                const putParams = {
+                    ...reqParams,
+                    method: 'put'
+                }
+                const deleteParams = {
+                    ...reqParams,
+                    method: 'delete'
+                }
+
+                let resp = await request(postParams, {}, 'DATA');
+                resp.deleteKey = () => request(deleteParams, {}, 'DATA');
+                resp.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
+
+                const params = {
+                    baseURL: fWSS,
+                    path: resp.listenKey
+                }
+
+                this.format = (data) => {
+                    callback(data);
+                }
+
+                return connect(params, this.format);
             }
 
         }
@@ -1626,6 +1662,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             close: () => {
                 object.alive = false;
                 object.socket.close();
+                if (object.interval) {
+                    clearInterval(object.interval);
+                    object.deleteKey();
+                }
             },
             alive: true,
             socket: {}
