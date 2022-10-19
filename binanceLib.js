@@ -2007,7 +2007,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         } else {
             for (let key of keys) {
                 if (Array.isArray(key)) {
-                    let newArr = [...key];
+                    let newArr = [...key];  // this is because 'key' is a reference to an array that will be used by any other subsequent message from the websocket, so if it is changed here (via .shift()), it will lose its value, and only the first websocket message will have its full info, any other will not
                     let mainKey = newArr.shift().split('=');
                     let oldKey = mainKey[0];
                     let newKey = mainKey[1];
