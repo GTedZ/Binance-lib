@@ -27,13 +27,17 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
+    this.APIKEYSInfo = {}
     this.timestamp_offset = 0;
     this.ping = 0;
+
+    if (options.callback) this.callback = options.callback; else this.callback = () => { };
     if (options.timeout) this.timeout = options.timeout; else this.timeout = 500;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
     if (options.query) this.query = true; else this.query = false;
+    if (options.extraResponseInfo) this.extraResponseInfo = true; else this.extraResponseInfo = false;  // will cause errors, do not use it except for dev-testing
     if (options.ws) this.ws = true; else this.ws = false;
 
     // public functions ////
@@ -65,7 +69,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
         }
         resp.roundtrip_time_millis = endTime - startTime;
-        this.ping = roundtrip_time_millis;
+        this.ping = resp.roundtrip_time_millis;
         return resp;
     }
 
@@ -1465,19 +1469,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'time',
-                    'symbol',
-                    'close',
-                    'open',
-                    'high',
-                    'low',
-                    'totalTraded_baseAssetVolume',
-                    'totalTraded_quoteAsset'
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'c=close',
+                    'o=open',
+                    'h=high',
+                    'l=low',
+                    'v=totalTraded_baseAssetVolume',
+                    'q=totalTraded_quoteAsset'
                 ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1502,28 +1506,28 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'time',
-                    'symbol',
-                    'priceChange',
-                    'percentChange',
-                    'weightedAvgPrice',
-                    'lastPrice',
-                    'lastQty',
-                    'open',
-                    'high',
-                    'low',
-                    'totalTraded_baseAssetVolume',
-                    'totalTraded_quoteAssetVolume',
-                    'stats_openTime',
-                    'stats_closeTime',
-                    'firstTradeId',
-                    'lastTradeId',
-                    'tradesCount'
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'p=priceChange',
+                    'P=percentChange',
+                    'w=weightedAvgPrice',
+                    'c=lastPrice',
+                    'Q=lastQty',
+                    'o=open',
+                    'h=high',
+                    'l=low',
+                    'v=totalTraded_baseAssetVolume',
+                    'q=totalTraded_quoteAssetVolume',
+                    'O=stats_openTime',
+                    'C=stats_closeTime',
+                    'F=firstTradeId',
+                    'L=lastTradeId',
+                    'n=tradesCount'
                 ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1548,19 +1552,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'updateId',
-                    'time',
-                    'transactionTime',
-                    'symbol',
-                    'bestBidPrice',
-                    'bestBidQty',
-                    'bestAskPrice',
-                    'bestAskQty',
+                    'e=event',
+                    'u=updateId',
+                    'E=time',
+                    'T=transactionTime',
+                    's=symbol',
+                    'b=bestBidPrice',
+                    'B=bestBidQty',
+                    'a=bestAskPrice',
+                    'A=bestAskQty',
                 ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1569,6 +1573,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 return connect(params, this.format);
             },
+
+            // TODO there are still stuff here to include
 
             liquidationOrders: function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
@@ -1885,14 +1891,17 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             })
             latency = Date.now() - startTime;
 
+            let data = {};
+            if (response.headers['x-mbx-used-weight-1m']) data['x-mbx-used-weight-1m'] = response.headers['x-mbx-used-weight-1m'];
+            if (response.headers['x-mbx-order-count-10s']) data['x-mbx-order-count-10s'] = response.headers['x-mbx-order-count-10s'];
+            if (response.headers['x-mbx-order-count-1m']) data['x-mbx-order-count-1m'] = response.headers['x-mbx-order-count-1m'];
+            if (response.headers['x-response-time']) data['server-process-time'] = response.headers['x-response-time'];
+            data.latency_millis = latency;
+
+            this.APIKEYSInfo = { ...this.APIKEYSInfo, ...data };
             if (this.extraResponseInfo) {
-                let data = {};
-                if (response.headers['x-mbx-used-weight-1m']) data['x-mbx-used-weight-1m'] = response.headers['x-mbx-used-weight-1m'];
-                if (response.headers['x-mbx-order-count-10s']) data['x-mbx-order-count-10s'] = response.headers['x-mbx-order-count-10s'];
-                if (response.headers['x-mbx-order-count-1m']) data['x-mbx-order-count-1m'] = response.headers['x-mbx-order-count-1m'];
-                if (response.headers['x-response-time']) data['server-process-time'] = response.headers['x-response-time'];
-                data.latency_millis = latency;
-                data.data = response.data;
+                if (this.fetchFloats) data.data = parseAllPropertiesToFloat(response.data);
+                else data.data = response.data;
                 return data;
             }
 
@@ -1939,7 +1948,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let currentTime = Date.now();
         let delta = (currentTime - startTime) / 2;
         this.timestamp_offset = time + parseInt(delta) - currentTime;
-        if (tries < 3) fetchOffset(++tries)
+        if (this.query) {
+            console.log({ deltaTime: (delta * 2).toFixed() }, { timestamp_offset: this.timestamp_offset })
+        }
+        if (tries < 3) fetchOffset(++tries); else this.callback();
     }
 
     const handleArrayResponse = (Arr, keys, type) => {

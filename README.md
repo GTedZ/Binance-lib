@@ -27,9 +27,10 @@ const binance = new Binance(
    '<YOUR_APISECRET>',
    {
     // these settings here are optional
-    useServerTime: true,  // recommended for everyone, it syncs time to the server's time
-    fetchFloats: true,    // <- **DOES NOT ALTER THE RESULTS** *HIGHLY RECOMMENDED AS IT FETCHES EVERYTHING AS INT (and obviously bigInts and strings to strings), always keep it on*
-    hedgeMode: false,     // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+    fetchFloats: true,      // <- **DOES NOT ALTER THE RESULTS** *HIGHLY RECOMMENDED AS IT FETCHES EVERYTHING AS INT (and obviously bigInts and strings to strings), always keep it on*
+    hedgeMode: false,       // You can set the value or not, either way the library will handle it automatically if it receives an error about your hedgeMode setting not matching your request
+    useServerTime: true,    // recommended for everyone, it syncs time to the server's time
+    callback: functionName  // If you set 'useServerTime' as true, you can also use the callback function to call that function once the library is done fetching the serverTime and offsets
    }
 );
 ```
@@ -3845,7 +3846,7 @@ There are two main ways to subscribe:
 |                                                                                           |                                                                                  |                               |
 |                                                                                           |                                                                                  |                               |
 |                                                                                           |                                                                                  |                               |
-
+// TODO there are still websockets to include, and the table to fill
 
 
 
@@ -4245,14 +4246,14 @@ There are two main ways to subscribe:
 ```js
 {
   event: 'bookTicker',
-  updateId: 2044205572092,
-  time: 'BTCUSDT',
-  transactionTime: 19100.8,
-  symbol: 11.605,
-  bestBidPrice: 19100.9,
-  bestBidQty: 8.721,
-  bestAskPrice: 1666120594200,
-  bestAskQty: 1666120594208
+  updateId: 2047601210938,
+  time: 1666205026117,
+  transactionTime: 1666205026113,
+  symbol: 'THETAUSDT',
+  bestBidPrice: 1.011,
+  bestBidQty: 26445.9,
+  bestAskPrice: 1.012,
+  bestAskQty: 60875.7
 }
 ```
 </details>
