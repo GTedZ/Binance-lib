@@ -807,7 +807,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (number(options.positionSide)) return ERR('positionSide', 'type', 'String');
             options.positionSide = fixValue(options.positionSide, 'LONG', ['long', 'buy']);
             options.positionSide = fixValue(options.positionSide, 'SHORT', ['short', 'sell']);
-            console.log('positionSide:', options.positionSide)
             if (!equal(options.positionSide, ['LONG', 'SHORT'])) return ERR('positionSide', 'value', false, ['LONG', 'SHORT']);
         }
         if (!this.hedgeMode) delete options.positionSide;
@@ -1680,6 +1679,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         [
                             'P=positions',
                             's=symbol',
+                            'ma=quoteAsset',
                             'pa=positionAmt',
                             'ep=entryPrice',
                             'cr=accumulatedRealized',
@@ -1755,12 +1755,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 ];
 
                 this.format = (msg) => {
-                    console.log(msg);
                     if (msg.e == 'MARGIN_CALL') {
                         msg = advancedRenameObjectProperties(msg, marginCallKeys);
                         callback(msg);
                     } else if (msg.e == 'ACCOUNT_UPDATE') {
-                        console.log('THIS IS IT')
                         msg = advancedRenameObjectProperties(msg, accountUpdateKeys);
                         callback(msg);
                     } else if (msg.e == 'ORDER_TRADE_UPDATE') {
@@ -1824,7 +1822,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('message', (msg) => {
-            console.log('hi')
             if (binance.ws) console.log(params.path + ' new message')
             callback(parseSocketMessage(msg));
         })
@@ -1872,7 +1869,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!this.APISECRET) return ERR('APISECRET is required for this request.');
             options.timestamp = Date.now() + this.timestamp_offset;
             query = makeQueryString(options);
-            // console.log(query)
             let signature = crypto.createHmac('sha256', this.APISECRET).update(query).digest('hex');
             options.signature = signature;
         }
