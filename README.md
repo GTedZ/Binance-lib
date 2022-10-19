@@ -4275,7 +4275,23 @@ There are two main ways to subscribe:
 <summary>View Response</summary>
 
 ```js
-
+{
+  event: 'forceOrder',
+  time: 1666138368392,
+  order: {
+    symbol: 'ANKRUSDT',
+    side: 'SELL',
+    orderType: 'LIMIT',
+    timeInForce: 'IOC',
+    Qty: 153515,
+    price: 0.031913,
+    avgPrice: 0.032262,
+    status: 'FILLED',
+    order_lastFilledQty: 33073,
+    order_filledAccumulatedQty: 153515,
+    order_tradeTime: 1666138368387
+  }
+}
 ```
 </details>
 
