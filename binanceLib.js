@@ -1585,7 +1585,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         side
                         orderType
                         timeInForce
-                        Qty
+                        qty
                         price
                         avgPrice
                         status
