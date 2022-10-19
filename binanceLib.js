@@ -29,6 +29,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     this.APISECRET = APISecret;
     this.timestamp_offset = 0;
     this.ping = 0;
+    if (options.timeout) this.timeout = options.timeout; else this.timeout = 500;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
@@ -1692,13 +1693,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('error', () => {
-            if (binance.ws) console.log(params.path + ' ERROR')
-            if (object.alive) newSocket(params, callback, object);
+            if (binance.ws) console.log(params.path + ' ERROR');
         })
 
         socket.on('close', () => {
-            if (binance.ws) console.log(params.path + ' Closed!')
-            if (object.alive) newSocket(params, callback, object);
+            if (binance.ws) console.log(params.path + ' Closed!');
+
+            setTimeout(() => {
+                if (object.alive) newSocket(params, callback, object);
+            }, binance.timeout)
         })
 
         socket.on('ping', () => {
