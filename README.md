@@ -4261,9 +4261,23 @@ There are two main ways to subscribe:
 ### .liquidationOrders():
 **Update Speed**: 1000ms
 ```js
-  let liquidations_BTC_stream = binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT')
-```
+  let liquidations_BTC_stream = binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT');
 
+  // OR
+
+  let liquidations_stream = binance.websockets.futures.liquidationOrders(handleLiquidations);
+
+  function handleLiquidations(data) {
+    // do something with the data
+  }
+```
+<details>
+<summary>View Response</summary>
+
+```js
+
+```
+</details>
 
 
 
