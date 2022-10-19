@@ -4231,7 +4231,7 @@ There are two main ways to subscribe:
 
 
 ### .bookTicker():
-**Update Speed**: *realtime*: approx 5000 updates/second for ALL symbols, but each symbol differs immensely, BTCUSDT averages 300 updates/second
+**Update Speed**: *Realtime*: approx 5000 updates/second for ALL symbols, but each symbol differs immensely, BTCUSDT averages 300 updates/second
 ```js
   let bookTicker_BTC_stream = binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
 
@@ -4292,6 +4292,57 @@ There are two main ways to subscribe:
     order_tradeTime: 1666138368387
   }
 }
+```
+</details>
+
+
+### .userData():
+**Update Speed**: *Realtime*
+```js
+  let userData = binance.websockets.futures.userData((data) => {
+    if(data.event == 'MARGIN_CALL') handleMarginCall(data);
+    else if(data.event == 'ACCOUNT_UPDATE') handleAccountUpdate(data);
+    else if(data.event == 'ORDER_TRADE_UPDATE') handleOrderUpdate(data);
+    else if(data.event == 'ACCOUNT_CONFIG_UPDATE') handleConfigUpdate(data);
+  })
+```
+
+#### These are the possible updates and their functions:
+
+#### MARGIN_CALL:
+- When the user's position risk ratio is too high, this stream will be pushed.
+- This message is only used as risk guidance information and is not recommended for investment strategies.
+- In the case of a highly volatile market, there may be the possibility that the user's position has been liquidated at the same time when this stream is pushed out.
+##### handleMarginCall():
+```js
+  function handleMarginCall(data) {
+    // do something with the Margin Call Data
+  }
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "event": "MARGIN_CALL",                  // Event Type
+    "time": 1587727187525,                   // Event Time
+    "crossWalletBalance": 3.16812045,        // Cross Wallet Balance. Only pushed with crossed position margin call
+    "positions":      
+    [                                       // Position(s) of Margin Call         
+      {
+        "symbol": "ETHUSDT",                      // Symbol
+        "positionSide": "LONG",                   // Position Side
+        "positionAmt": 1.327,                     // Position Amount
+        "marginType": "CROSSED",                  // Margin Type
+        "isolatedWallet": 0,                      // Isolated Wallet (if isolated position)
+        "markPrice": 187.17127,                   // Mark Price
+        "unrealizedPnl": -1.166074,               // Unrealized PnL
+        "maintenanceMarginRequired": 1.614445     // Maintenance Margin Required
+      },
+      ...,
+      ...
+    ]
+}  
 ```
 </details>
 

@@ -1343,22 +1343,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'event',
                     'time',
                     'symbol',
-                    `candle[startTime
-                        closeTime
-                        symbol
-                        interval
-                        firstTradeId
-                        lastTradeId
-                        open
-                        close
-                        high
-                        low
-                        baseAssetVolume
-                        tradesCount
-                        closed
-                        quoteAssetVolume
-                        takerBuy_baseAssetVolume
-                        takerBuy_quoteAssetVolume]`
+                    [
+                        'candle',
+                        'startTime',
+                        'closeTime',
+                        'symbol',
+                        'interval',
+                        'firstTradeId',
+                        'lastTradeId',
+                        'open',
+                        'close',
+                        'high',
+                        'low',
+                        'baseAssetVolume',
+                        'tradesCount',
+                        'closed',
+                        'quoteAssetVolume',
+                        'takerBuy_baseAssetVolume',
+                        'takerBuy_quoteAssetVolume'
+                    ]
                 ];
 
                 this.format = (msg) => {
@@ -1417,21 +1420,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'time',
                     'pair',
                     'contractType',
-                    `candle[startTime
-                        closeTime
-                        interval
-                        firstTradeId
-                        lastTradeId
-                        open
-                        close
-                        high
-                        low
-                        volume
-                        tradesCount
-                        closed
-                        quoteAssetVolume
-                        takerBuy_volume
-                        takerBuy_volume]`
+                    [
+                        'candle',
+                        'startTime',
+                        'closeTime',
+                        'interval',
+                        'firstTradeId',
+                        'lastTradeId',
+                        'open',
+                        'close',
+                        'high',
+                        'low',
+                        'volume',
+                        'tradesCount',
+                        'closed',
+                        'quoteAssetVolume',
+                        'takerBuy_volume',
+                        'takerBuy_volume',
+                    ]
                 ];
 
                 this.format = (msg) => {
@@ -1582,17 +1588,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 const newKeys = [
                     'event',
                     'time',
-                    `order[symbol
-                        side
-                        orderType
-                        timeInForce
-                        qty
-                        price
-                        avgPrice
-                        status
-                        order_lastFilledQty
-                        order_filledAccumulatedQty
-                        order_tradeTime]`
+                    [
+                        'order',
+                        'symbol',
+                        'side',
+                        'orderType',
+                        'timeInForce',
+                        'qty',
+                        'price',
+                        'avgPrice',
+                        'status',
+                        'order_lastFilledQty',
+                        'order_filledAccumulatedQty',
+                        'order_tradeTime',
+                    ]
                 ]
 
                 this.format = (msg) => {
@@ -1636,8 +1645,136 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: resp.listenKey
                 }
 
-                this.format = (data) => {
-                    callback(data);
+
+                const marginCallKeys = [
+                    'e=event',
+                    'E=time',
+                    'cw=crossWalletBalance',
+                    [
+                        'p=positions',    // this is the main object key before the subkeys
+                        's=symbol',
+                        'ps=positionSide',
+                        'pa=positionAmt',
+                        'mt=marginType',
+                        'iw=isolatedWallet',
+                        'mp=markPrice',
+                        'up=unrealizedPnl',
+                        'mm=maintenanceMarginRequired'
+                    ]
+                ];
+
+                const accountUpdateKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transactionTime',
+                    [
+                        'a=updateData',
+                        'm=eventType',
+                        [
+                            'B=balances',
+                            'a=asset',
+                            'wb=walletBalance',
+                            'cw=crossWalletBalance',
+                            'bc=balanceChange'
+                        ],
+                        [
+                            'P=positions',
+                            's=symbol',
+                            'pa=positionAmt',
+                            'ep=entryPrice',
+                            'cr=accumulatedRealized',
+                            'up=unrealizedPnl',
+                            'mt=marginType',
+                            'iw=isolatedWallet',
+                            'ps=positionSide'
+                        ]
+                    ]
+                ];
+
+                const orderTradeUpdateKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transactionTime',
+                    [
+                        'o=order',
+                        's=symbol',
+                        'c=clientOrderId',
+                        'S=side',
+                        'o=orderType',
+                        'f=timeInForce',
+                        'q=origQty',
+                        'p=origPrice',
+                        'ap=avgPrice',
+                        'sp=stopPrice',
+                        'x=executionType',
+                        'X=orderStatus',
+                        'i=orderId',
+                        'l=lastFilledQty',
+                        'z=filledAccumulatedQty',
+                        'L=lastFilledPrice',
+                        'N=commissionAsset',
+                        'n=commission',
+                        'T=tradeTime',
+                        't=tradeId',
+                        'b=bidsNotional',
+                        'a=askNotional',
+                        'm=maker',
+                        'R=reduceOnly',
+                        'wt=stopPrice_workingType',
+                        'ot=originalOrderType',
+                        'ps=positionSide',
+                        'cp=closeAll',
+                        'AP=activationPrice',
+                        'cr=callbackRate',
+                        'rp=realizedProfit',
+                        'pP=ignore',
+                        'si=ignore',
+                        'ss=ignore'
+                    ]
+                ];
+
+                const accountConfigLeverageChangeKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transactionTime',
+                    [
+                        'ac=newLeverage',
+                        's=symbol',
+                        'l=leverage'
+                    ]
+                ];
+
+                const accountConfigMarginModeChangeKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transactionTime',
+                    [
+                        'ai=newMarginMode',
+                        'j=mode'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    console.log(msg);
+                    if (msg.e == 'MARGIN_CALL') {
+                        msg = advancedRenameObjectProperties(msg, marginCallKeys);
+                        callback(msg);
+                    } else if (msg.e == 'ACCOUNT_UPDATE') {
+                        console.log('THIS IS IT')
+                        msg = advancedRenameObjectProperties(msg, accountUpdateKeys);
+                        callback(msg);
+                    } else if (msg.e == 'ORDER_TRADE_UPDATE') {
+                        msg = advancedRenameObjectProperties(msg, orderTradeUpdateKeys);
+                        callback(msg);
+                    } else if (msg.e == 'ACCOUNT_CONFIG_UPDATE') {
+                        if (msg.ac) {
+                            msg = advancedRenameObjectProperties(msg, accountConfigLeverageChangeKeys);
+                            callback(msg);
+                        } else if (msg.ai) {
+                            msg = advancedRenameObjectProperties(msg, accountConfigMarginModeChangeKeys);
+                            callback(msg);
+                        }
+                    } else callback(msg);
                 }
 
                 return connect(params, this.format);
@@ -1830,18 +1967,52 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             let newObj = {};
 
             for (let x in keys) {
-                let newKey = keys[x].trim();
+                let newKey = keys[x];
                 let oldKey = oldKeys[x];
                 if (newKey == 'ignore') continue;
 
-                if (newKey.includes('[')) {
-                    newKey = newKey.slice(0, -1).split('[');
-                    let newObjKey = newKey[0];
-                    let newObjKeys = newKey[1].replace(/\r/gm, '').split('\n');
-                    newObj[newObjKey] = renameObjectProperties(obj[oldKey], newObjKeys);
+                if (Array.isArray(newKey)) {
+                    let newArr = [...newKey]
+                    let newObjKey = newArr.shift();
+                    newObj[newObjKey] = renameObjectProperties(obj[oldKey], newArr);
                 } else newObj[newKey] = obj[oldKey];
             }
             obj = newObj;
+        }
+        return obj;
+    }
+
+    /**
+     * Renames your object keys, it accepts objects, and arrays of objects
+     * @param {Object} obj - This is the object that you want to change (You will lose your original object when you use this function)
+     * @param {Array} keys - These are your keys that you will send, and since this is the 'advanced' rename, it will follow these rules:
+     * - "oldKey=newKey" - This basically means that any element in the array that is a string, will be split into oldKey and newKey, where it will replace the 'oldKey' propertyName, by the 'newKey' propertyName
+     * - ["oldKey=newKey", "oldKey=newKey",...] - This is when you have a subObject in your original object, which needs to have its properties renamed:
+     * This array will contain: at index 0, it will contain the 'oldKey' of the original Object's property, that will be renamed to 'newKey'
+     *  And then the rest (index 1 and above) will be the oldKeys and newKeys of that subObject's properties, and those properties can be arrays themselves too, the function handles recursion
+     */
+    const advancedRenameObjectProperties = (obj, keys) => {
+        if (Array.isArray(obj)) {
+            for (let ind in obj) {
+                obj[ind] = advancedRenameObjectProperties(obj[ind], keys);
+            }
+        } else {
+            for (let key of keys) {
+                if (Array.isArray(key)) {
+                    let newArr = [...key];
+                    let mainKey = newArr.shift().split('=');
+                    let oldKey = mainKey[0];
+                    let newKey = mainKey[1];
+                    obj[newKey] = advancedRenameObjectProperties(obj[oldKey], newArr);
+                    delete obj[oldKey];
+                } else {
+                    key = key.split('=');
+                    let oldKey = key[0];
+                    let newKey = key[1];
+                    if (newKey != 'ignore') obj[newKey] = obj[oldKey];
+                    delete obj[oldKey];
+                }
+            }
         }
         return obj;
     }
@@ -1936,6 +2107,48 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // private functions \\\\
 
     if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
+
+    this.test = () => {
+        let obj = {
+            hi: 100,
+            hi2: 200,
+            hi3: 300,
+            obj: {
+                hi: 200,
+                hi2: 300,
+                hi3: 400,
+                hi5: 123810
+            },
+            hi5: 'fuck you',
+            someObj: {
+                hi: 10,
+                ho: 200
+            },
+
+            obj2: {
+                x: 100
+            }
+        }
+
+        let newKey = [
+            'hi=lol',
+            'hi2=lol2',
+            'hi3=lol3',
+            [
+                'obj=obj1',
+                'hi=lol',
+                'hi2=lol2',
+                'hi3=lol3',
+            ],
+            [
+                'obj2=someNewObjectIDontKnowMuchAbout',
+                'x=singleObjectIknowAbout'
+            ]
+        ]
+
+        let resp = advancedRenameObjectProperties(obj, newKey);
+        console.log(resp);
+    }
 }
 
 module.exports = api;
