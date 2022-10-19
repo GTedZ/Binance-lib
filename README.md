@@ -4316,12 +4316,10 @@ There are two main ways to subscribe:
 ##### handleMarginCall():
 ```js
   function handleMarginCall(data) {
-    // do something with the Margin Call Data
+    // do something with the Margin Call data...
   }
 ```
-<details>
-<summary>View Response</summary>
-
+***This is the data received on MARGIN_CALL updates***:
 ```js
 {
     "event": "MARGIN_CALL",                  // Event Type
@@ -4344,8 +4342,186 @@ There are two main ways to subscribe:
     ]
 }  
 ```
-</details>
 
+
+#### ACCOUNT_UPDATE:
+- When balance or position get updated, this event will be pushed.
+- - ***ACCOUNT_UPDATE*** will be pushed only when update happens on user's account, including changes on **balances**, **positions**, or **margin** type.
+- - **Unfilled orders** or **cancelled orders** will not make the event ***ACCOUNT_UPDATE*** pushed, since there's **no change on positions**.
+- - "**positions**" in ***ACCOUNT_UPDATE***: Only **symbols** of **changed positions** will be pushed.
+- When "**FUNDING FEE**" changes to the user's balance, the event will be pushed with the brief message:
+- - When "**FUNDING FEE**" occurs in a crossed position, ACCOUNT_UPDATE will be pushed with only the balance(including the "**FUNDING FEE**" asset only), without any position message.
+- - When "**FUNDING FEE**" occurs in an isolated position, ACCOUNT_UPDATE will be pushed with only the balance(including the "**FUNDING FEE**" asset only) and the relative position message( including the isolated position on which the "**FUNDING FEE**" occurs only, without any other position message ).
+- The field "eventType" represents the reason type for the event and may shows the following possible types:
+- - *DEPOSIT*
+- - *WITHDRAW*
+- - *ORDER*
+- - *FUNDING_FEE*
+- - *WITHDRAW_REJECT*
+- - *ADJUSTMENT*
+- - *INSURANCE_CLEAR*
+- - *ADMIN_DEPOSIT*
+- - *ADMIN_WITHDRAW*
+- - *MARGIN_TRANSFER*
+- - *MARGIN_TYPE_CHANGE*
+- - *ASSET_TRANSFER*
+- - *OPTIONS_PREMIUM_FEE*
+- - *OPTIONS_SETTLE_PROFIT*
+- - *AUTO_EXCHANGE*
+- The field "balanceChange" represents the balance change except for PnL and commission.
+#### handleAccountUpdate():
+```js
+  function handleAccountUpdate(data) {
+    // do something with the Account Update data...
+  }
+```
+***This is the data received on ACCOUNT_UPDATE updates***:
+```js
+{
+  "event": "ACCOUNT_UPDATE",
+  "time": 1666197269367,
+  "transactionTime": 1666197269362,
+  "updateData": {
+    "eventType": "ORDER",
+    "balances": [
+      {
+        "asset": "USDT",
+        "walletBalance": -7.20740215,
+        "crossWalletBalance": -7.20740215,
+        "balanceChange": 0
+      }
+    ],
+    "positions": [  // <= THIS FIELD CAN BE OMITTED APPARENTLY, not sure if my library, any unsent property will be returned as 'undefined' even though it wasn't sent.
+      {
+        "symbol": "BTCUSDT",
+        "quoteAsset": "USDT",
+        "positionAmt": 0,
+        "entryPrice": 0,
+        "accumulatedRealized": 0.5417,
+        "unrealizedPnl": 0,
+        "marginType": "cross",
+        "isolatedWallet": 0,
+        "positionSide": "BOTH"
+      },
+      {
+        "symbol": "BTCUSDT",
+        "quoteAsset": "USDT",
+        "positionAmt": 0.001,
+        "entryPrice": 19212.1,
+        "accumulatedRealized": -0.4172,
+        "unrealizedPnl": 1e-8,
+        "marginType": "cross",
+        "isolatedWallet": 0,
+        "positionSide": "LONG"
+      },
+      {
+        "symbol": "BTCUSDT",
+        "quoteAsset": "USDT",
+        "positionAmt": 0,
+        "entryPrice": 0,
+        "accumulatedRealized": -0.0081,
+        "unrealizedPnl": 0,
+        "marginType": "cross",
+        "isolatedWallet": 0,
+        "positionSide": "SHORT"
+      }
+    ]
+  }
+}
+```
+
+
+#### ORDER_TRADE_UPDATE:
+When new order created, order status changed will push such event. event type is ***ORDER_TRADE_UPDATE***.
+
+**Side**
+- *BUY*
+- *SELL*
+
+**Order Type**
+- *MARKET*
+- *LIMIT*
+- *STOP*
+- *TAKE_PROFIT*
+- *LIQUIDATION*
+
+**Execution Type**
+- *NEW*
+- *CANCELED*
+- *CALCULATED* - Liquidation Execution
+- *EXPIRED*
+- *TRADE*
+
+**Order Status**
+*NEW*
+*PARTIALLY_FILLED*
+*FILLED*
+*CANCELED*
+*EXPIRED*
+*NEW_INSURANCE* - Liquidation with Insurance Fund
+*NEW_ADL* - Counterparty Liquidation`
+
+**Time in force**
+- *GTC*
+- *IOC*
+- *FOK*
+- *GTX*
+
+**Working Type**
+- *MARK_PRICE*
+- *CONTRACT_PRICE*
+
+**Liquidation and ADL**:
+- If user gets liquidated due to insufficient margin balance:
+- - If liquidation Counterparty is market: **clientOrderId** shows as "**autoclose***-XXX*", **orderStatus** shows as "**NEW**"
+- - If liquidation Counterparty is insurance fund: **clientOrderId** shows as "**autoclose***-XXX*", **orderStatus** shows as "**NEW_INSURANCE**"
+- - If liquidation Counterparty is ADL counterparty: **clientOrderId** shows as "**autoclose***-XXX*", **orderStatus** shows as "**NEW_ADL**"
+- If user has enough margin balance but gets ADL:
+- - **clientOrderId** shows as "**adl_autoclose**", **orderStatus** shows as "**NEW**"
+#### handleOrderUpdate():
+```js
+  function handleOrderUpdate(data) {
+    // do something with the Account Order Update data
+  }
+```
+***This is the data received on ORDER_TRADE_UPDATE updates***:
+```js
+{
+  "event": "ORDER_TRADE_UPDATE",
+  "time": 1666199193550,
+  "transactionTime": 1666199193546,
+  "order": {
+    "symbol": "BTCBUSD",
+    "clientOrderId": "ios_sSjEWbH5Q0dccSEDxssv",
+    "side": "BUY",
+    "orderType": "MARKET",
+    "timeInForce": "GTC",
+    "origQty": 0.001,
+    "origPrice": 0,
+    "avgPrice": 19131.8,
+    "stopPrice": 0,
+    "executionType": "TRADE",
+    "orderStatus": "FILLED",
+    "orderId": 15945747278,
+    "lastFilledQty": 0.001,
+    "filledAccumulatedQty": 0.001,
+    "lastFilledPrice": 19131.8,
+    "commissionAsset": "BUSD",
+    "commission": 0.00573954,
+    "tradeTime": 1666199193546,
+    "tradeId": 317896923,
+    "bidsNotional": 0,
+    "askNotional": 0,
+    "maker": false,
+    "reduceOnly": false,
+    "stopPrice_workingType": "CONTRACT_PRICE",
+    "originalOrderType": "MARKET",
+    "positionSide": "LONG",
+    "closeAll": false,
+    "realizedProfit": 0
+  }
+}
+```
 
 
 
