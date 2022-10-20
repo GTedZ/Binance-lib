@@ -2204,7 +2204,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     parseSocketMessage = (msg) => {
-        return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
+        if (binance.fetchFloats) return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
+        else return JSON.parse(msg.toString());
+
     }
 
     // websockets ////
