@@ -1332,6 +1332,58 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format)
             },
 
+            candlesticks: function (symbol, interval, callback) {
+                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!interval) { ERROR('interval', 'required'); return; }
+                if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals)
+
+                if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@kline_${interval}`
+                }
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    [
+                        'k=candle',
+                        't=startTime',
+                        'T=closeTime',
+                        's=symbol',
+                        'i=interval',
+                        'f=firstTradeId',
+                        'L=lastTradeId',
+                        'o=open',
+                        'c=close',
+                        'h=high',
+                        'l=low',
+                        'v=baseAssetVolume',
+                        'n=tradeCount',
+                        'x=closed',
+                        'q=quoteAssetVolume',
+                        'V=takerBuy_baseAssetVolume',
+                        'Q=takerBuy_quoteAssetVolume',
+                        'B=ignore'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            },
+
             miniTicker: function (callback, symbol = false) {
                 if (!callback) { ERROR('callback', 'required'); return; }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
@@ -1352,6 +1404,53 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'l=low',
                     'v=totalTraded_baseAssetVolume',
                     'q=totalTraded_quoteAssetVolume'
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            },
+
+            ticker: function (callback, symbol = false) {
+                if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: '!ticker@arr'
+                }
+                if (symbol) params.path = `${symbol.toLowerCase()}@ticker`;
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'p=priceChange',
+                    'P=percentChange',
+                    'w=weightedAvgPrice',
+                    'x=previousStream_firstTradePrice',
+                    'Q=lastQty',
+                    'b=bestBidPrice',
+                    'B=bestBidQty',
+                    'a=bestAskPrice',
+                    'A=bestAskQty',
+                    'o=open',
+                    'c=close',
+                    'h=high',
+                    'l=low',
+                    'v=totalTraded_baseAssetVolume',
+                    'q=totalTraded_quoteAssetVolume',
+                    'O=stats_openTime',
+                    'C=stats_closeTime',
+                    'F=firstTradeId',
+                    'L=lastTradedId',
+                    'n=tradeCount'
                 ];
 
                 this.format = (msg) => {
@@ -1763,6 +1862,52 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'E=time',
                     'T=transactionTime',
                     's=symbol',
+                    'U=firstUpdateId',
+                    'u=finalUpdateId',
+                    'pu=previousStream_finalUpdateId',
+                    [
+                        'b=bids'
+                    ],
+                    [
+                        'a=asks'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            },
+
+            diffBookTicker: function (symbol, speed, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol.toLowerCase()}@depth`
+                }
+                if (speed != '250ms') params.path += '@' + speed;
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transationTime',
+                    's=symbol',
+                    'U=firstUpdateId',
+                    'u=finalUpdateId',
+                    'pu=previousStream_finalUpdateId',
                     [
                         'b=bids'
                     ],
@@ -1842,6 +1987,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 let resp = await request(postParams, {}, 'DATA');
+                if (resp.error) {
+                    if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
+                    return userData(callback, --tries);
+                }
                 resp.deleteKey = () => request(deleteParams, {}, 'DATA');
                 resp.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
 
@@ -2303,7 +2452,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         console.error({
             error: {
                 status: 400,
-                statusText: 'Websocket Parameter Error',
+                statusText: 'Websocket Error',
                 code: -3,
                 msg: msg
             }
