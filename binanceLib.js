@@ -1258,6 +1258,80 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         spot: {
 
+            aggTrade: function (symbol, callback) {
+                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@aggTrade`
+                }
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'a=aggTradeId',
+                    'p=price',
+                    'q=qty',
+                    'f=firstTradeId',
+                    'l=lastTradeId',
+                    'T=tradeTime',
+                    'm=maker',
+                    'M=ignore'
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format)
+            },
+
+            trade: function (symbol, callback) {
+                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@trade`
+                }
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    't=tradeId',
+                    'p=price',
+                    'q=qty',
+                    'b=buyOrderId',
+                    'a=sellerOrderId',
+                    'T=tradeId',
+                    'm=maker',
+                    'M=ignore'
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format)
+            },
+
             miniTicker: function (callback, symbol = false) {
                 if (!callback) { ERROR('callback', 'required'); return; }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
@@ -1315,7 +1389,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         'e=event',
                         'E=time',
                         's=symbol',
-                        'a=tradeId',
+                        'a=aggTradeId',
                         'p=price',
                         'q=qty',
                         'f=firstTradeId',

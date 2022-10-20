@@ -3803,7 +3803,7 @@ There are two main ways to subscribe:
   event: 'aggTrade',
   time: 1666065747727,
   symbol: 1492881301,
-  tradeId: 'BTCUSDT',
+  aggTradeId: 'BTCUSDT',
   price: 19546.9,
   qty: 0.003,
   firstTradeId: 2964443439,
@@ -4272,7 +4272,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ```
 
 
-### .userData():
+### f.userData():
 **Update Speed**: *Realtime*
 ```js
   let userData = binance.websockets.futures.userData((data) => {
