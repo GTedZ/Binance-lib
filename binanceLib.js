@@ -15,6 +15,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const fapi = 'https://fapi.binance.com';
     const dapi = 'https://dapi.binance.com';
 
+    const sWSS = 'wss://stream.binance.com:9443'
     const fWSS = 'wss://fstream.binance.com';
 
 
@@ -1253,6 +1254,47 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     this.websockets = {
 
+        // spot websockets \\\\
+
+        spot: {
+
+            miniTicker: function (callback, symbol = false) {
+                if (!callback) { ERROR('callback', 'required'); return; }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: '!miniTicker@arr'
+                }
+                if (symbol) params.path = `${symbol.toLowerCase()}@miniTicker`;
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'c=close',
+                    'o=open',
+                    'h=high',
+                    'l=low',
+                    'v=totalTraded_baseAssetVolume',
+                    'q=totalTraded_quoteAssetVolume'
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            }
+
+        },
+
+        // spot websockets ////
+
         // futures websocket \\\\
         futures: {
 
@@ -1327,6 +1369,27 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format);
             },
 
+            lastPrice: function (symbol, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                symbol = symbol.toLowerCase();
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol}@kline_1m`
+                }
+
+                this.format = (msg) => {
+                    let obj = {};
+                    obj[msg.s] = msg.k.c;
+                    callback(obj);
+                }
+
+                return connect(params, this.format)
+            },
+
             /**
              * @param {String} symbol - required
              * @param {String} interval - required: "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M" 
@@ -1377,27 +1440,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         newKeys
                     );
                     callback(msg);
-                }
-
-                return connect(params, this.format)
-            },
-
-            lastPrice: function (symbol, callback) {
-                if (!symbol) return ERROR('symbol', 'required');
-                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                symbol = symbol.toLowerCase();
-                if (!callback) return ERROR('callback', 'required');
-                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
-
-                const params = {
-                    baseURL: fWSS,
-                    path: `${symbol}@kline_1m`
-                }
-
-                this.format = (msg) => {
-                    let obj = {};
-                    obj[msg.s] = msg.k.c;
-                    callback(obj);
                 }
 
                 return connect(params, this.format)
