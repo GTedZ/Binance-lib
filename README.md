@@ -3798,9 +3798,6 @@ There are two main ways to subscribe:
     // do something with the data
   }
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'aggTrade',
@@ -3815,7 +3812,6 @@ There are two main ways to subscribe:
   maker: true
 }
 ```
-</details>
 
 
 ### .markPrice():
@@ -3832,9 +3828,6 @@ There are two main ways to subscribe:
 
   let markPrices_stream = binance.websockets.futures.markPrice(handleMarkPrices);
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'markPriceUpdate',
@@ -3883,7 +3876,6 @@ There are two main ways to subscribe:
   ...
 ]
 ```
-</details>
 
 
 ### .lastPrice():
@@ -3892,13 +3884,9 @@ There are two main ways to subscribe:
   // this is using the candlesticks() websocket, but filtering out all the other data
   let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', console.log);
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 { BTCUSDT: 19849.1 }
 ```
-</details>
 
 
 ### .candlesticks():
@@ -3914,9 +3902,6 @@ There are two main ways to subscribe:
   // OR
   let candleSticks_1w = binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'kline',
@@ -3942,7 +3927,6 @@ There are two main ways to subscribe:
   }
 }
 ```
-</details>
 
 
 ### .continuousContractKline():
@@ -3954,9 +3938,6 @@ There are two main ways to subscribe:
     // do something with the data
   })
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'continuous_kline',
@@ -3981,7 +3962,6 @@ There are two main ways to subscribe:
   }
 }
 ```
-</details>
 
 
 ### .miniTicker():
@@ -3997,9 +3977,6 @@ There are two main ways to subscribe:
     /* Do something with data */ 
   }
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 { // for single symbol
   event: '24hrMiniTicker',
@@ -4039,28 +4016,6 @@ There are two main ways to subscribe:
   },
   {
     event: '24hrMiniTicker',
-    time: 1666119534197,
-    symbol: 'ETHUSDT',
-    close: 1292.68,
-    open: 1320.85,
-    high: 1342,
-    low: 1289.85,
-    totalTraded_baseAssetVolume: 5987209.294,
-    totalTraded_quoteAsset: 7911413443.27
-  },
-  {
-    event: '24hrMiniTicker',
-    time: 1666119534138,
-    symbol: 'BCHUSDT',
-    close: 107.41,
-    open: 109.83,
-    high: 111.43,
-    low: 107.06,
-    totalTraded_baseAssetVolume: 803104.592,
-    totalTraded_quoteAsset: 88119710.86
-  },
-  {
-    event: '24hrMiniTicker',
     time: 1666119534031,
     symbol: 'C98USDT',
     close: 0.3273,
@@ -4072,8 +4027,8 @@ There are two main ways to subscribe:
   },
   ...,
   ...
+]
 ```
-</details>
 
 
 ### .ticker():
@@ -4090,9 +4045,6 @@ There are two main ways to subscribe:
     /* Do something with data */ 
   }
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 { // for single symbol
   event: '24hrTicker',
@@ -4161,7 +4113,6 @@ There are two main ways to subscribe:
   ...
 ]
 ```
-</details>
 
 
 ### .bookTicker():
@@ -4173,9 +4124,6 @@ There are two main ways to subscribe:
 
   let bookTicker_stream = binance.websockets.futures.bookTicker(handleBookTicker);
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'bookTicker',
@@ -4189,7 +4137,6 @@ There are two main ways to subscribe:
   bestAskQty: 60875.7
 }
 ```
-</details>
 
 
 ### .liquidationOrders():
@@ -4205,9 +4152,6 @@ There are two main ways to subscribe:
     // do something with the data
   }
 ```
-<details>
-<summary>View Response</summary>
-
 ```js
 {
   event: 'forceOrder',
@@ -4227,7 +4171,105 @@ There are two main ways to subscribe:
   }
 }
 ```
-</details>
+
+
+### .partialBookTicker():
+**Update Speed**: 500ms, 250ms or 100ms
+
+**How to manage a local order book correctly**
+Open a stream via partialBookTicker(<symbol>, ...)
+Buffer the events you receive from the stream. For same price, latest received update covers the previous one.
+Get a depth snapshot from futuresOrderBook(<symbol>, 1000).
+Drop any event where `u` is < `lastUpdateId` in the snapshot.
+The first processed event should have `U` <= `lastUpdateId` AND `u` >= `lastUpdateId`
+While listening to the stream, each new event's `pu` should be equal to the previous event's `u`, otherwise initialize the process from step 3.
+The data in each event is the absolute quantity for a price level.
+If the quantity is 0, remove the price level.
+Receiving an event that removes a price level that is not in your local order book can happen and is normal.
+
+**Maybe when I use this and understand this better myself, I can add this to the library, send me a message if you are interested in me adding this.**
+```js
+  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '500ms', handleBookTickers);
+  // OR
+  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '250ms', handleBookTickers);
+  // OR
+  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '100ms', handleBookTickers);
+```
+```js
+{
+  U: 2050041436271,   // idk what those are, so it was hard to rename them, so I kept them as they are
+  u: 2050041447559,   // idk what those are, so it was hard to rename them, so I kept them as they are
+  pu: 2050041436200,  // idk what those are, so it was hard to rename them, so I kept them as they are
+  event: 'depthUpdate',
+  time: 1666268277100,
+  transactionTime: 1666268277094,
+  symbol: 'BTCUSDT',
+  bids: [
+    [ 19216.1, 20.283 ],
+    [ 19216, 0.213 ],
+    [ 19215.8, 3.19 ],
+    [ 19215.7, 9.11 ],
+    [ 19215.6, 0.142 ],
+    ...
+  ],
+  asks: [
+    [ 19216.2, 1.412 ],
+    [ 19216.4, 1.416 ],
+    [ 19216.8, 0.008 ],
+    [ 19216.9, 0.381 ],
+    [ 19217, 1 ],
+    ...
+  ]
+}
+```
+
+
+### .compositeIndexSymbol():
+**Update Speed**: 1000ms
+```js
+  let DEFI_compositeIndex_stream = binance.websockets.futures.compositeIndexSymbol('BTCUSDT', handleCompositeIndex);
+```
+```js
+{
+  event: 'compositeIndex',
+  time: 1666269777010,
+  symbol: 'DEFIUSDT',
+  price: 659.52193937,
+  baseAsset: 'baseAsset',
+  composition: [
+    {
+      b: '1INCH',
+      quoteAsset: 'USDT',
+      weightInQty: 35.2790071,
+      weightInPercentage: 0.030245,
+      indexPrice: 0.56507234
+    },
+    {
+      b: 'AAVE',
+      quoteAsset: 'USDT',
+      weightInQty: 0.43612226,
+      weightInPercentage: 0.054492,
+      indexPrice: 82.28923147
+    },
+    {
+      b: 'ALGO',
+      quoteAsset: 'USDT',
+      weightInQty: 133.17753636,
+      weightInPercentage: 0.062715,
+      indexPrice: 0.31164673
+    },
+    {
+      b: 'ALPHA',
+      quoteAsset: 'USDT',
+      weightInQty: 125.56278837,
+      weightInPercentage: 0.020528,
+      indexPrice: 0.10853437
+    },
+    ...,
+    ...
+  ]
+}
+```
 
 
 ### .userData():
@@ -4456,6 +4498,8 @@ When new order created, order status changed will push such event. event type is
   }
 }
 ```
+
+
 
 
 
