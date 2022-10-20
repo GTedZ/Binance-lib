@@ -3655,12 +3655,13 @@ order2 =>
 
 
 # ***WEBSOCKETS***:
+## SPOT<a href='#WebSocket-Spot'><sup>ref</sup></a>
+## FUTURES<a href='#WebSocket-Futures'><sup>ref</sup></a>
+
 ### How To Use<a href='#How-To-Use'><sup>ref</sup></a>
 ### How To Subscribe<a href='#How-To-Subscribe'><sup>ref</sup></a>
 ### How To Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
 
-### SPOT<a href='#WebSocket-Spot'><sup>ref</sup></a>
-### FUTURES<a href='#WebSocket-Futures'><sup>ref</sup></a>
 
 ## HOW TO USE:
 - All websockets are divided into 'blocks' for '*SPOT*', '*FUTURES*', etc...
