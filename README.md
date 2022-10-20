@@ -4272,7 +4272,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ```
 
 
-### f.userData():
+### futures .userData():
 **Update Speed**: *Realtime*
 ```js
   let userData = binance.websockets.futures.userData((data) => {
