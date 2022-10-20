@@ -1270,20 +1270,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 const newKeys =
                     [
-                        'event',
-                        'time',
-                        'symbol',
-                        'tradeId',
-                        'price',
-                        'qty',
-                        'firstTradeId',
-                        'lastTradeId',
-                        'timestamp',
-                        'maker'
+                        'e=event',
+                        'E=time',
+                        's=symbol',
+                        'a=tradeId',
+                        'p=price',
+                        'q=qty',
+                        'f=firstTradeId',
+                        'l=lastTradeId',
+                        'T=timestamp',
+                        'm=maker'
                     ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1305,18 +1305,18 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (slow) params.path = params.path.slice(0, -3);
 
                 const newKeys = [
-                    'event',
-                    'time',
-                    'symbol',
-                    'markPrice',
-                    'indexPrice',
-                    'estimatedSettlePrice',
-                    'fundingRate',
-                    'nextFundingTime'
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'p=markPrice',
+                    'i=indexPrice',
+                    'P=estimatedSettlePrice',
+                    'r=fundingRate',
+                    'T=nextFundingTime'
                 ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1346,32 +1346,33 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'time',
-                    'symbol',
+                    'e=event',
+                    'E=time',
+                    's=symbol',
                     [
-                        'candle',
-                        'startTime',
-                        'closeTime',
-                        'symbol',
-                        'interval',
-                        'firstTradeId',
-                        'lastTradeId',
-                        'open',
-                        'close',
-                        'high',
-                        'low',
-                        'baseAssetVolume',
-                        'tradesCount',
-                        'closed',
-                        'quoteAssetVolume',
-                        'takerBuy_baseAssetVolume',
-                        'takerBuy_quoteAssetVolume'
+                        'k=candle',
+                        't=startTime',
+                        'T=closeTime',
+                        's=symbol',
+                        'i=interval',
+                        'f=firstTradeId',
+                        'L=lastTradeId',
+                        'o=open',
+                        'c=close',
+                        'h=high',
+                        'l=low',
+                        'v=baseAssetVolume',
+                        'n=tradesCount',
+                        'x=closed',
+                        'q=quoteAssetVolume',
+                        'V=takerBuy_baseAssetVolume',
+                        'Q=takerBuy_quoteAssetVolume',
+                        'B=ignore'
                     ]
                 ];
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1422,32 +1423,33 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'time',
-                    'pair',
-                    'contractType',
+                    'e=event',
+                    'E=time',
+                    'ps=pair',
+                    'ct=contractType',
                     [
-                        'candle',
-                        'startTime',
-                        'closeTime',
-                        'interval',
-                        'firstTradeId',
-                        'lastTradeId',
-                        'open',
-                        'close',
-                        'high',
-                        'low',
-                        'volume',
-                        'tradesCount',
-                        'closed',
-                        'quoteAssetVolume',
-                        'takerBuy_volume',
-                        'takerBuy_volume',
+                        'k=candle',
+                        't=startTime',
+                        'T=closeTime',
+                        'i=interval',
+                        'f=firstTradeId',
+                        'L=lastTradeId',
+                        'o=open',
+                        'c=close',
+                        'h=high',
+                        'l=low',
+                        'v=volume',
+                        'n=tradesCount',
+                        'x=closed',
+                        'q=quoteAssetVolume',
+                        'V=takerBuy_volume',
+                        'Q=takerBuy_volume',
+                        'B=ignore'  // anything that is 'ignore' will be ignored
                     ]
                 ];
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
@@ -1577,8 +1579,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format);
             },
 
-            // TODO there are still stuff here to include
-
             liquidationOrders: function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
@@ -1594,26 +1594,107 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const newKeys = [
-                    'event',
-                    'time',
+                    'e=event',
+                    'E=time',
                     [
-                        'order',
-                        'symbol',
-                        'side',
-                        'orderType',
-                        'timeInForce',
-                        'qty',
-                        'price',
-                        'avgPrice',
-                        'status',
-                        'order_lastFilledQty',
-                        'order_filledAccumulatedQty',
-                        'order_tradeTime',
+                        'o=order',
+                        's=symbol',
+                        'S=side',
+                        'o=orderType',
+                        'f=timeInForce',
+                        'q=qty',
+                        'p=price',
+                        'ap=avgPrice',
+                        'X=status',
+                        'l=order_lastFilledQty',
+                        'z=order_filledAccumulatedQty',
+                        'T=order_tradeTime',
                     ]
                 ]
 
                 this.format = (msg) => {
-                    msg = renameObjectProperties(
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            },
+
+            partialBookTicker: function (symbol, levels, speed, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!levels) return ERROR('levels', 'required', false, [5, 10, 20]);
+                if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20]);
+
+                if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol.toLowerCase()}@depth${levels}`
+                }
+                if (speed != '250ms') params.path += '@' + speed;
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    'T=transactionTime',
+                    's=symbol',
+                    [
+                        'b=bids'
+                    ],
+                    [
+                        'a=asks'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                return connect(params, this.format);
+            },
+
+            compositeIndexSymbol: function (symbol, callback) {
+                if (!symbol) return ERROR('symbol', 'required');
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol.toLowerCase()}@compositeIndex`
+                }
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'p=price',
+                    'C=baseAsset',
+                    [
+                        'c=composition',
+                        'q=quoteAsset',
+                        'w=weightInQty',
+                        'W=weightInPercentage',
+                        'i=indexPrice'
+                    ]
+                ]
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
                         msg,
                         newKeys
                     );
