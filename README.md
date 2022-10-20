@@ -3268,13 +3268,13 @@ order2 =>
 
 ### .futuresPositionRisk():
 ```js
-  let openBTC_positions = await binance.futuresPositionRisk('BTCUSDT');
-  console.log(openBTC_positions);
+  let BTC_positions = await binance.futuresPositionRisk('BTCUSDT');
+  console.log(BTC_positions);
 
   // OR
 
-  let allOpenPositions = await binance.futuresPositionRisk();
-  console.log(allOpenPositions);
+  let allPositions = await binance.futuresPositionRisk();
+  console.log(allPositions);
 ```
 <details>
 <summary>View Response</summary>
@@ -3387,7 +3387,7 @@ order2 =>
 
 ### .futuresOpenPositions():
 ```js
-  // same as .futuresPositionRisk(), but I guess it's just a better name than 'positionRisk'
+  // same as .futuresPositionRisk(), but returns only the OPEN positions
   let openBTC_positions = await binance.futuresOpenPositions('BTCUSDT');
   console.log(openBTC_positions);
 
@@ -3395,35 +3395,28 @@ order2 =>
 
   let allOpenPositions = await binance.futuresOpenPositions();
   console.log(allOpenPositions);
+
+  // alternatively, you can check if there are or aren't positions open via .length
+  if(openBTC_positions.length != 0) {
+    // do something knowing you have an OPEN BTC position
+  }
+
+  if(allOpenPositions.length != 0) {
+    // do something knowing you have at least 1 open position, like for example
+    allOpenPositions.forEach(position => {
+      console.log(position);  // here it iterates over each position
+    })
+  }
 ```
 <details>
 <summary>View Response</summary>
 
 ```js
-// for One-Way Mode:
-[
-    {
-        "entryPrice": "0.00000",
-        "marginType": "isolated", 
-        "isAutoAddMargin": "false",
-        "isolatedMargin": "0.00000000", 
-        "leverage": "10", 
-        "liquidationPrice": "0", 
-        "markPrice": "6679.50671178",   
-        "maxNotionalValue": "20000000", 
-        "positionAmt": "0.000",
-        "notional": "0",, 
-        "isolatedWallet": "0",
-        "symbol": "BTCUSDT", 
-        "unRealizedProfit": "0.00000000", 
-        "positionSide": "BOTH",
-        "updateTime": 0
-    }
-]
+[] // empty for no positions open
 
-// for hedgeMode:
+// and of course, not empty for when there are positions open
 [
-    {
+  {
         "symbol": "BTCUSDT",
         "positionAmt": "0.001",
         "entryPrice": "22185.2",
@@ -3439,67 +3432,7 @@ order2 =>
         "notional": "21.12305052",
         "isolatedWallet": "0",
         "updateTime": 1655217461579
-    },
-    {
-        "symbol": "BTCUSDT",
-        "positionAmt": "0.000",
-        "entryPrice": "0.0",
-        "markPrice": "21123.05052574",
-        "unRealizedProfit": "0.00000000",
-        "liquidationPrice": "0",
-        "leverage": "4",
-        "maxNotionalValue": "100000000",
-        "marginType": "cross",
-        "isolatedMargin": "0.00000000",
-        "isAutoAddMargin": "false",
-        "positionSide": "SHORT",
-        "notional": "0",
-        "isolatedWallet": "0",
-        "updateTime": 0
     }
-]
-
-// for allOpenPositions
-[
-    {
-        "entryPrice": "0.00000",
-        "marginType": "isolated", 
-        "isAutoAddMargin": "false",
-        "isolatedMargin": "0.00000000", 
-        "leverage": "10", 
-        "liquidationPrice": "0", 
-        "markPrice": "6679.50671178",   
-        "maxNotionalValue": "20000000", 
-        "positionAmt": "0.000",
-        "notional": "0",, 
-        "isolatedWallet": "0",
-        "symbol": "BTCUSDT", 
-        "unRealizedProfit": "0.00000000", 
-        "positionSide": "BOTH",
-        "updateTime": 0
-    },
-    {
-        "entryPrice": "0.00000",
-        "marginType": "isolated", 
-        "isAutoAddMargin": "false",
-        "isolatedMargin": "0.00000000", 
-        "leverage": "10", 
-        "liquidationPrice": "0", 
-        "markPrice": "1400.50671178",   
-        "maxNotionalValue": "20000000", 
-        "positionAmt": "0.000",
-        "notional": "0",, 
-        "isolatedWallet": "0",
-        "symbol": "ETHUSDT", 
-        "unRealizedProfit": "2.41424600", 
-        "positionSide": "BOTH",
-        "updateTime": 0
-    },
-    {
-      "symbol": "XRPUSDT",
-      ...
-    },
-    ...
 ]
 ```
 </details>

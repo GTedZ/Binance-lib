@@ -412,7 +412,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (symbol) options.symbol = symbol;
 
         let data = await request(params, options);
-        if (data.error) return response;
+        if (data.error) return data;
         return Array.isArray(data) ? data.reduce((out, i) => ((out[i.symbol] = parseFloat(i.price)), out), {}) : { symbol: data.symbol, price: parseFloat(data.price), time: data.time };
     }
 
@@ -1159,8 +1159,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @or 
      * @returns Arrays of 2 Objects for hedgeMode
      */
-    this.futuresOpenPositions = (symbol = false, opts = {}) => {
-        return futuresPositionRisk(symbol, opts);
+    this.futuresOpenPositions = async (symbol = false, opts = {}) => {
+        let response = await binance.futuresPositionRisk(symbol, opts);
+        if (response.error) return response;
+
+        return response.filter(position => position.positionAmt != 0);
     }
 
     this.futuresUserTrades = (symbol, limit = 500, opts = {}) => {
