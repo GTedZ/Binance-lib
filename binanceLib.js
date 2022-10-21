@@ -2225,6 +2225,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             params.headers['X-MBX-APIKEY'] = this.APIKEY;
         }
 
+        let query;
         if (type == "SIGNED") {
             if (!this.APISECRET) return ERR('APISECRET is required for this request.');
             options.timestamp = Date.now() + this.timestamp_offset;
