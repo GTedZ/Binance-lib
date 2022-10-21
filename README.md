@@ -2728,6 +2728,7 @@ order2 =>
 
 
 ### .futuresCancelBatchOrders():
+**Currently not working** // TODO
 ```js
   let orderIdList = [84237713406, 84237714515, 84237714598]; // TODO current max is 10 orders per request (binance limit), need to support unlimited amount
   let batchOrderIdCancel = await binance.futuresCancelBatchOrders('BTCUSDT', orderIdList);

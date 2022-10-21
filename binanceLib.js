@@ -36,7 +36,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.timeout) this.timeout = options.timeout; else this.timeout = 500;
     if (options.hedgeMode == true) this.hedgeMode = true; else this.hedgeMode = false;
     if (options.fetchFloats == true) this.fetchFloats = true; else this.fetchFloats = false;
-    if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 5000;
+    if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 8000;
     if (options.query) this.query = true; else this.query = false;
     if (options.extraResponseInfo) this.extraResponseInfo = true; else this.extraResponseInfo = false;  // will cause errors, do not use it except for dev-testing
     if (options.ws) this.ws = true; else this.ws = false;
@@ -875,7 +875,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (orderId) options.orderId = orderId;
         if (origClientOrderId) options.origClientOrderId = origClientOrderId;
         if (!orderId && !origClientOrderId) return ERR(`Either 'orderId' or 'origClientOrderId' need to be sent for this request.`);
-        // if (orderId && origClientOrderId)
+
         return request(params, options, 'SIGNED');
     }
 
@@ -896,6 +896,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.futuresCancelBatchOrders = async (symbol, orderIdList, origClientOrderIdList, opts = {}) => {
+        return ERR('This request currently doesnt work (problem in the library)');
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/batchOrders',
@@ -913,6 +914,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
             options.origClientOrderIdList = origClientOrderIdList;
         }
+
+        options.orderIdList = orderIdList.join('%')
 
         return request(params, options, 'SIGNED');
     }
@@ -2230,7 +2233,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.signature = signature;
         }
 
-        if (this.query) console.log(params.baseURL + params.path, options);
+        if (this.query) {
+            console.log(params.baseURL + params.path, options);
+            console.log(query)
+        }
         let startTime = Date.now(), latency;
         try {
             let response = await axios({
@@ -2295,7 +2301,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const fetchOffset = async (tries = 0) => {
         let startTime = Date.now();
-        let time = await this.futuresServerTime();
+        let time = await this.futuresServerTime(true, 3);
+        if (time.error) return;
         let currentTime = Date.now();
         let delta = (currentTime - startTime) / 2;
         this.timestamp_offset = time + parseInt(delta) - currentTime;
