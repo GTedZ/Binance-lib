@@ -814,7 +814,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             options.positionSide = fixValue(options.positionSide, 'SHORT', ['short', 'sell']);
             if (!equal(options.positionSide, ['LONG', 'SHORT'])) return ERR('positionSide', 'value', false, ['LONG', 'SHORT']);
         }
-        if (!this.hedgeMode) delete options.positionSide;
+        if (!this.hedgeMode) delete options.positionSide; else delete options.reduceOnly;
 
         let response = await request(params, options, 'SIGNED');
         if (response.error) {
