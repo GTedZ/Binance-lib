@@ -2162,7 +2162,17 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
             },
             alive: true,
-            socket: {}
+            socket: {},
+            // extras
+            subscriptions: async () => {
+
+            },
+
+            privateMessage: () => {
+                
+            },
+            resolve: {},
+            reject: {}
         }
 
         new newSocket(params, callback, object);
@@ -2181,7 +2191,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         socket.on('message', (msg) => {
             if (binance.ws) console.log(params.path + ' new message');
-            callback(parseSocketMessage(msg));
+            const obj = parseSocketMessage(msg);
+            if (obj.id && obj.msg && Object.keys(obj).length == 2) {
+                if (binance.ws) console.log('Private response to websocket message was received');
+                object.privateMessage(msg);
+                return;
+            }
+            callback(obj);
         })
 
         socket.on('error', () => {
@@ -2207,8 +2223,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     parseSocketMessage = (msg) => {
-        if (binance.fetchFloats) return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
-        else return JSON.parse(msg.toString());
+        const obj = JSON.parse(msg.toString());
+        if (obj.id && obj.result) return obj;
+        if (binance.fetchFloats) return parseAllPropertiesToFloat(obj);
+        else return obj;
     }
 
     // websockets ////

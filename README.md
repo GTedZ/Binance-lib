@@ -3695,7 +3695,7 @@ order2 =>
 
 ## HOW TO SUBSCRIBE:
 There are two main ways to subscribe:
-- You can either use the built-in library functions (that you can see inside your editor when typing the general path like 'binance.websockets.futures.': when you type the final dot '.', your editor will most likely show you all the options you have)
+- You can either use the built-in library functions:
 ```js
   let aggTrade = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
 
@@ -3706,6 +3706,8 @@ There are two main ways to subscribe:
 - Or you can subscribe youself via the .subscribe() method of each websocket block:
 ```js
   let aggTrade = binance.websockets.futures.subscribe('btcusdt@aggTrade');
+  // It is NOT RECOMMENDED to use this method, as it will not come with the added benefits of having the library rename the properties of the message
+  // The library renames all the properties of the websocket response for clarity, it is instead recommended to use one of the other methods
 ```
 
 ## HOW TO UNSUBSCRIBE:
