@@ -4600,7 +4600,7 @@ Receiving an event that removes a price level that is not in your local order bo
         "balanceChange": 0
       }
     ],
-    "positions": [  // <= THIS FIELD CAN BE OMITTED APPARENTLY, not sure if my library, any unsent property will be returned as 'undefined' even though it wasn't sent.
+    "positions": [  // <= THIS FIELD CAN BE OMITTED BY BINANCE ON SOME REQUESTS
       {
         "symbol": "BTCUSDT",
         "quoteAsset": "USDT",
