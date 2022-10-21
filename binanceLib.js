@@ -2180,7 +2180,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('message', (msg) => {
-            if (binance.ws) console.log(params.path + ' new message')
+            if (binance.ws) console.log(params.path + ' new message');
             callback(parseSocketMessage(msg));
         })
 
@@ -2209,7 +2209,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     parseSocketMessage = (msg) => {
         if (binance.fetchFloats) return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
         else return JSON.parse(msg.toString());
-
     }
 
     // websockets ////
@@ -2385,6 +2384,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     const parseAllPropertiesToFloat = (obj) => {
+        if (obj == null) return obj;
         if (Array.isArray(obj)) for (let index in obj) obj[index] = parseAllPropertiesToFloat(obj[index], index)
         else if (typeof obj == 'object') for (let key of Object.keys(obj)) obj[key] = parseAllPropertiesToFloat(obj[key], key);
         else obj = getNumberOrString(obj);
