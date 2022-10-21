@@ -1994,8 +1994,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
                     return userData(callback, --tries);
                 }
-                resp.deleteKey = () => request(deleteParams, {}, 'DATA');
-                resp.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
 
                 const params = {
                     baseURL: fWSS,
@@ -2133,7 +2131,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     } else callback(msg);
                 }
 
-                return connect(params, this.format);
+                let obj = connect(params, this.format);
+
+                obj.deleteKey = () => request(deleteParams, {}, 'DATA');
+                obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
+
+                return obj;
             }
 
         }
@@ -2153,32 +2156,46 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             return new Promise((res, reject) => {
                 object.resolve = res;
                 object.reject = reject;
-                setTimeout(() => {
 
-                })
+                setTimeout(() => {
+                    if (typeof object.reject == 'function') reject(ERROR('No response was received from websocket endpoint within 5 seconds'))
+                }, 5000)
             });
         }
 
-        const object = {
-            unsubscribe: () => {
-
-            },
+        const object = { // TODO to map each resolve and reject to the 'id' that I create
+            alive: true,
+            socket: {},
             close: async () => {
                 object.alive = false;
                 object.socket.close();
                 if (object.interval) {
+                    console.log("THI SIS IT")
                     clearInterval(object.interval);
                     object.deleteKey();
                 }
                 await delay(500);
                 Object.keys(object).forEach(key => delete object[key]);
             },
-            alive: true,
-            socket: {},
             // extras
-            subscriptions: async () => {
+            unsubscribe: async (subscriptions) => {
+                if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
                 const promise = newPromise(object);
 
+                const msg = JSON.stringify
+                    ({
+                        "method": "UNSUBSCRIBE",
+                        "params":
+                            Array.isArray(subscriptions) ? subscriptions :
+                                [
+                                    subscriptions
+                                ],
+                        "id": 3
+                    });
+                object.socket.send(msg);
+                return promise;
+            },
+            subscriptions: async () => {
                 const msg = JSON.stringify
                     (
                         {
@@ -2187,11 +2204,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                         }
                     );
                 object.socket.send(msg);
-                return promise;
+                return newPromise(object);
             },
-
             privateMessage: (msg) => {
                 if (typeof object.resolve != 'function') return;
+
                 // For subscriptions \\
                 if (Array.isArray(msg.result)) {
                     object.resolve(msg.result);
@@ -2220,7 +2237,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     newSocket = function (params, callback, object) {
         object.socket = new ws(params.baseURL + '/ws/' + params.path);
         let socket = object.socket;
-        
+
         socket.on('open', () => {
             if (binance.ws) console.log(params.path + ' is open')
             // TODO add conditions to add the correct subscriptions to the right futures/spot object
