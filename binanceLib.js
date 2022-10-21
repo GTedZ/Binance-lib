@@ -2235,7 +2235,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         if (this.query) {
             console.log(params.baseURL + params.path, options);
-            console.log(query)
+            if (query) console.log(query)
         }
         let startTime = Date.now(), latency;
         try {
