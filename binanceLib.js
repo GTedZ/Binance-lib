@@ -2148,28 +2148,65 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     connect = (params, callback) => {
         if (!params.path) { ERROR('streamName', 'required'); return; }
         if (!callback) { ERROR('callback', 'required'); return; }
+
+        const newPromise = (object) => {
+            return new Promise((res, reject) => {
+                object.resolve = res;
+                object.reject = reject;
+                setTimeout(() => {
+
+                })
+            });
+        }
+
         const object = {
             unsubscribe: () => {
-                object.alive = false;
-                object.socket.close();
+
             },
-            close: () => {
+            close: async () => {
                 object.alive = false;
                 object.socket.close();
                 if (object.interval) {
                     clearInterval(object.interval);
                     object.deleteKey();
                 }
+                await delay(500);
+                Object.keys(object).forEach(key => delete object[key]);
             },
             alive: true,
             socket: {},
             // extras
             subscriptions: async () => {
+                const promise = newPromise(object);
 
+                const msg = JSON.stringify
+                    (
+                        {
+                            "method": "LIST_SUBSCRIPTIONS",
+                            "id": 3
+                        }
+                    );
+                object.socket.send(msg);
+                return promise;
             },
 
-            privateMessage: () => {
-                
+            privateMessage: (msg) => {
+                if (typeof object.resolve != 'function') return;
+                // For subscriptions \\
+                if (Array.isArray(msg.result)) {
+                    object.resolve(msg.result);
+                    object.resolve = {};
+                    object.reject = {};
+                }
+                // For subscriptions //
+
+                // For failures \\\\
+                else {
+                    object.resolve('success!');
+                    object.resolve = {};
+                    object.reject = {};
+                }
+                // For failures ////
             },
             resolve: {},
             reject: {}
@@ -2183,21 +2220,27 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     newSocket = function (params, callback, object) {
         object.socket = new ws(params.baseURL + '/ws/' + params.path);
         let socket = object.socket;
-
+        
         socket.on('open', () => {
             if (binance.ws) console.log(params.path + ' is open')
             // TODO add conditions to add the correct subscriptions to the right futures/spot object
         })
 
         socket.on('message', (msg) => {
-            if (binance.ws) console.log(params.path + ' new message');
             const obj = parseSocketMessage(msg);
-            if (obj.id && obj.msg && Object.keys(obj).length == 2) {
+            if (Object.keys(obj).includes('id') && Object.keys(obj).includes('result') && Object.keys(obj).length == 2) {
                 if (binance.ws) console.log('Private response to websocket message was received');
-                object.privateMessage(msg);
+                object.privateMessage(obj);
+                return;
+            } else if (Object.keys(obj).includes('code') && Object.keys(obj).includes('msg') && Object.keys(obj).length == 2) {
+                if (binance.ws) console.log('Error code from websocket message was received');
+                if (typeof object.reject == 'function') object.reject(msg);
                 return;
             }
+            // normal websocket messages here \\
+            if (binance.ws) console.log(params.path + ' new message');
             callback(obj);
+            // normal websocket messages here //
         })
 
         socket.on('error', () => {
