@@ -2152,25 +2152,23 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (!params.path) { ERROR('streamName', 'required'); return; }
         if (!callback) { ERROR('callback', 'required'); return; }
 
-        const newPromise = (object) => {
-            return new Promise((res, reject) => {
-                object.resolve = res;
-                object.reject = reject;
-
+        const newPromise = (object, id) => {
+            return new Promise((res) => {
+                object.resolves[id] = res;
                 setTimeout(() => {
-                    if (typeof object.reject == 'function') reject(ERROR('No response was received from websocket endpoint within 5 seconds'))
+                    if (object.resolves[id] && object.resolves[id] != undefined && typeof object.resolves[id] == 'function')
+                        object.resolves[id](ERROR('No response was received from websocket endpoint within 5 seconds'))
                 }, 5000)
             });
         }
 
-        const object = { // TODO to map each resolve and reject to the 'id' that I create
+        const object = {
             alive: true,
             socket: {},
             close: async () => {
                 object.alive = false;
                 object.socket.close();
                 if (object.interval) {
-                    console.log("THI SIS IT")
                     clearInterval(object.interval);
                     object.deleteKey();
                 }
@@ -2178,9 +2176,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 Object.keys(object).forEach(key => delete object[key]);
             },
             // extras
+            subscribe: async (...params) => {
+                
+            },
             unsubscribe: async (subscriptions) => {
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
-                const promise = newPromise(object);
+                const id = randomNumber(0, 10000);
+                const promise = newPromise(object, id);
 
                 const msg = JSON.stringify
                     ({
@@ -2190,43 +2192,40 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                 [
                                     subscriptions
                                 ],
-                        "id": 3
+                        "id": id
                     });
                 object.socket.send(msg);
                 return promise;
             },
             subscriptions: async () => {
+                const id = randomNumber(0, 10000);
                 const msg = JSON.stringify
                     (
                         {
                             "method": "LIST_SUBSCRIPTIONS",
-                            "id": 3
+                            "id": id
                         }
                     );
                 object.socket.send(msg);
-                return newPromise(object);
+                return newPromise(object, id);
             },
             privateMessage: (msg) => {
-                if (typeof object.resolve != 'function') return;
-
+                if (typeof object.resolves[msg.id] != 'function') return;
                 // For subscriptions \\
                 if (Array.isArray(msg.result)) {
-                    object.resolve(msg.result);
-                    object.resolve = {};
-                    object.reject = {};
+                    object.resolves[msg.id](msg.result);
+                    delete object.resolves[msg.id];
                 }
                 // For subscriptions //
 
                 // For failures \\\\
                 else {
-                    object.resolve('success!');
-                    object.resolve = {};
-                    object.reject = {};
+                    object.resolves[msg.id]('success!');
+                    delete object.resolves[msg.id];
                 }
                 // For failures ////
             },
-            resolve: {},
-            reject: {}
+            resolves: {}
         }
 
         new newSocket(params, callback, object);
@@ -2245,13 +2244,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         socket.on('message', (msg) => {
             const obj = parseSocketMessage(msg);
+
             if (Object.keys(obj).includes('id') && Object.keys(obj).includes('result') && Object.keys(obj).length == 2) {
                 if (binance.ws) console.log('Private response to websocket message was received');
                 object.privateMessage(obj);
                 return;
             } else if (Object.keys(obj).includes('code') && Object.keys(obj).includes('msg') && Object.keys(obj).length == 2) {
                 if (binance.ws) console.log('Error code from websocket message was received');
-                if (typeof object.reject == 'function') object.reject(msg);
+                if (typeof object.resolves[obj.id] == 'function') object.resolves[obj.id]({
+                    error: {
+                        status: 400,
+                        statusText: 'Bad Websocket Request',
+                        ...obj
+                    }
+                });
                 return;
             }
             // normal websocket messages here \\
@@ -2486,6 +2492,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const equal = (variable, possibilities) => {
         return possibilities.filter(a => variable == a).length != 0;
+    }
+
+    const randomNumber = (lower, higher) => {
+        return parseInt(Math.random() * (higher - lower) + lower);
     }
 
     const fixValue = (variable, end_value, possibilities) => {
