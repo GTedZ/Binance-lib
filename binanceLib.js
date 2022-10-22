@@ -1592,10 +1592,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         // futures websocket \\\\
         futures: {
 
-            subscribe: function (subscription, callback) {
+            /**
+             * Subscribes to any stream, not recommended as it will not rename the properties, for better clarity, please use the relevant websocket function
+             * @param {String, Array} subscriptions - string OR array
+             * @param {Function} callback - the callback function that will be called on any new websocket message
+             */
+            subscribe: function (subscriptions, callback) {
                 const params = {
                     baseURL: fWSS,
-                    path: subscription
+                    path: subscriptions
                 }
 
                 return connect(params, callback, (path) => { return path });
@@ -2388,6 +2393,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         const object = {
             alive: true,
             socket: {},
+            cachedSubscriptions: [],
             close: async () => {
                 object.alive = false;
                 object.socket.close();
@@ -2402,6 +2408,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             subscribe: async (...params) => {
                 const formedWSPath = formMessageFunc(...params);
                 if (formedWSPath.error) return formedWSPath;
+                object.cachedSubscriptions.push(formedWSPath)
 
                 const id = randomNumber(0, 10000);
                 const promise = newPromise(object, id);
@@ -2456,12 +2463,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 // For subscriptions //
 
-                // For failures \\\\
+                // For non .subscriptions() requests \\\\
                 else {
                     object.resolves[msg.id]('success!');
                     delete object.resolves[msg.id];
                 }
-                // For failures ////
+                // For non .subscriptions() requests ////
             },
             resolves: {}
         }
