@@ -1336,7 +1336,36 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    // TODO theres 2 or more functions left to include
+    this.futuresPortfolioMarginExchangeInfo = (symbol) => {
+        if (!symbol) return ERR('symbol', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/pmExchangeInfo',
+            method: 'get'
+        }
+
+        let options = {
+            symbol: symbol
+        }
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresPortfolioMarginAccountInfo = (asset, opts = {}) => {
+        if (!asset) return ERR('asset', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/pmAccountInfo',
+            method: 'get'
+        }
+
+        let options = {
+            asset: asset
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
 
     // futures Account/Trade Endpoints ////
 

@@ -194,6 +194,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 // TODO added futuresUserCommissionRate()
 // TODO added futuresTransactionHistoryDownloadId()
 // TODO added futuresGetTransactionHistoryLinkByDownloadId()
+// TODO added futuresPortfolioMarginExchangeInfo()
 
 ## **FUTURES MARKET DATA**
 
