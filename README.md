@@ -4116,15 +4116,17 @@ There are two main ways to subscribe:
 ```
 </details>
 
-- .subscriptions():
+- All requests that awaits for 'data'(Like for .subscriptions(), which returns the subscriptions in the socket) will return as normal
+- But all requests that do not anticipate a reply of data(Like for .subscribe() or .unsubscribe()) will instead only need to be checked for .error property if it is urgent to know that it was a success:
+- - .subscriptions():
 ```js
   let stream = binance.websockets.futures...;
   // ...
   // ...
   let subscriptions = await stream.subscriptions(); // this returns a list of all the subscriptions in the CURRENT socket `stream`
-  console.log(subscriptions); 
+  console.log(subscriptions);
 ```
-- .unsubscribe():
+- - .unsubscribe():
 ```js
   // assuming we have the subscriptions from the .subscriptions() method
   let response = await stream.unsubscribe(subscriptions);
@@ -4132,7 +4134,7 @@ There are two main ways to subscribe:
     // this means an error happened, altho very unlikely since the connection is already established
   }
 ```
-- same for .subscribe()
+- - same for .subscribe()
 
 ## WEBSOCKET PARAMETERS EXPLANATION:
 - ***callback***: It's a function that you define anywhere (can be a simple arrow function), that is passed to the websocket function, that will be called on every message received from the websocket connection, for example:
