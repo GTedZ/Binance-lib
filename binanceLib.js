@@ -896,7 +896,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.futuresCancelBatchOrders = async (symbol, orderIdList, origClientOrderIdList, opts = {}) => {
-        return ERR('This request currently doesnt work (problem in the library)');
+        return ERR('This request currently isnt working (in library)');
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/batchOrders',
@@ -906,18 +906,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {
             symbol: symbol
         }
-        if (!orderIdList && !origClientOrderIdList) return ERR(`Either 'orderIdList' or 'origClientOrderIdList' need to be sent for this request.`);
-        if (orderIdList) {
-            if (!Array.isArray(orderIdList)) return ERR('orderIdList', 'type', 'Array');
-            options.orderIdList = orderIdList;
-        } else if (origClientOrderIdList) {
-            if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
-            options.origClientOrderIdList = origClientOrderIdList;
-        }
+        // if (!orderIdList && !origClientOrderIdList) return ERR(`Either 'orderIdList' or 'origClientOrderIdList' need to be sent for this request.`);
+        // if (orderIdList) {
+        //     if (!Array.isArray(orderIdList)) return ERR('orderIdList', 'type', 'Array');
+        //     options.orderIdList = orderIdList;
+        // } else if (origClientOrderIdList) {
+        //     if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
+        //     options.origClientOrderIdList = origClientOrderIdList;
+        // }
 
-        options.orderIdList = orderIdList.join('%')
+        // options.orderIdList = orderIdList.join('%')
 
-        return request(params, options, 'SIGNED');
+        params.data = { orderIdList: [128731, 1238712] }
+
+        return request(params, options, 'SIGNED', { 'Content-Type': 'application/x-www-form-urlencoded' });
     }
 
     /**
@@ -1337,16 +1339,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.futuresPortfolioMarginExchangeInfo = (symbol) => {
-        if (!symbol) return ERR('symbol', 'required');
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/pmExchangeInfo',
             method: 'get'
         }
 
-        let options = {
-            symbol: symbol
-        }
+        let options = {}
+        if (symbol) options.symbol = symbol;
 
         return request(params, options, 'SIGNED');
     }
@@ -2558,6 +2558,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (query) console.log(query)
         }
         let startTime = Date.now(), latency;
+
         try {
             let response = await axios({
                 method: params.method,

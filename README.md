@@ -3641,26 +3641,319 @@ order2 =>
 
 ### .futuresADLQuantileEstimation():
 ```js
-  // TODO
+  let ADLQuantile = await binance.futuresADLQuantileEstimation();
+
+  let BTC_ADLQuantile = await binance.futuresADLQuantileEstimation('BTCUSDT');
 ```
+<details>
+<summary>View Response</summary>
 
-// TODO theres 3 or more functions left to include
+```js
+[
+    {
+        "symbol": "ETHUSDT", 
+        "adlQuantile": 
+            {
+                // if the positions of the symbol are crossed margined in Hedge Mode, "LONG" and "SHORT" will be returned a same quantile value, and "HEDGE" will be returned instead of "BOTH".
+                "LONG": 3,  
+                "SHORT": 3, 
+                "HEDGE": 0   // only a sign, ignore the value
+            }
+        },
+    {
+        "symbol": "BTCUSDT", 
+        "adlQuantile": 
+            {
+                // for positions of the symbol are in One-way Mode or isolated margined in Hedge Mode
+                "LONG": 1,  // adl quantile for "LONG" position in hedge mode
+                "SHORT": 2,     // adl qauntile for "SHORT" position in hedge mode
+                "BOTH": 0       // adl qunatile for position in one-way mode
+            }
+    },
+    ...
+ ]
+```
+</details>
 
+### .futuresForceOrders():
+```js
+  let forceOrders = await binance.futuresForceOrders();
 
+  let BTC_last_5_forceOrders = await binance.futuresForceOrders('BTCUSDT', 5);
 
+  let BTC_last_5_LIQ_orders_only = await binance.futuresForceOrders('BTCUSDT', 5, 'LIQUIDATION');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+[
+  {
+    "orderId": 6071832819, 
+    "symbol": "BTCUSDT", 
+    "status": "FILLED", 
+    "clientOrderId": "autoclose-1596107620040000020", 
+    "price": "10871.09", 
+    "avgPrice": "10913.21000", 
+    "origQty": "0.001", 
+    "executedQty": "0.001", 
+    "cumQuote": "10.91321", 
+    "timeInForce": "IOC", 
+    "type": "LIMIT", 
+    "reduceOnly": false, 
+    "closePosition": false, 
+    "side": "SELL", 
+    "positionSide": "BOTH", 
+    "stopPrice": "0", 
+    "workingType": "CONTRACT_PRICE", 
+    "origType": "LIMIT", 
+    "time": 1596107620044, 
+    "updateTime": 1596107620087
+  }
+  {
+    "orderId": 6072734303, 
+    "symbol": "BTCUSDT", 
+    "status": "FILLED", 
+    "clientOrderId": "adl_autoclose", 
+    "price": "11023.14", 
+    "avgPrice": "10979.82000", 
+    "origQty": "0.001", 
+    "executedQty": "0.001", 
+    "cumQuote": "10.97982", 
+    "timeInForce": "GTC", 
+    "type": "LIMIT", 
+    "reduceOnly": false, 
+    "closePosition": false, 
+    "side": "BUY", 
+    "positionSide": "SHORT", 
+    "stopPrice": "0", 
+    "workingType": "CONTRACT_PRICE", 
+    "origType": "LIMIT", 
+    "time": 1596110725059, 
+    "updateTime": 1596110725071
+  },
+  ...
+]
+```
+</details>
 
+### .futuresQuantitativeRules():
+```js
+  let APITradingStatus = await binance.futuresQuantitativeRules();
 
+  let BTC_APITradingStatus = await binance.futuresQuantitativeRules('BTCUSDT');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "indicators": { // indicator: quantitative rules indicators, value: user's indicators value, triggerValue: trigger indicator value threshold of quantitative rules. 
+        "BTCUSDT": [
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "UFR",  // Unfilled Ratio (UFR)
+                "value": 0.05,  // Current value
+                "triggerValue": 0.995  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "IFER",  // IOC/FOK Expiration Ratio (IFER)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "GCR",  // GTC Cancellation Ratio (GCR)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "DR",  // Dust Ratio (DR)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            }
+        ],
+        "ETHUSDT": [
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "UFR",
+                "value": 0.05,
+                "triggerValue": 0.995
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "IFER",
+                "value": 0.99,
+                "triggerValue": 0.99
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "GCR",
+                "value": 0.99,
+                "triggerValue": 0.99
+            }
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "DR",
+                "value": 0.99,
+                "triggerValue": 0.99
+            }
+        ]
+    },
+    "updateTime": 1545741270000
+}
+```
+***Or (Account violation triggered):***
+```js
+{
+    "indicators":{
+        "ACCOUNT":[
+            {
+                "indicator":"TMV",  //  Too many violations under multiple symbols trigger account violation
+                "value":10,
+                "triggerValue":1,
+                "plannedRecoverTime":1644919865000,
+                "isLocked":true
+            }
+        ]
+    },
+    "updateTime":1644913304748
+}
+```
+</details>
 
+### .futuresUserCommissionRate():
+```js
+  let BTC_CommissionRate = await binance.futuresUserCommissionRate('BTCUSDT');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+  symbol: 'BTCUSDT',
+  makerCommissionRate: 0.0002,  // For LIMIT orders
+  takerCommissionRate: 0.0004   // For MARKET orders
+}
+```
+</details>
 
+### .futuresTransactionHistoryDownloadId():
+```js
+  const startTime = Date.now() - (5 * 24 * 60 * 60 * 1000); // last 5 days
+  const endTime = Date.now();
 
+  let TxHistoryDownloadId = await binance.futuresTransactionHistoryDownloadId(startTime, endTime);
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "avgCostTimestampOfLast30d":7241837, // Average time taken for data download in the past 30 days
+    "downloadId":"545923594199212032",
+}
+```
+</details>
 
+### .futuresGetTransactionHistoryLinkByDownloadId():
+```js
+  let downloadLink = await binance.futuresGetTransactionHistoryLinkByDownloadId(TxHistoryDownloadId); // which is '545923594199212032' from the last request above
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "downloadId":"545923594199212032",
+    "status":"completed",     // Enum：completed，processing
+    "url":"www.binance.com",  // The link is mapped to download id
+    "notified":true,          // ignore
+    "expirationTimestamp":1645009771000,  // The link would expire after this timestamp
+    "isExpired":null,
+}
 
+// OR when server is still processing
+{
+    "downloadId":"545923594199212032",
+    "status":"processing",
+    "url":"", 
+    "notified":false,
+    "expirationTimestamp":-1
+    "isExpired":null,
+}
+```
+</details>
 
+### .futuresPortfolioMarginExchangeInfo():
+```js
+  let portfolioMarginAccountInfo = await binance.futuresPortfolioMarginExchangeInfo('BTCUSDT');
+  
+  let FULL_portfolioMarginAccountInfo = await binance.futuresPortfolioMarginExchangeInfo();
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  notionalLimits: 
+    [ 
+      { 
+        symbol: 'BTCUSDT', notionalLimit: 100000000 
+      } 
+    ] 
+}
+
+{ // for ALL symbols
+  notionalLimits: [
+    { symbol: 'BTCUSDT', notionalLimit: 100000000 },
+    { symbol: 'ETHUSDT', notionalLimit: 20000000 },
+    { symbol: 'BCHUSDT', notionalLimit: 3000000 },
+    { symbol: 'XRPUSDT', notionalLimit: 6000000 },
+    { symbol: 'EOSUSDT', notionalLimit: 3000000 },
+    { symbol: 'LTCUSDT', notionalLimit: 3000000 },
+    { symbol: 'TRXUSDT', notionalLimit: 3000000 },
+    { symbol: 'ETCUSDT', notionalLimit: 3000000 },
+    { symbol: 'LINKUSDT', notionalLimit: 6000000 },
+    { symbol: 'XLMUSDT', notionalLimit: 3000000 },
+    { symbol: 'ADAUSDT', notionalLimit: 6000000 },
+    { symbol: 'XMRUSDT', notionalLimit: 3000000 },
+    { symbol: 'DASHUSDT', notionalLimit: 1000000 },
+    { symbol: 'ZECUSDT', notionalLimit: 2000000 },
+    { symbol: 'XTZUSDT', notionalLimit: 3000000 },
+    { symbol: 'BNBUSDT', notionalLimit: 3000000 },
+    ...,
+    ...,
+  ]
+}
+```
+</details>
+
+### .futuresPortfolioMarginAccountInfo():
+```js
+  let BTC_marginAccountInfo = await binance.futuresPortfolioMarginAccountInfo('BTC');
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "maxWithdrawAmountUSD": "1627523.32459208", // Portfolio margin maximum virtual amount for transfer out in USD
+    "asset": "BTC",                             // asset name
+    "maxWithdrawAmount": "27.43689636",         // maximum amount for transfer out
+}
+```
+</details>
 
 
 
@@ -3877,7 +4170,7 @@ There are two main ways to subscribe:
 |partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|                                                                                  |                                                  |
-
+// TODO need to add all spot websockets, their documentation and add formData() to all the already created spot websockets
 
 ### spot .aggTrade():
 **Update Speed**: *Realtime*
