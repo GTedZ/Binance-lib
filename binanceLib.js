@@ -65,7 +65,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresPing(reconnect, tries);
             }
         }
@@ -87,7 +87,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresServerTime(reconnect, tries);
             }
         }
@@ -134,7 +134,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresExchangeInfo(reconnect, tries, options);
             }
         }
@@ -1640,6 +1640,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 };
 
                 this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('aggTrade')) return symbol;
+
                     if (!symbol) { ERROR('symbol', 'required'); return; }
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                     return `${symbol}@aggTrade`;
@@ -1681,6 +1683,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol = false, slow = false) => {
+                    if (symbol && symbol.includes('markPrice')) return symbol;
+
                     let origPath = `!markPrice@arr@1s`;
                     if (symbol) origPath = `${symbol.toLowerCase()}@markPrice@1s`
                     if (slow) origPath = origPath.slice(0, -3);
@@ -1708,6 +1712,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('kline_')) return symbol;
+
                     if (!symbol) return ERROR('symbol', 'required');
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                     return `${symbol.toLowerCase()}@kline_1m`;
@@ -1770,6 +1776,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol, interval) => {
+                    if (symbol && symbol.includes('kline_')) return symbol;
+
                     if (!symbol) return ERROR('symbol', 'required');
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                     if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
@@ -1832,6 +1840,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (pair, contractType, interval) => {
+                    if (pair && pair.includes('continuousKline_')) return pair;
+
                     if (!pair) return ERROR('pair', 'required');
                     if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
 
@@ -1881,6 +1891,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('miniTicker')) return symbol;
+
                     let origPath = '!miniTicker@arr';
                     if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
                     if (symbol) origPath = params.path = `${symbol.toLowerCase()}@miniTicker`;
@@ -1934,6 +1946,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('ticker')) return symbol;
+
                     let origPath = '!ticker@arr';
                     if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
                     if (symbol) origPath = params.path = `${symbol.toLowerCase()}@ticker`;
@@ -1978,6 +1992,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('bookTicker')) return symbol;
+
                     let origPath = '!bookTicker';
                     if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
                     if (symbol) origPath = `${symbol.toLowerCase()}@bookTicker`;
@@ -2029,6 +2045,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('forceOrder')) return symbol;
+
                     let origPath = '!forceOrder@arr';
                     if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
                     if (symbol) origPath = `${symbol.toLowerCase()}@forceOrder`;
@@ -2082,6 +2100,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol, levels, speed) => {
+                    if (symbol && symbol.includes('@depth')) return symbol;
+
                     if (!symbol) return ERROR('symbol', 'required');
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2140,6 +2160,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol, speed) => {
+                    if (symbol && symbol.includes('@depth')) return symbol;
+
                     if (!symbol) return ERROR('symbol', 'required');
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2189,6 +2211,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@compositeIndex')) return symbol;
+
                     if (!symbol) return ERROR('symbol', 'required');
                     return `${symbol.toLowerCase()}@compositeIndex`;
                 }
@@ -2196,7 +2220,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            userData: async function (callback, tries = 2) {
+            userData: async function (callback, tries = 10) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2219,8 +2243,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 let resp = await request(postParams, {}, 'DATA');
                 if (resp.error) {
+                    if (resp.error.code == -1) return resp;
+                    await delay(binance.timeout)
                     if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
-                    return userData(callback, --tries);
+                    return binance.websockets.futures.userData(callback, --tries);
                 }
 
                 const params = {
@@ -2393,7 +2419,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         const object = {
             alive: true,
             socket: {},
-            cachedSubscriptions: [],
+            cachedSubscriptions: new Set().add(params.path),
             close: async () => {
                 object.alive = false;
                 object.socket.close();
@@ -2408,7 +2434,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             subscribe: async (...params) => {
                 const formedWSPath = formMessageFunc(...params);
                 if (formedWSPath.error) return formedWSPath;
-                object.cachedSubscriptions.push(formedWSPath)
+                object.cachedSubscriptions.add(formedWSPath)
+
 
                 const id = randomNumber(0, 10000);
                 const promise = newPromise(object, id);
@@ -2428,6 +2455,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
                 const id = randomNumber(0, 10000);
                 const promise = newPromise(object, id);
+
+                // deleting keys
+                if (Array.isArray(subscriptions)) {
+                    subscriptions.forEach(sub => object.cachedSubscriptions.delete(sub))
+                } else object.cachedSubscriptions.delete(subscriptions);
+                //
+
 
                 const msg = JSON.stringify
                     ({
@@ -2479,12 +2513,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     newSocket = function (params, callback, object) {
+        if (binance.ws) console.log({ path: params.path })
+        let streamPath = params.path, allSubsDone = true;
+        if (Array.isArray(streamPath)) {
+            allSubsDone = false;
+            streamPath = params.path[0];
+        }
+
         object.socket = new ws(params.baseURL + '/ws/' + params.path);
         let socket = object.socket;
 
         socket.on('open', () => {
-            if (binance.ws) console.log(params.path + ' is open')
-            // TODO add conditions to add the correct subscriptions to the right futures/spot object
+            if (binance.ws) console.log(streamPath + ' is open');
+            if (!allSubsDone) {
+                allSubsDone = true;
+                serializedSubscribe([...params.path], object);
+            }
         })
 
         socket.on('message', (msg) => {
@@ -2519,6 +2563,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (binance.ws) console.log(params.path + ' Closed!');
 
             setTimeout(() => {
+                params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
                 if (object.alive) newSocket(params, callback, object);
             }, binance.timeout)
         })
@@ -2538,6 +2583,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (obj.id && obj.result) return obj;
         if (binance.fetchFloats) return parseAllPropertiesToFloat(obj);
         else return obj;
+    }
+
+    serializedSubscribe = async (arr, object) => {
+        for await (const path of arr) {
+            let resp = await object.subscribe(path);
+            let streamName = `subTo${path}`;
+            let obj = {}; obj[streamName] = resp;
+            if (binance.ws) console.log(obj)
+        }
     }
 
     // websockets ////
