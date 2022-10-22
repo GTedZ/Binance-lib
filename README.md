@@ -4021,7 +4021,6 @@ There are two main ways to subscribe:
   const delay = (ms) => new Promise(r => setTimeout(r,ms));
 
   const candlestick_stream = binance.websockets.futures.candlesticks('BTCUSDT', '1m', console.log);
-  await delay(3000);  // to make sure that the connection is open, it will take some time to establish a connection with the server
   
   candlestick_stream.close(); // this closes the connection permanently, the callback function will not be triggered anymore
 ```
@@ -4033,8 +4032,6 @@ There are two main ways to subscribe:
     // to something here with the data
   });
   
-  await delay(3000);  // to make sure that the connection is open, it will take some time to establish a connection with the server
-
   const subscriptions = await aggTrades_stream.subscriptions(); // this function gets the subscriptions,
   aggTrades_stream.unsubscribe(subscriptions); // This here is how you unsubscribe from a subscription, or array of subscriptions
 ```
@@ -4059,7 +4056,6 @@ There are two main ways to subscribe:
     // do something with the data
   });
 
-  await delay(3000);  // This is just to make sure the connection is open before we use the .subscribe() function
 
   // now remember, .lastPrice(<symbol>, <callback>) has 2 parameters, but ignoring 'callback' since it isnt needed, we only need to pass the new symbol
   lastPrice_stream.subscribe('ETHUSDT');
@@ -4071,8 +4067,6 @@ There are two main ways to subscribe:
     // do something with the data
   });
 
-  await delay(3000);
-
   // the function has 3 parameters, all of them mandatory => pair, contractType, interval
   continuousKline_stream.subscribe('ETHUSDT','PERPETUAL', '1m');
   continuousKline_stream.subscribe('XRPUSDT','PERPETUAL', '3m');
@@ -4080,8 +4074,6 @@ There are two main ways to subscribe:
 - Same for optional parameters:
 ```js
   let miniTicker_stream = binance.websockets.futures.miniTicker('BTCUSDT', (data) => console.log());
-
-  await delay(3000);
 
   miniTicker_stream.unsubscribe(await miniTicker_stream.subscriptions()); // unsubscribing from the single stream to sub to the main stream on the next request
   miniTicker_stream.subscribe('');  // Because symbol is an 'optional' parameter, the function will accept an empty symbol as a parameter and will subscribe to the ALL symbols' stream

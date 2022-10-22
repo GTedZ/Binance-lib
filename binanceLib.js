@@ -2412,7 +2412,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 setTimeout(() => {
                     if (object.resolves[id] && object.resolves[id] != undefined && typeof object.resolves[id] == 'function')
                         object.resolves[id](ERROR('No response was received from websocket endpoint within 5 seconds'))
-                }, 5000)
+                }, 10000)
             });
         }
 
@@ -2438,7 +2438,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
 
                 const id = randomNumber(0, 10000);
-                const promise = newPromise(object, id);
                 const msg = JSON.stringify
                     ({
                         "method": "SUBSCRIBE",
@@ -2448,13 +2447,18 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                             ],
                         "id": id
                     });
-                object.socket.send(msg);
-                return promise;
+                try {
+                    object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.subscribe()`)
+                    await delay(binance.timeout);
+                    return object.subscribe(...params);
+                }
             },
             unsubscribe: async (subscriptions) => {
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
                 const id = randomNumber(0, 10000);
-                const promise = newPromise(object, id);
 
                 // deleting keys
                 if (Array.isArray(subscriptions)) {
@@ -2473,8 +2477,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                 ],
                         "id": id
                     });
-                object.socket.send(msg);
-                return promise;
+                try {
+                    await object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.unsubscribe()`)
+                    await delay(binance.timeout);
+                    return object.unsubscribe(subscriptions);
+                }
             },
             subscriptions: async () => {
                 const id = randomNumber(0, 10000);
@@ -2485,8 +2495,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                             "id": id
                         }
                     );
-                object.socket.send(msg);
-                return newPromise(object, id);
+
+                try {
+                    object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.subscriptions()`)
+                    await delay(binance.timeout);
+                    return object.subscriptions();
+                }
             },
             privateMessage: (msg) => {
                 if (typeof object.resolves[msg.id] != 'function') return;
