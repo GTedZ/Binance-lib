@@ -1249,7 +1249,94 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    // TODO theres 3 or more functions left to include
+    this.futuresForceOrders = (symbol = false, limit = 50, autoCloseType = '', startTime = 0, endTime = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/forceOrders',
+            method: 'get'
+        }
+
+        let options = {
+            limit: limit
+        }
+        if (symbol) options.symbol = symbol;
+        if (autoCloseType) {
+            if (!equal(autoCloseType, ['LIQUIDATION', 'ADL'])) return ERR('autoCloseType', 'value', false, ['LIQUIDATION', 'ADL'])
+            options.autoCloseType = autoCloseType;
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED')
+    }
+
+    this.futuresQuantitativeRules = (symbol = false, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/apiTradingStatus',
+            method: 'get'
+        }
+
+        let options = {}
+        if (symbol) options.symbol;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresUserCommissionRate = (symbol, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/commissionRate ',
+            method: 'get'
+        }
+
+        let options = {
+            symbol: symbol
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresTransactionHistoryDownloadId = (startTime, endTime, opts = {}) => {
+        if (!startTime) return ERR('startTime', 'required');
+        if (!endTime) return ERR('endTime', 'required');
+
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/income/asyn',
+            method: 'get'
+        }
+
+        let options = {
+            startTime: startTime,
+            endTime: endTime
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresGetTransactionHistoryLinkByDownloadId = (downloadId, opts = {}) => {
+        if (!downloadId) return ERR('downloadId', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/income/asyn/id',
+            method: 'get'
+        }
+
+        let options = {
+            downloadId: downloadId
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    // TODO theres 2 or more functions left to include
 
     // futures Account/Trade Endpoints ////
 
@@ -2177,7 +2264,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
             // extras
             subscribe: async (...params) => {
-                
+
             },
             unsubscribe: async (subscriptions) => {
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);

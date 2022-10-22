@@ -189,6 +189,11 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresUserTrades()                                  <a href='#futuresUserTrades'><sup>ref</sup></a>|                                                                         |symbol, limit, incomeType, startTime, endTime            |recvWindow      |
 |futuresIncomeHistory()                            <a href='#futuresIncomeHistory'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
 |futuresADLQuantileEstimation()            <a href='#futuresADLQuantileEstimation'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+// TODO added futuresForceOrders()
+// TODO added futuresQuantitativeRules()
+// TODO added futuresUserCommissionRate()
+// TODO added futuresTransactionHistoryDownloadId()
+// TODO added futuresGetTransactionHistoryLinkByDownloadId()
 
 ## **FUTURES MARKET DATA**
 
