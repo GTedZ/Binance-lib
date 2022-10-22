@@ -1378,10 +1378,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         spot: {
 
             aggTrade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1415,10 +1415,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
 
             trade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1452,13 +1452,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
 
             candlesticks: function (symbol, interval, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!interval) { ERROR('interval', 'required'); return; }
+                if (!interval) { return ERROR('interval', 'required'); }
                 if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals)
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1504,7 +1504,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
 
             miniTicker: function (callback, symbol = false) {
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1537,7 +1537,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
 
             ticker: function (callback, symbol = false) {
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1590,16 +1590,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         // futures websocket \\\\
         futures: {
 
-            aggTrade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
-                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                if (!callback) { ERROR('callback', 'required'); return; }
-                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
-
-                symbol = symbol.toLowerCase();
+            subscribe: function (subscription, callback) {
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@aggTrade`
+                    path: subscription
+                }
+
+                return connect(params, callback, (path) => { return path });
+            },
+
+            aggTrade: function (symbol, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol.toLowerCase()}@aggTrade`
                 }
 
                 const newKeys =
@@ -1623,7 +1631,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     );
                     callback(msg);
                 };
-                return connect(params, this.format);
+
+                this.formPath = (symbol) => {
+                    if (!symbol) { ERROR('symbol', 'required'); return; }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol}@aggTrade`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             markPrice: function (callback, symbol = false, slow = false) {
@@ -1658,19 +1673,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false, slow = false) => {
+                    let origPath = `!markPrice@arr@1s`;
+                    if (symbol) origPath = `${symbol.toLowerCase()}@markPrice@1s`
+                    if (slow) origPath = origPath.slice(0, -3);
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             lastPrice: function (symbol, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                symbol = symbol.toLowerCase();
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@kline_1m`
+                    path: `${symbol.toLowerCase()}@kline_1m`
                 }
 
                 this.format = (msg) => {
@@ -1679,7 +1700,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(obj);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@kline_1m`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             /**
@@ -1690,14 +1717,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             candlesticks: function (symbol, interval, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                symbol = symbol.toLowerCase();
+
                 if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
+
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@kline_${interval}`
+                    path: `${symbol.toLowerCase()}@kline_${interval}`
                 }
 
                 const newKeys = [
@@ -1734,13 +1762,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol, interval) => {
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
+                    return `${symbol.toLowerCase()}@kline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             continuousContractKline: function (pair, contractType, interval, callback) {
                 if (!pair) return ERROR('pair', 'required');
                 if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
-                pair = pair.toLowerCase();
 
                 if (!contractType) return ERROR('contractType', 'required');
                 if (!equal(contractType, shortenedContractTypes)) return ERROR('contractType', 'value', false, shortenedContractTypes);
@@ -1753,7 +1787,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 let params = {
                     baseURL: fWSS,
-                    path: `${pair}_${contractType.toLowerCase()}@continuousKline_${interval}`
+                    path: `${pair.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval}`
                 }
 
                 const newKeys = [
@@ -1790,7 +1824,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (pair, contractType, interval) => {
+                    if (!pair) return ERROR('pair', 'required');
+                    if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
+
+                    if (!contractType) return ERROR('contractType', 'required');
+                    if (!equal(contractType, shortenedContractTypes)) return ERROR('contractType', 'value', false, shortenedContractTypes);
+
+                    if (!interval) return ERROR('contractType', 'required');
+                    if (!equal(interval, intervals)) return ERROR('contractType', 'value', false, intervals);
+                    return `${pair.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             miniTicker: function (callback, symbol = false) {
@@ -1827,7 +1873,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    let origPath = '!miniTicker@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = params.path = `${symbol.toLowerCase()}@miniTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             ticker: function (callback, symbol = false) {
@@ -1873,7 +1926,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    let origPath = '!ticker@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = params.path = `${symbol.toLowerCase()}@ticker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             bookTicker: function (callback, symbol = false) {
@@ -1910,7 +1970,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    let origPath = '!bookTicker';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = `${symbol.toLowerCase()}@bookTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             liquidationOrders: function (callback, symbol = false) {
@@ -1954,7 +2021,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    let origPath = '!forceOrder@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = `${symbol.toLowerCase()}@forceOrder`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             partialBookTicker: function (symbol, levels, speed, callback) {
@@ -2000,7 +2074,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, levels, speed) => {
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!levels) return ERROR('levels', 'required', false, [5, 10, 20]);
+                    if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20]);
+
+                    if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                    if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+                    let origPath = `${symbol.toLowerCase()}@depth${levels}`;
+                    if (speed != '250ms') origPath += '@' + speed;
+                    return origPath;
+
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             diffBookTicker: function (symbol, speed, callback) {
@@ -2043,7 +2132,18 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, speed) => {
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                    if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+                    let origPath = `${symbol.toLowerCase()}@depth`;
+                    if (speed != '250ms') origPath += '@' + speed;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             compositeIndexSymbol: function (symbol, callback) {
@@ -2081,7 +2181,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol) => {
+                    if (!symbol) return ERROR('symbol', 'required');
+                    return `${symbol.toLowerCase()}@compositeIndex`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             userData: async function (callback, tries = 2) {
@@ -2247,7 +2352,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     } else callback(msg);
                 }
 
-                let obj = connect(params, this.format);
+                let obj = connect(params, this.format, () => { return resp.listenKey });
 
                 obj.deleteKey = () => request(deleteParams, {}, 'DATA');
                 obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
@@ -2264,9 +2369,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // functions necessary for websocket
 
-    connect = (params, callback) => {
-        if (!params.path) { ERROR('streamName', 'required'); return; }
-        if (!callback) { ERROR('callback', 'required'); return; }
+    connect = (params, callback, formMessageFunc) => {
+        if (!params.path) { return ERROR('streamName', 'required'); }
+        if (!callback) { return ERROR('callback', 'required'); }
 
         const newPromise = (object, id) => {
             return new Promise((res) => {
@@ -2293,7 +2398,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
             // extras
             subscribe: async (...params) => {
+                const formedWSPath = formMessageFunc(...params);
+                if (formedWSPath.error) return formedWSPath;
 
+                const id = randomNumber(0, 10000);
+                const promise = newPromise(object, id);
+                const msg = JSON.stringify
+                    ({
+                        "method": "SUBSCRIBE",
+                        "params":
+                            [
+                                formedWSPath
+                            ],
+                        "id": id
+                    });
+                object.socket.send(msg);
+                return promise;
             },
             unsubscribe: async (subscriptions) => {
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
@@ -2663,14 +2783,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (possibilities.length != 0) msg += ` Possible options:${possibilities.map(a => ` '${a}'`)}.`
         }
 
-        console.error({
+        return {
             error: {
                 status: 400,
                 statusText: 'Websocket Error',
                 code: -3,
                 msg: msg
             }
-        });
+        };
     }
 
     const delay = (ms) => new Promise(r => setTimeout(r, ms));
