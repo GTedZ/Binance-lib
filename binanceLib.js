@@ -101,7 +101,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @param {Number} tries - optional: Default is 0 (for infinite); The maximum number of tries before an error is returned
      * @options All the parameters below are optional and should be wrapped in an object along with their property name, these options can be used to selectively choose the properties that you want to receive, and not all of the data that binance usually returns
      * @param symbols - if 'true', returns an array of all the exchange's symbols
-     * @rest the rest of the parameters will be returned as an object with it's properties as the symbols' names
+     * @rest the rest of the parameters are bools and will be returned as an object with it's properties as the symbols' names
      * @param {Boolean} quantityPrecision - returns all symbols' Quantity Precisions (decimal places that binance can handle)
      * @param {Boolean} pricePrecision - returns all symbol' Price Precisions
      * @param {Boolean} contractType - returns the contractType of the symbols
@@ -766,6 +766,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (quantity) {
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
+            options.reduceOnly = true;
         } else options.closePosition = true;
 
         return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
@@ -778,6 +779,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (quantity) {
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
+            options.reduceOnly = true;
         }
         else options.closePosition = true;
 

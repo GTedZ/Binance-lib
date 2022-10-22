@@ -1436,12 +1436,17 @@ OR
 ```js
   let btc_bookTicker = await binance.futuresBookTicker('BTCUSDT');
   console.log(btc_bookTicker);
+
+  // OR
+  
+  let bookTickers = await binance.futuresBookTicker();
+  console.log(bookTickers);
 ```
 <details>
 <summary>View Response</summary>
 
 ```js
-{
+{ // for symbole symbol
   symbol: 'BTCUSDT',
   bidPrice: 18414.8,
   bidQty: 4.629,
@@ -1449,16 +1454,8 @@ OR
   askQty: 24.508,
   time: 1665673452329
 }
-```
-</details>
 
-OR
-
-<details>
-<summary>View Response</summary>
-
-```js
-[
+[ // for ALL symbols
   {
     symbol: 'BTCUSDT',
     bidPrice: 18419.9,
@@ -2557,6 +2554,7 @@ OR
 
   // for futuresTakeProfit() /
 
+  // TODO finish documentation for for futuresStopLoss()
 ```
 
 ### .futuresCreateOrder():
@@ -4052,7 +4050,9 @@ There are two main ways to subscribe:
 ```
 
 ## ADD STREAMS TO SOCKET:
+- ***IMPORTANT***: **ONLY SUBSCRIBE TO THE SAME TYPES OF STREAMS, ONLY SIMILAR-TYPE STREAMS CAN BE ACCESSED VIA THE SAME SOCKET OBJECT**
 - All Websocket function return an object that you can use to subscribe to a new stream
+- The library renames the properties for more clarity, so subscribing to the same streams via the websocket is recommended
 - To use the `.subscribe()` function correctly, all you need to do is pass the same parameters the original(in the same order too) except for the callback function.
 ```js
   let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', (data) => {
