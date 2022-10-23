@@ -4157,12 +4157,12 @@ There are two main ways to subscribe:
 |candlesticks()                         <a href='#spot-candlesticks'><sup>ref</sup></a>|symbol, interval, callback                                                        |                                                  |
 |miniTicker()                             <a href='#spot-miniTicker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
 |ticker()                                     <a href='#spot-ticker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
-|rollingWindowStats()             <a href='#spot-rollingWindowStats'><sup>ref</sup></a>|                                                                                  |                                                  |
-|bookTicker()                             <a href='#spot-bookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
-|partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
-|diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
+|rollingWindowStats()             <a href='#spot-rollingWindowStats'><sup>ref</sup></a>|windowSize, callback                                                              |symbol                                            |
+|bookTicker()                             <a href='#spot-bookTicker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
+|partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|symbol, levels, speed, callback                                                   |                                                  |
+|diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|symbol, speed, callback                                                           |                                                  |
 |subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
-|userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|                                                                                  |                                                  |
+|userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|callback                                                                          |                                                  |
 
 ### spot .aggTrade():
 **Update Speed**: *Realtime*
