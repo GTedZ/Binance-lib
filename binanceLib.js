@@ -1,6 +1,5 @@
 // timeInForce is GTX for post, and GTC for limit orders apparently
 
-
 let api = function everything(APIKEY = false, APISecret = false, options = { hedgeMode: false, recvWindow: 5000 }) {
     if (!new.target) return new api(options); // Legacy support for calling the constructor without 'new';
     const axios = require('axios')
@@ -65,7 +64,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresPing(reconnect, tries);
             }
         }
@@ -87,7 +86,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresServerTime(reconnect, tries);
             }
         }
@@ -101,7 +100,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @param {Number} tries - optional: Default is 0 (for infinite); The maximum number of tries before an error is returned
      * @options All the parameters below are optional and should be wrapped in an object along with their property name, these options can be used to selectively choose the properties that you want to receive, and not all of the data that binance usually returns
      * @param symbols - if 'true', returns an array of all the exchange's symbols
-     * @rest the rest of the parameters will be returned as an object with it's properties as the symbols' names
+     * @rest the rest of the parameters are bools and will be returned as an object with it's properties as the symbols' names
      * @param {Boolean} quantityPrecision - returns all symbols' Quantity Precisions (decimal places that binance can handle)
      * @param {Boolean} pricePrecision - returns all symbol' Price Precisions
      * @param {Boolean} contractType - returns the contractType of the symbols
@@ -134,7 +133,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             tries--;
             if (reconnect == false || tries == 0) return resp;
             else {
-                await delay(50);
+                await delay(binance.timeout);
                 return this.futuresExchangeInfo(reconnect, tries, options);
             }
         }
@@ -766,6 +765,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (quantity) {
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
+            options.reduceOnly = true;
         } else options.closePosition = true;
 
         return this.futuresCreateOrder(symbol, side, 'TAKE_PROFIT_MARKET', options);
@@ -778,6 +778,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (quantity) {
             if (!number(quantity)) return ERR('quantity', 'type', 'Number');
             options.quantity = quantity;
+            options.reduceOnly = true;
         }
         else options.closePosition = true;
 
@@ -896,7 +897,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.futuresCancelBatchOrders = async (symbol, orderIdList, origClientOrderIdList, opts = {}) => {
-        return ERR('This request currently doesnt work (problem in the library)');
+        return ERR('This request currently isnt working (in library)'); // TODO
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/batchOrders',
@@ -906,18 +907,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let options = {
             symbol: symbol
         }
-        if (!orderIdList && !origClientOrderIdList) return ERR(`Either 'orderIdList' or 'origClientOrderIdList' need to be sent for this request.`);
-        if (orderIdList) {
-            if (!Array.isArray(orderIdList)) return ERR('orderIdList', 'type', 'Array');
-            options.orderIdList = orderIdList;
-        } else if (origClientOrderIdList) {
-            if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
-            options.origClientOrderIdList = origClientOrderIdList;
-        }
+        // if (!orderIdList && !origClientOrderIdList) return ERR(`Either 'orderIdList' or 'origClientOrderIdList' need to be sent for this request.`);
+        // if (orderIdList) {
+        //     if (!Array.isArray(orderIdList)) return ERR('orderIdList', 'type', 'Array');
+        //     options.orderIdList = orderIdList;
+        // } else if (origClientOrderIdList) {
+        //     if (!Array.isArray(origClientOrderIdList)) return ERR('orderIdList', 'type', 'Array');
+        //     options.origClientOrderIdList = origClientOrderIdList;
+        // }
 
-        options.orderIdList = orderIdList.join('%')
+        // options.orderIdList = orderIdList.join('%')
 
-        return request(params, options, 'SIGNED');
+        params.data = { orderIdList: [128731, 1238712] }
+
+        return request(params, options, 'SIGNED', { 'Content-Type': 'application/x-www-form-urlencoded' });
     }
 
     /**
@@ -1249,7 +1252,121 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
-    // TODO theres 3 or more functions left to include
+    this.futuresForceOrders = (symbol = false, limit = 50, autoCloseType = '', startTime = 0, endTime = 0, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/forceOrders',
+            method: 'get'
+        }
+
+        let options = {
+            limit: limit
+        }
+        if (symbol) options.symbol = symbol;
+        if (autoCloseType) {
+            if (!equal(autoCloseType, ['LIQUIDATION', 'ADL'])) return ERR('autoCloseType', 'value', false, ['LIQUIDATION', 'ADL'])
+            options.autoCloseType = autoCloseType;
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED')
+    }
+
+    this.futuresQuantitativeRules = (symbol = false, opts = {}) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/apiTradingStatus',
+            method: 'get'
+        }
+
+        let options = {}
+        if (symbol) options.symbol;
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresUserCommissionRate = (symbol, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/commissionRate ',
+            method: 'get'
+        }
+
+        let options = {
+            symbol: symbol
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresTransactionHistoryDownloadId = (startTime, endTime, opts = {}) => {
+        if (!startTime) return ERR('startTime', 'required');
+        if (!endTime) return ERR('endTime', 'required');
+
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/income/asyn',
+            method: 'get'
+        }
+
+        let options = {
+            startTime: startTime,
+            endTime: endTime
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresGetTransactionHistoryLinkByDownloadId = (downloadId, opts = {}) => {
+        if (!downloadId) return ERR('downloadId', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/income/asyn/id',
+            method: 'get'
+        }
+
+        let options = {
+            downloadId: downloadId
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresPortfolioMarginExchangeInfo = (symbol) => {
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/pmExchangeInfo',
+            method: 'get'
+        }
+
+        let options = {}
+        if (symbol) options.symbol = symbol;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.futuresPortfolioMarginAccountInfo = (asset, opts = {}) => {
+        if (!asset) return ERR('asset', 'required');
+        let params = {
+            baseURL: fapi,
+            path: '/fapi/v1/pmAccountInfo',
+            method: 'get'
+        }
+
+        let options = {
+            asset: asset
+        }
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
 
     // futures Account/Trade Endpoints ////
 
@@ -1261,11 +1378,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         spot: {
 
+            /**
+             * Subscribes to any stream, not recommended as it will not rename the properties, for better clarity, please use the relevant websocket function
+             * @param {String, Array} subscriptions - string OR array
+             * @param {Function} callback - the callback function that will be called on any new websocket message
+             */
+            subscribe: function (subscriptions, callback) {
+                const params = {
+                    baseURL: fWSS,
+                    path: subscriptions
+                }
+
+                return connect(params, callback, (path) => { return path });
+            },
+
             aggTrade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1273,36 +1404,30 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@aggTrade`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'a=aggTradeId',
-                    'p=price',
-                    'q=qty',
-                    'f=firstTradeId',
-                    'l=lastTradeId',
-                    'T=tradeTime',
-                    'm=maker',
-                    'M=ignore'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_AGGTRADE_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@aggTrade')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@aggTrade`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             trade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1310,39 +1435,33 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@trade`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    't=tradeId',
-                    'p=price',
-                    'q=qty',
-                    'b=buyOrderId',
-                    'a=sellerOrderId',
-                    'T=tradeId',
-                    'm=maker',
-                    'M=ignore'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_TRADE_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@trade')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@trade`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             candlesticks: function (symbol, interval, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
+                if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
-                if (!interval) { ERROR('interval', 'required'); return; }
+                if (!interval) { return ERROR('interval', 'required'); }
                 if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals)
 
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1350,45 +1469,31 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@kline_${interval}`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        's=symbol',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=baseAssetVolume',
-                        'n=tradeCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_baseAssetVolume',
-                        'Q=takerBuy_quoteAssetVolume',
-                        'B=ignore'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_CANDLESTICKS_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, interval) => {
+                    if (symbol && symbol.includes('@kline_')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!interval) { return ERROR('interval', 'required'); }
+                    if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals)
+
+                    return `${symbol.toLowerCase()}@kline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             miniTicker: function (callback, symbol = false) {
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1397,31 +1502,26 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@miniTicker`;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'c=close',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_MINITICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('miniTicker')) return symbol;
+                    let origPath = '!miniTicker@arr';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@miniTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             ticker: function (callback, symbol = false) {
-                if (!callback) { ERROR('callback', 'required'); return; }
+                if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
@@ -1430,41 +1530,224 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@ticker`;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=priceChange',
-                    'P=percentChange',
-                    'w=weightedAvgPrice',
-                    'x=previousStream_firstTradePrice',
-                    'Q=lastQty',
-                    'b=bestBidPrice',
-                    'B=bestBidQty',
-                    'a=bestAskPrice',
-                    'A=bestAskQty',
-                    'o=open',
-                    'c=close',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume',
-                    'O=stats_openTime',
-                    'C=stats_closeTime',
-                    'F=firstTradeId',
-                    'L=lastTradedId',
-                    'n=tradeCount'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_TICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('ticker')) return symbol;
+                    let origPath = '!ticker@arr';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@ticker`;;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath)
+            },
+
+            rollingWindowStats: function (symbol = false, windowSize, callback) {
+                if (!windowSize) { return ERROR('windowSize', 'required', false, ['1h', '4h', '1d']); }
+                if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
+
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `!ticker_${windowSize}@arr`
+                }
+                if (symbol) params.path = `${symbol.toLowerCase()}@ticker_${windowSize.toLowerCase()}`;
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        SPOT_ROLLINGWINDOWSTATS_KEYS
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol = false, windowSize) => {
+                    if (symbol.includes('ticker_')) return symbol;
+
+                    if (!windowSize) { return ERROR('windowSize', 'required'); }
+                    if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
+                    let origPath = `!ticker_${windowSize.toLowerCase()}@arr`;
+                    if (symbol) origPath = `${symbol.toLowerCase()}@ticker_${windowSize.toLowerCase()}`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            bookTicker: function (callback, symbol = false) {
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: '!bookTicker'
+                }
+                if (symbol) params.path = `${symbol.toLowerCase()}@bookTicker`;
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        SPOT_BOOKTICKER_KEYS
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol) => {
+                    if (symbol.includes('ticker_')) return symbol;
+
+                    let origPath = '!bookTicker';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@bookTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            partialBookTicker: function (symbol, levels, speed, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!levels) { return ERROR('levels', 'required', false, [5, 10, 20]); }
+                if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20])
+
+                if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@depth${levels}`
+                }
+                if (speed == '100ms') params.path += '@100ms';
+
+                this.format = (msg) => {
+                    callback(msg);
+                }
+
+                this.formPath = (symbol, levels, speed) => {
+                    if (symbol.includes('depth')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!levels) { return ERROR('levels', 'required', false, [5, 10, 20]); }
+                    if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20])
+
+                    if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                    if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                    let origPath = `${symbol.toLowerCase()}@depth${levels}`;
+                    if (speed == '100ms') origPath += '@100ms';
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            diffBookTicker: function (symbol, speed, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@depth`
+                }
+                if (speed == '100ms') params.path += '@100ms';
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        SPOT_DIFFBOOKTICKER_KEYS
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol, speed) => {
+                    if (symbol.includes('depth')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                    if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                    let origPath = `${symbol.toLowerCase()}@depth`;
+                    if (speed == '100ms') origPath += '@100ms';
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            userData: async function (callback, tries = 10) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const reqParams = {
+                    baseURL: sapi,
+                    path: '/api/v3/userDataStream'
+                }
+                const postParams = {
+                    ...reqParams,
+                    method: 'post'
+                }
+                const putParams = {
+                    ...reqParams,
+                    method: 'put'
+                }
+                const deleteParams = {
+                    ...reqParams,
+                    method: 'delete'
+                }
+
+                let resp = await request(postParams, {}, 'DATA');
+                if (resp.error) {
+                    if (resp.error.code == -1) return resp;
+                    await delay(binance.timeout)
+                    if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
+                    return binance.websockets.spot.userData(callback, --tries);
+                }
+
+                const params = {
+                    baseURL: fWSS,
+                    path: resp.listenKey
+                }
+
+                this.format = (msg) => {
+                    if (msg.e == 'outboundAccountPosition ') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_OUTBOUNDACCOUNTPOSITION_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'balanceUpdate') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_BALANCEUPDATE_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'executionReport') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_EXECUTIONREPORT_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'listStatus') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_LISTSTATUS_KEYS);
+                        callback(msg);
+                    } else callback(msg);
+                }
+
+                let obj = await connect(params, this.format, () => { return resp.listenKey });
+
+                obj.deleteKey = () => request(deleteParams, {}, 'DATA');
+                obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
+
+                return obj;
             }
 
         },
@@ -1474,40 +1757,48 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         // futures websocket \\\\
         futures: {
 
-            aggTrade: function (symbol, callback) {
-                if (!symbol) { ERROR('symbol', 'required'); return; }
-                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                if (!callback) { ERROR('callback', 'required'); return; }
-                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
-
-                symbol = symbol.toLowerCase();
+            /**
+             * Subscribes to any stream, not recommended as it will not rename the properties, for better clarity, please use the relevant websocket function
+             * @param {String, Array} subscriptions - string OR array
+             * @param {Function} callback - the callback function that will be called on any new websocket message
+             */
+            subscribe: function (subscriptions, callback) {
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@aggTrade`
+                    path: subscriptions
                 }
 
-                const newKeys =
-                    [
-                        'e=event',
-                        'E=time',
-                        's=symbol',
-                        'a=aggTradeId',
-                        'p=price',
-                        'q=qty',
-                        'f=firstTradeId',
-                        'l=lastTradeId',
-                        'T=timestamp',
-                        'm=maker'
-                    ]
+                return connect(params, callback, (path) => { return path });
+            },
+
+            aggTrade: function (symbol, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: fWSS,
+                    path: `${symbol.toLowerCase()}@aggTrade`
+                }
 
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_AGGTRADE_KEYS
                     );
                     callback(msg);
                 };
-                return connect(params, this.format);
+
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('aggTrade')) return symbol;
+
+                    if (!symbol) { ERROR('symbol', 'required'); return; }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol}@aggTrade`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             markPrice: function (callback, symbol = false, slow = false) {
@@ -1522,39 +1813,36 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (symbol) params.path = `${symbol.toLowerCase()}@markPrice@1s`
                 if (slow) params.path = params.path.slice(0, -3);
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=markPrice',
-                    'i=indexPrice',
-                    'P=estimatedSettlePrice',
-                    'r=fundingRate',
-                    'T=nextFundingTime'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_MARKPRICE_KEYS
                     );
 
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false, slow = false) => {
+                    if (symbol && symbol.includes('markPrice')) return symbol;
+
+                    let origPath = `!markPrice@arr@1s`;
+                    if (symbol) origPath = `${symbol.toLowerCase()}@markPrice@1s`
+                    if (slow) origPath = origPath.slice(0, -3);
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             lastPrice: function (symbol, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                symbol = symbol.toLowerCase();
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@kline_1m`
+                    path: `${symbol.toLowerCase()}@kline_1m`
                 }
 
                 this.format = (msg) => {
@@ -1563,7 +1851,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(obj);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('kline_')) return symbol;
+
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@kline_1m`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             /**
@@ -1574,57 +1870,40 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             candlesticks: function (symbol, interval, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                symbol = symbol.toLowerCase();
+
                 if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
+
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
                     baseURL: fWSS,
-                    path: `${symbol}@kline_${interval}`
+                    path: `${symbol.toLowerCase()}@kline_${interval}`
                 }
-
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        's=symbol',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=baseAssetVolume',
-                        'n=tradesCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_baseAssetVolume',
-                        'Q=takerBuy_quoteAssetVolume',
-                        'B=ignore'
-                    ]
-                ];
 
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_CANDLESTICKS_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol, interval) => {
+                    if (symbol && symbol.includes('kline_')) return symbol;
+
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals);
+                    return `${symbol.toLowerCase()}@kline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             continuousContractKline: function (pair, contractType, interval, callback) {
                 if (!pair) return ERROR('pair', 'required');
                 if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
-                pair = pair.toLowerCase();
 
                 if (!contractType) return ERROR('contractType', 'required');
                 if (!equal(contractType, shortenedContractTypes)) return ERROR('contractType', 'value', false, shortenedContractTypes);
@@ -1637,44 +1916,32 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 let params = {
                     baseURL: fWSS,
-                    path: `${pair}_${contractType.toLowerCase()}@continuousKline_${interval}`
+                    path: `${pair.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval}`
                 }
-
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'ps=pair',
-                    'ct=contractType',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=volume',
-                        'n=tradesCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_volume',
-                        'Q=takerBuy_volume',
-                        'B=ignore'  // anything that is 'ignore' will be ignored
-                    ]
-                ];
 
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_CONTINUOUSCONTRACTKLINE_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (pair, contractType, interval) => {
+                    if (pair && pair.includes('continuousKline_')) return pair;
+
+                    if (!pair) return ERROR('pair', 'required');
+                    if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
+
+                    if (!contractType) return ERROR('contractType', 'required');
+                    if (!equal(contractType, shortenedContractTypes)) return ERROR('contractType', 'value', false, shortenedContractTypes);
+
+                    if (!interval) return ERROR('contractType', 'required');
+                    if (!equal(interval, intervals)) return ERROR('contractType', 'value', false, intervals);
+                    return `${pair.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             miniTicker: function (callback, symbol = false) {
@@ -1691,27 +1958,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@miniTicker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'c=close',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAsset'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_MINITICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('miniTicker')) return symbol;
+
+                    let origPath = '!miniTicker@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = params.path = `${symbol.toLowerCase()}@miniTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             ticker: function (callback, symbol = false) {
@@ -1728,36 +1992,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@ticker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=priceChange',
-                    'P=percentChange',
-                    'w=weightedAvgPrice',
-                    'c=lastPrice',
-                    'Q=lastQty',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume',
-                    'O=stats_openTime',
-                    'C=stats_closeTime',
-                    'F=firstTradeId',
-                    'L=lastTradeId',
-                    'n=tradesCount'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_TICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('ticker')) return symbol;
+
+                    let origPath = '!ticker@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = params.path = `${symbol.toLowerCase()}@ticker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             bookTicker: function (callback, symbol = false) {
@@ -1774,27 +2026,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@bookTicker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'u=updateId',
-                    'E=time',
-                    'T=transactionTime',
-                    's=symbol',
-                    'b=bestBidPrice',
-                    'B=bestBidQty',
-                    'a=bestAskPrice',
-                    'A=bestAskQty',
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_BOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('bookTicker')) return symbol;
+
+                    let origPath = '!bookTicker';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = `${symbol.toLowerCase()}@bookTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             liquidationOrders: function (callback, symbol = false) {
@@ -1811,34 +2060,24 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@forceOrder`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    [
-                        'o=order',
-                        's=symbol',
-                        'S=side',
-                        'o=orderType',
-                        'f=timeInForce',
-                        'q=qty',
-                        'p=price',
-                        'ap=avgPrice',
-                        'X=status',
-                        'l=order_lastFilledQty',
-                        'z=order_filledAccumulatedQty',
-                        'T=order_tradeTime',
-                    ]
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_LIQUIDATIONORDERS_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('forceOrder')) return symbol;
+
+                    let origPath = '!forceOrder@arr';
+                    if (symbol && typeof symbol != 'string') return ERROR('symbol', 'type', 'Number');
+                    if (symbol) origPath = `${symbol.toLowerCase()}@forceOrder`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             partialBookTicker: function (symbol, levels, speed, callback) {
@@ -1860,31 +2099,32 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (speed != '250ms') params.path += '@' + speed;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    's=symbol',
-                    'U=firstUpdateId',
-                    'u=finalUpdateId',
-                    'pu=previousStream_finalUpdateId',
-                    [
-                        'b=bids'
-                    ],
-                    [
-                        'a=asks'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_PARTIALBOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, levels, speed) => {
+                    if (symbol && symbol.includes('@depth')) return symbol;
+
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!levels) return ERROR('levels', 'required', false, [5, 10, 20]);
+                    if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20]);
+
+                    if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                    if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+                    let origPath = `${symbol.toLowerCase()}@depth${levels}`;
+                    if (speed != '250ms') origPath += '@' + speed;
+                    return origPath;
+
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             diffBookTicker: function (symbol, speed, callback) {
@@ -1903,31 +2143,28 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (speed != '250ms') params.path += '@' + speed;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transationTime',
-                    's=symbol',
-                    'U=firstUpdateId',
-                    'u=finalUpdateId',
-                    'pu=previousStream_finalUpdateId',
-                    [
-                        'b=bids'
-                    ],
-                    [
-                        'a=asks'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_DIFFBOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, speed) => {
+                    if (symbol && symbol.includes('@depth')) return symbol;
+
+                    if (!symbol) return ERROR('symbol', 'required');
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!speed) return ERROR('speed', 'required', false, ['500ms', '250ms', '100ms']);
+                    if (!equal(speed, ['500ms', '250ms', '100ms'])) return ERROR('levels', 'value', false, ['500ms', '250ms', '100ms']);
+                    let origPath = `${symbol.toLowerCase()}@depth`;
+                    if (speed != '250ms') origPath += '@' + speed;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
             compositeIndexSymbol: function (symbol, callback) {
@@ -1942,33 +2179,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@compositeIndex`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=price',
-                    'C=baseAsset',
-                    [
-                        'c=composition',
-                        'q=quoteAsset',
-                        'w=weightInQty',
-                        'W=weightInPercentage',
-                        'i=indexPrice'
-                    ]
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_COMPOSITEINDEXSYMBOL_KEYS
                     );
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@compositeIndex')) return symbol;
+
+                    if (!symbol) return ERROR('symbol', 'required');
+                    return `${symbol.toLowerCase()}@compositeIndex`;
+                }
+
+                return connect(params, this.format, this.formPath);
             },
 
-            userData: async function (callback, tries = 2) {
+            userData: async function (callback, tries = 10) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -1991,149 +2220,44 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 let resp = await request(postParams, {}, 'DATA');
                 if (resp.error) {
+                    if (resp.error.code == -1) return resp;
+                    await delay(binance.timeout)
                     if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
-                    return userData(callback, --tries);
+                    return binance.websockets.futures.userData(callback, --tries);
                 }
-                resp.deleteKey = () => request(deleteParams, {}, 'DATA');
-                resp.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
 
                 const params = {
                     baseURL: fWSS,
                     path: resp.listenKey
                 }
 
-
-                const marginCallKeys = [
-                    'e=event',
-                    'E=time',
-                    'cw=crossWalletBalance',
-                    [
-                        'p=positions',    // this is the main object key before the subkeys
-                        's=symbol',
-                        'ps=positionSide',
-                        'pa=positionAmt',
-                        'mt=marginType',
-                        'iw=isolatedWallet',
-                        'mp=markPrice',
-                        'up=unrealizedPnl',
-                        'mm=maintenanceMarginRequired'
-                    ]
-                ];
-
-                const accountUpdateKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'a=updateData',
-                        'm=eventType',
-                        [
-                            'B=balances',
-                            'a=asset',
-                            'wb=walletBalance',
-                            'cw=crossWalletBalance',
-                            'bc=balanceChange'
-                        ],
-                        [
-                            'P=positions',
-                            's=symbol',
-                            'ma=quoteAsset',
-                            'pa=positionAmt',
-                            'ep=entryPrice',
-                            'cr=accumulatedRealized',
-                            'up=unrealizedPnl',
-                            'mt=marginType',
-                            'iw=isolatedWallet',
-                            'ps=positionSide'
-                        ]
-                    ]
-                ];
-
-                const orderTradeUpdateKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'o=order',
-                        's=symbol',
-                        'c=clientOrderId',
-                        'S=side',
-                        'o=orderType',
-                        'f=timeInForce',
-                        'q=origQty',
-                        'p=origPrice',
-                        'ap=avgPrice',
-                        'sp=stopPrice',
-                        'x=executionType',
-                        'X=orderStatus',
-                        'i=orderId',
-                        'l=lastFilledQty',
-                        'z=filledAccumulatedQty',
-                        'L=lastFilledPrice',
-                        'N=commissionAsset',
-                        'n=commission',
-                        'T=tradeTime',
-                        't=tradeId',
-                        'b=bidsNotional',
-                        'a=askNotional',
-                        'm=maker',
-                        'R=reduceOnly',
-                        'wt=stopPrice_workingType',
-                        'ot=originalOrderType',
-                        'ps=positionSide',
-                        'cp=closeAll',
-                        'AP=activationPrice',
-                        'cr=callbackRate',
-                        'rp=realizedProfit',
-                        'pP=ignore',
-                        'si=ignore',
-                        'ss=ignore'
-                    ]
-                ];
-
-                const accountConfigLeverageChangeKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'ac=newLeverage',
-                        's=symbol',
-                        'l=leverage'
-                    ]
-                ];
-
-                const accountConfigMarginModeChangeKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'ai=newMarginMode',
-                        'j=mode'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     if (msg.e == 'MARGIN_CALL') {
-                        msg = advancedRenameObjectProperties(msg, marginCallKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_MARGINCALL_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ACCOUNT_UPDATE') {
-                        msg = advancedRenameObjectProperties(msg, accountUpdateKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTUPDATE_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ORDER_TRADE_UPDATE') {
-                        msg = advancedRenameObjectProperties(msg, orderTradeUpdateKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_ORDERTRADEUPDATE_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ACCOUNT_CONFIG_UPDATE') {
                         if (msg.ac) {
-                            msg = advancedRenameObjectProperties(msg, accountConfigLeverageChangeKeys);
+                            msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTCONFIGLEVERAGECHANGE_KEYS);
                             callback(msg);
                         } else if (msg.ai) {
-                            msg = advancedRenameObjectProperties(msg, accountConfigMarginModeChangeKeys);
+                            msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTCONFIGMARGINMODECHANGE_KEYS);
                             callback(msg);
                         }
                     } else callback(msg);
                 }
 
-                return connect(params, this.format);
+                let obj = await connect(params, this.format, () => { return resp.listenKey });
+
+                obj.deleteKey = () => request(deleteParams, {}, 'DATA');
+                obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
+
+                return obj;
             }
 
         }
@@ -2143,45 +2267,182 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // futures websocket ////
 
 
-    // functions necessary for websocket
+    // functions necessary for websocket    \\\\
 
-    connect = (params, callback) => {
-        if (!params.path) { ERROR('streamName', 'required'); return; }
-        if (!callback) { ERROR('callback', 'required'); return; }
+    connect = (params, callback, formMessageFunc) => {
+        if (!params.path) { return ERROR('streamName', 'required'); }
+        if (!callback) { return ERROR('callback', 'required'); }
+
+        const newPromise = (object, id) => {
+            return new Promise((res) => {
+                object.resolves[id] = res;
+                setTimeout(() => {
+                    if (object.resolves[id] && object.resolves[id] != undefined && typeof object.resolves[id] == 'function')
+                        object.resolves[id](ERROR('No response was received from websocket endpoint within 5 seconds'))
+                }, 10000)
+            });
+        }
+
         const object = {
-            unsubscribe: () => {
-                object.alive = false;
-                object.socket.close();
-            },
-            close: () => {
+            alive: true,
+            socket: {},
+            cachedSubscriptions: new Set().add(params.path),
+            close: async () => {
                 object.alive = false;
                 object.socket.close();
                 if (object.interval) {
                     clearInterval(object.interval);
                     object.deleteKey();
                 }
+                await delay(500);
+                Object.keys(object).forEach(key => delete object[key]);
             },
-            alive: true,
-            socket: {}
+            // extras
+            subscribe: async (...params) => {
+                const formedWSPath = formMessageFunc(...params);
+                if (formedWSPath.error) return formedWSPath;
+                object.cachedSubscriptions.add(formedWSPath)
+
+
+                const id = randomNumber(0, 10000);
+                const msg = JSON.stringify
+                    ({
+                        "method": "SUBSCRIBE",
+                        "params":
+                            [
+                                formedWSPath
+                            ],
+                        "id": id
+                    });
+                try {
+                    object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.subscribe()`)
+                    await delay(binance.timeout);
+                    return object.subscribe(...params);
+                }
+            },
+            unsubscribe: async (subscriptions) => {
+                if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
+                const id = randomNumber(0, 10000);
+
+                // deleting keys
+                if (Array.isArray(subscriptions)) {
+                    subscriptions.forEach(sub => object.cachedSubscriptions.delete(sub))
+                } else object.cachedSubscriptions.delete(subscriptions);
+                //
+
+
+                const msg = JSON.stringify
+                    ({
+                        "method": "UNSUBSCRIBE",
+                        "params":
+                            Array.isArray(subscriptions) ? subscriptions :
+                                [
+                                    subscriptions
+                                ],
+                        "id": id
+                    });
+                try {
+                    await object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.unsubscribe()`)
+                    await delay(binance.timeout);
+                    return object.unsubscribe(subscriptions);
+                }
+            },
+            subscriptions: async () => {
+                const id = randomNumber(0, 10000);
+                const msg = JSON.stringify
+                    (
+                        {
+                            "method": "LIST_SUBSCRIPTIONS",
+                            "id": id
+                        }
+                    );
+
+                try {
+                    object.socket.send(msg);
+                    return newPromise(object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: socket.subscriptions()`)
+                    await delay(binance.timeout);
+                    return object.subscriptions();
+                }
+            },
+            privateMessage: (msg) => {
+                if (typeof object.resolves[msg.id] != 'function') return;
+                // For subscriptions \\
+                if (Array.isArray(msg.result)) {
+                    object.resolves[msg.id](msg.result);
+                    delete object.resolves[msg.id];
+                }
+                // For subscriptions //
+
+                // For non .subscriptions() requests \\\\
+                else {
+                    object.resolves[msg.id]('success!');
+                    delete object.resolves[msg.id];
+                }
+                // For non .subscriptions() requests ////
+            },
+            resolves: {},
+            originalResolve: -1
         }
+
 
         new newSocket(params, callback, object);
 
-        return object;
+        return new Promise(res => {
+            object.originalResolve = res;
+        })
     }
 
     newSocket = function (params, callback, object) {
-        object.socket = new ws(params.baseURL + '/ws/' + params.path);
+        if (binance.ws) console.log({ path: params.path })
+        let streamPath = params.path, allSubsDone = true;
+        if (Array.isArray(streamPath)) {
+            allSubsDone = false;
+            streamPath = params.path[0];
+        }
+
+        object.socket = new ws(params.baseURL + '/ws/' + streamPath);
         let socket = object.socket;
 
         socket.on('open', () => {
-            if (binance.ws) console.log(params.path + ' is open')
-            // TODO add conditions to add the correct subscriptions to the right futures/spot object
+            if (typeof object.originalResolve == 'function') object.originalResolve(object);
+            object.originalResolve = -1;
+            if (binance.ws) console.log(streamPath + ' is open');
+            if (!allSubsDone) {
+                allSubsDone = true;
+                serializedSubscribe([...params.path], object);
+            }
         })
 
         socket.on('message', (msg) => {
+            const obj = parseSocketMessage(msg);
+
+            if (Object.keys(obj).includes('id') && Object.keys(obj).includes('result') && Object.keys(obj).length == 2) {
+                if (binance.ws) console.log('Private response to websocket message was received');
+                object.privateMessage(obj);
+                return;
+            } else if (Object.keys(obj).includes('code') && Object.keys(obj).includes('msg') && Object.keys(obj).length == 2) {
+                if (binance.ws) console.log('Error code from websocket message was received');
+                if (typeof object.resolves[obj.id] == 'function') object.resolves[obj.id]({
+                    error: {
+                        status: 400,
+                        statusText: 'Bad Websocket Request',
+                        ...obj
+                    }
+                });
+                return;
+            }
+            // normal websocket messages here \\
             if (binance.ws) console.log(params.path + ' new message');
-            callback(parseSocketMessage(msg));
+            callback(obj);
+            // normal websocket messages here //
         })
 
         socket.on('error', () => {
@@ -2192,6 +2453,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (binance.ws) console.log(params.path + ' Closed!');
 
             setTimeout(() => {
+                params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
                 if (object.alive) newSocket(params, callback, object);
             }, binance.timeout)
         })
@@ -2207,11 +2469,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     parseSocketMessage = (msg) => {
-        if (binance.fetchFloats) return parseAllPropertiesToFloat(JSON.parse(msg.toString()));
-        else return JSON.parse(msg.toString());
+        const obj = JSON.parse(msg.toString());
+        if (obj.id && obj.result) return obj;
+        if (binance.fetchFloats) return parseAllPropertiesToFloat(obj);
+        else return obj;
     }
 
-    // websockets ////
+    serializedSubscribe = async (arr, object) => {
+        for await (const path of arr) {
+            let resp = await object.subscribe(path);
+            let streamName = `subTo${path}`;
+            let obj = {}; obj[streamName] = resp;
+            if (binance.ws) console.log(obj)
+        }
+    }
+
+    // functions necessary for websocket    ////
 
     // private functions \\\\
 
@@ -2238,6 +2511,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (query) console.log(query)
         }
         let startTime = Date.now(), latency;
+
         try {
             let response = await axios({
                 method: params.method,
@@ -2410,6 +2684,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return possibilities.filter(a => variable == a).length != 0;
     }
 
+    const randomNumber = (lower, higher) => {
+        return parseInt(Math.random() * (higher - lower) + lower);
+    }
+
     const fixValue = (variable, end_value, possibilities) => {
         if (variable == undefined) return variable;
         possibilities.push(end_value.toLowerCase());
@@ -2459,63 +2737,562 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (possibilities.length != 0) msg += ` Possible options:${possibilities.map(a => ` '${a}'`)}.`
         }
 
-        console.error({
+        return {
             error: {
                 status: 400,
                 statusText: 'Websocket Error',
                 code: -3,
                 msg: msg
             }
-        });
+        };
     }
 
     const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
-    // private functions \\\\
+    // private functions ////
 
-    if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
+    // constants \\\\
 
-    this.test = () => {
-        let obj = {
-            hi: 100,
-            hi2: 200,
-            hi3: 300,
-            obj: {
-                hi: 200,
-                hi2: 300,
-                hi3: 400,
-                hi5: 123810
-            },
-            hi5: 'fuck you',
-            someObj: {
-                hi: 10,
-                ho: 200
-            },
+    // SPOT WEBSOCKET KEYS \\\\
 
-            obj2: {
-                x: 100
-            }
-        }
+    const SPOT_AGGTRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'a=aggTradeId',
+        'p=price',
+        'q=qty',
+        'f=firstTradeId',
+        'l=lastTradeId',
+        'T=tradeTime',
+        'm=maker',
+        'M=ignore'
+    ];
 
-        let newKey = [
-            'hi=lol',
-            'hi2=lol2',
-            'hi3=lol3',
+    const SPOT_TRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        't=tradeId',
+        'p=price',
+        'q=qty',
+        'b=buyOrderId',
+        'a=sellerOrderId',
+        'T=tradeId',
+        'm=maker',
+        'M=ignore'
+    ];
+
+    const SPOT_CANDLESTICKS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            's=symbol',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=baseAssetVolume',
+            'n=tradeCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_baseAssetVolume',
+            'Q=takerBuy_quoteAssetVolume',
+            'B=ignore'
+        ]
+    ];
+
+    const SPOT_MINITICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=close',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume'
+    ];
+
+    const SPOT_TICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'w=weightedAvgPrice',
+        'x=previousStream_firstTradePrice',
+        'Q=lastQty',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty',
+        'o=open',
+        'c=close',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradedId',
+        'n=tradeCount'
+    ];
+
+    const SPOT_ROLLINGWINDOWSTATS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'o=open',
+        'h=high',
+        'l=low',
+        'c=lastPrice',
+        'w=weightedAvgPrice',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradeId',
+        'n=tradeCount'
+    ];
+
+    const SPOT_BOOKTICKER_KEYS = [
+        'u=updateId',
+        's=symbol',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty'
+    ];
+
+    const SPOT_PARTIALBOOKTICKER_KEYS = [
+        // not in use, for now
+    ];
+
+    const SPOT_DIFFBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    // SPOT USERDATA KEYS \\\\
+
+    const SPOT_OUTBOUNDACCOUNTPOSITION_KEYS = [
+        'e=event',
+        'E=time',
+        'u=lastAccountUpdateTime',
+        [
+            'B=balances',
+            'a=asset',
+            'f=free',
+            'l=locked'
+        ]
+    ];
+
+    const SPOT_BALANCEUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'a=asset',
+        'd=balanceDelta',
+        'T=clearTime'
+    ];
+
+    const SPOT_EXECUTIONREPORT_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=clientOrderId',
+        'S=side',
+        'o=orderType',
+        'f=timeInForce',
+        'q=qty',
+        'p=price',
+        'P=stopPrice',
+        'd=trailingDelta',
+        'F=icebergQty',
+        'g=orderListId',
+        'C=origClientOrderId',
+        'x=currentExecutionType',
+        'X=currentOrderType',
+        'r=orderRejectReason',
+        'i=orderId',
+        'l=lastExecutedQty',
+        'z=cumulativeFilledQty',
+        'L=lastExecutedPrice',
+        'n=commissionAmount',
+        'N=commissionAsset',
+        'T=transactionId',
+        't=tradeId',
+        'I=ignore',
+        'w=isOrderInBook',
+        'm=maker',
+        'M=ignore',
+        'O=orderCreationTime',
+        'Z=cumulative_quoteAssetTransactedQty',
+        'Y=lastQuote_assetTrasactedQty',
+        'Q=quoteOrderQty',
+        'j=strategyId',
+        'J=strategyType'
+    ];
+
+    const SPOT_LISTSTATUS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'g=orderListId',
+        'c=contingencyType',
+        'l=listStatusType',
+        'L=listOrderStatus',
+        'r=listRejectReason',
+        'C=listClientOrderId',
+        'T=transactionTime',
+        [
+            'O=orders',
+            's=symbol',
+            'i=orderId',
+            'c=clientOrderId'
+        ]
+    ];
+
+    // SPOT USERDATA KEYS ////
+
+
+    // SPOT WEBSOCKET KEYS ////
+
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+
+    // FUTURES WEBSOCKET KEYS \\\\
+
+    const FUTURES_AGGTRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'a=aggTradeId',
+        'p=price',
+        'q=qty',
+        'f=firstTradeId',
+        'l=lastTradeId',
+        'T=timestamp',
+        'm=maker'
+    ];
+
+    const FUTURES_MARKPRICE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=markPrice',
+        'i=indexPrice',
+        'P=estimatedSettlePrice',
+        'r=fundingRate',
+        'T=nextFundingTime'
+    ];
+
+    const FUTURES_CANDLESTICKS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            's=symbol',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=baseAssetVolume',
+            'n=tradesCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_baseAssetVolume',
+            'Q=takerBuy_quoteAssetVolume',
+            'B=ignore'
+        ]
+    ];
+
+    const FUTURES_CONTINUOUSCONTRACTKLINE_KEYS = [
+        'e=event',
+        'E=time',
+        'ps=pair',
+        'ct=contractType',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=volume',
+            'n=tradesCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_volume',
+            'Q=takerBuy_volume',
+            'B=ignore'  // anything that is 'ignore' will be ignored
+        ]
+    ];
+
+    const FUTURES_MINITICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=close',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAsset'
+    ];
+
+    const FUTURES_TICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'w=weightedAvgPrice',
+        'c=lastPrice',
+        'Q=lastQty',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradeId',
+        'n=tradesCount'
+    ];
+
+    const FUTURES_BOOKTICKER_KEYS = [
+        'e=event',
+        'u=updateId',
+        'E=time',
+        'T=transactionTime',
+        's=symbol',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty',
+    ];
+
+    const FUTURES_LIQUIDATIONORDERS_KEYS = [
+        'e=event',
+        'E=time',
+        [
+            'o=order',
+            's=symbol',
+            'S=side',
+            'o=orderType',
+            'f=timeInForce',
+            'q=qty',
+            'p=price',
+            'ap=avgPrice',
+            'X=status',
+            'l=order_lastFilledQty',
+            'z=order_filledAccumulatedQty',
+            'T=order_tradeTime',
+        ]
+    ];
+
+    const FUTURES_PARTIALBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        'pu=previousStream_finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    const FUTURES_DIFFBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transationTime',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        'pu=previousStream_finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    const FUTURES_COMPOSITEINDEXSYMBOL_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=price',
+        'C=baseAsset',
+        [
+            'c=composition',
+            'q=quoteAsset',
+            'w=weightInQty',
+            'W=weightInPercentage',
+            'i=indexPrice'
+        ]
+    ];
+
+    // FUTURES USERDATA KEYS \\\\
+
+    const FUTURES_MARGINCALL_KEYS = [
+        'e=event',
+        'E=time',
+        'cw=crossWalletBalance',
+        [
+            'p=positions',    // this is the main object key before the subkeys
+            's=symbol',
+            'ps=positionSide',
+            'pa=positionAmt',
+            'mt=marginType',
+            'iw=isolatedWallet',
+            'mp=markPrice',
+            'up=unrealizedPnl',
+            'mm=maintenanceMarginRequired'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'a=updateData',
+            'm=eventType',
             [
-                'obj=obj1',
-                'hi=lol',
-                'hi2=lol2',
-                'hi3=lol3',
+                'B=balances',
+                'a=asset',
+                'wb=walletBalance',
+                'cw=crossWalletBalance',
+                'bc=balanceChange'
             ],
             [
-                'obj2=someNewObjectIDontKnowMuchAbout',
-                'x=singleObjectIknowAbout'
+                'P=positions',
+                's=symbol',
+                'ma=quoteAsset',
+                'pa=positionAmt',
+                'ep=entryPrice',
+                'cr=accumulatedRealized',
+                'up=unrealizedPnl',
+                'mt=marginType',
+                'iw=isolatedWallet',
+                'ps=positionSide'
             ]
         ]
+    ];
 
-        let resp = advancedRenameObjectProperties(obj, newKey);
-        console.log(resp);
+    const FUTURES_ORDERTRADEUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'o=order',
+            's=symbol',
+            'c=clientOrderId',
+            'S=side',
+            'o=orderType',
+            'f=timeInForce',
+            'q=origQty',
+            'p=origPrice',
+            'ap=avgPrice',
+            'sp=stopPrice',
+            'x=executionType',
+            'X=orderStatus',
+            'i=orderId',
+            'l=lastFilledQty',
+            'z=filledAccumulatedQty',
+            'L=lastFilledPrice',
+            'N=commissionAsset',
+            'n=commission',
+            'T=tradeTime',
+            't=tradeId',
+            'b=bidsNotional',
+            'a=askNotional',
+            'm=maker',
+            'R=reduceOnly',
+            'wt=stopPrice_workingType',
+            'ot=originalOrderType',
+            'ps=positionSide',
+            'cp=closeAll',
+            'AP=activationPrice',
+            'cr=callbackRate',
+            'rp=realizedProfit',
+            'pP=ignore',
+            'si=ignore',
+            'ss=ignore'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTCONFIGLEVERAGECHANGE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'ac=newLeverage',
+            's=symbol',
+            'l=leverage'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTCONFIGMARGINMODECHANGE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'ai=newMarginMode',
+            'j=mode'
+        ]
+    ];
+
+    // FUTURES USERDATA KEYS ////
+
+    // FUTURES WEBSOCKET KEYS ////
+
+    // constants ////
+
+
+    this.test = () => {
+        
     }
+    if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
 }
 
 module.exports = api;

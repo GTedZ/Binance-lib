@@ -1,9 +1,9 @@
 # Binance-lib
  A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
 
- ***WILL include all SPOT, MARGIN, FUTURES<a href='#futures-documentation'><sup>ref</sup></a> and EUROPEAN market/account/trade/websocket options***
+ ***WILL include all SPOT, MARGIN, FUTURES<a href='#futures-documentation'><sup>ref</sup></a> and EUROPEAN market/account/trade/websocket<a href='#Websockets'><sup>ref</sup></a> options***
 
- **Futures API almost fully implemented for now, documentation will come shortly**
+ **Futures API FULLY IMPLEMENTED!! Full documentation below**
 
  #### Please use the <a href='#please-use-the-ref-symbols-to-navigate-through-the-documentation-as-it-is-huge'>'<sup>ref</sup></a>' symbols to navigate through the documentation, as it is huge.
 
@@ -130,65 +130,74 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***incomeType***: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
 
 ## ALL FUTURES FUNCTIONS:
-|FUNCTIONS                                                                                           |REQUIRED PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
-|:---------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------:|:-------------------------------------------------------:|:--------------:|
-|futuresPing()                                              <a href='#futuresPing'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
-|futuresServerTime()                                  <a href='#futuresServerTime'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
-|futuresExchangeInfo()                              <a href='#futuresExchangeInfo'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |(BOOLS ONLY): quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
-|futuresOrderBook()                                    <a href='#futuresOrderBook'><sup>ref</sup></a>|symbol                                                                   |limit                                                    |                |
-|futuresRecentTrades()                              <a href='#futuresRecentTrades'><sup>ref</sup></a>|symbol                                                                   |limit                                                    |                |
-|futuresHistoricalTrades()                      <a href='#futuresHistoricalTrades'><sup>ref</sup></a>|symbol                                                                   |limit, fromId                                            |                |
-|futuresAggTrades()                                    <a href='#futuresAggTrades'><sup>ref</sup></a>|symbol                                                                   |limit, startTime, endTime, fromId                        |                |
-|futuresCandlesticks()                              <a href='#futuresCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime, fromId                        |                |
-|futuresContinuousCandlesticks()          <a href='#futuresContinuousCandlesticks'><sup>ref</sup></a>|pair, interval, contractType                                             |limit, startTime, endTime                                |                |
-|futuresIndexPriceCandlesticks()          <a href='#futuresIndexPriceCandlesticks'><sup>ref</sup></a>|pair, interval                                                           |                                                         |                |
-|futuresMarkPriceCandlesticks()            <a href='#futuresMarkPriceCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime                                |                |
-|futuresMarkPrice()                                    <a href='#futuresMarkPrice'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresFundingRate()                                <a href='#futuresFundingRate'><sup>ref</sup></a>|                                                                         |symbol, limit, startTime, endTime                        |                |
-|futures24hrTicker()                                  <a href='#futures24hrTicker'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresPrices()                                          <a href='#futuresPrices'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresOpenInterestStatistics()          <a href='#futuresOpenInterestStatistics'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresOpenInterest()                              <a href='#futuresOpenInterest'><sup>ref</sup></a>|symbol                                                                   |                                                         |                |
-|futuresBookTicker()                                  <a href='#futuresBookTicker'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresTopLongShortAccountRatio()      <a href='#futuresTopLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresTopLongShortPositionRatio()    <a href='#futuresTopLongShortPositionRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresGlobalLongShortAccountRatio()<a href='#futuresGlobalLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresTakerLongShortRatio()                <a href='#futuresTakerLongShortRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
-|futuresBLVTCandlesticks()                      <a href='#futuresBLVTCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime                                |                |
-|futuresIndexInfo()                                    <a href='#futuresIndexInfo'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresMultiAssetModeIndex()                <a href='#futuresMultiAssetModeIndex'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresChangePositionSide()                  <a href='#futuresChangePositionSide'><sup>ref</sup></a>|dualSidePosition                                                         |                                                         |recvWindow      |
-|futuresGetPositionSide()                        <a href='#futuresGetPositionSide'><sup>ref</sup></a>|multiAssetsMargin                                                        |                                                         |recvWindow      |
-|futuresChangeMultiAssetMargin()          <a href='#futuresChangeMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresGetMultiAssetMargin()                <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresMarketBuy()                                    <a href='#futuresMarketBuy'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
-|futuresMarketSell()                                  <a href='#futuresMarketSell'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
-|futuresBuy()                                                <a href='#futuresBuy'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
-|futuresSell()                                              <a href='#futuresSell'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
-|futuresTakeProfit()                                  <a href='#futuresTakeProfit'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
-|futuresStopLoss()                                      <a href='#futuresStopLoss'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
-|futuresCreateOrder()                                <a href='#futuresCreateOrder'><sup>ref</sup></a>|symbol, side, type                                                       |                                                         |positionSide, reduceOnly, closePosition, quantity, price, stopPrice, activationPrice, callbackRate, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
-|futuresMultipleOrders()                          <a href='#futuresMultipleOrders'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresOrder()                                            <a href='#futuresOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
-|futuresCancelOrder()                                <a href='#futuresCancelOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
-|futuresCancelAll()                                    <a href='#futuresCancelAll'><sup>ref</sup></a>|symbol                                                                   |                                                         |recvWindow      |
-|futuresCancelBatchOrders()                    <a href='#futuresCancelBatchOrders'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresCountdownCancelAll()                  <a href='#futuresCountdownCancelAll'><sup>ref</sup></a>|symbol, countdownTime                                                    |                                                         |recvWindow      |
-|futuresOpenOrder()                                    <a href='#futuresOpenOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
-|futuresOpenOrders()                                  <a href='#futuresOpenOrders'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresAllOrders()                                    <a href='#futuresAllOrders'><sup>ref</sup></a>|symbol                                                                   |orderId, limit, startTime, endTime                       |recvWindow      |
-|futuresBalance()                                        <a href='#futuresBalance'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |recvWindow      |
-|futuresAccount()                                        <a href='#futuresAccount'><sup>ref</sup></a>|                                                                         |(BOOLS ONLY): activePositionsOnly, activeAssets          |recvWindow      |
-|futuresLeverage()                                      <a href='#futuresLeverage'><sup>ref</sup></a>|symbol, leverage                                                         |                                                         |recvWindow, findHighest (BOOL)|
-|futuresLeverageBrackets()                      <a href='#futuresLeverageBrackets'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresMarginType()                                  <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, marginType                                               |                                                         |recvWindow      |
-|futuresPositionMargin()                          <a href='#futuresPositionMargin'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |positionSide, recvWindow|
-|futuresPositionMarginHistory()            <a href='#futuresPositionMarginHistory'><sup>ref</sup></a>|symbol                                                                   |limit, type_2, startTime, endTime                        |recvWindow      |
-|futuresPositionRisk()                              <a href='#futuresPositionRisk'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresOpenPositions()                            <a href='#futuresOpenPositions'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
-|futuresUserTrades()                                  <a href='#futuresUserTrades'><sup>ref</sup></a>|                                                                         |symbol, limit, incomeType, startTime, endTime            |recvWindow      |
-|futuresIncomeHistory()                            <a href='#futuresIncomeHistory'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresADLQuantileEstimation()            <a href='#futuresADLQuantileEstimation'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|FUNCTIONS                                                                                                    |REQUIRED PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
+|:------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------:|:-------------------------------------------------------:|:--------------:|
+|futuresPing()                                                       <a href='#futuresPing'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
+|futuresServerTime()                                           <a href='#futuresServerTime'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
+|futuresExchangeInfo()                                       <a href='#futuresExchangeInfo'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |(BOOLS ONLY): quantityPrecision, pricePrecision, contractType, status, baseAsset, quoteAsset, marginAsset, baseAssetPrecision, quotePrecision, minNotional, timeInForce, orderTypes, priceFilters, priceFilters, lotFilters, marketLotFilters, maxNumOrders, maxNumAlgoOrders, percentPriceFilters|
+|futuresOrderBook()                                             <a href='#futuresOrderBook'><sup>ref</sup></a>|symbol                                                                   |limit                                                    |                |
+|futuresRecentTrades()                                       <a href='#futuresRecentTrades'><sup>ref</sup></a>|symbol                                                                   |limit                                                    |                |
+|futuresHistoricalTrades()                               <a href='#futuresHistoricalTrades'><sup>ref</sup></a>|symbol                                                                   |limit, fromId                                            |                |
+|futuresAggTrades()                                             <a href='#futuresAggTrades'><sup>ref</sup></a>|symbol                                                                   |limit, startTime, endTime, fromId                        |                |
+|futuresCandlesticks()                                       <a href='#futuresCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime, fromId                        |                |
+|futuresContinuousCandlesticks()                   <a href='#futuresContinuousCandlesticks'><sup>ref</sup></a>|pair, interval, contractType                                             |limit, startTime, endTime                                |                |
+|futuresIndexPriceCandlesticks()                   <a href='#futuresIndexPriceCandlesticks'><sup>ref</sup></a>|pair, interval                                                           |                                                         |                |
+|futuresMarkPriceCandlesticks()                     <a href='#futuresMarkPriceCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime                                |                |
+|futuresMarkPrice()                                             <a href='#futuresMarkPrice'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresFundingRate()                                         <a href='#futuresFundingRate'><sup>ref</sup></a>|                                                                         |symbol, limit, startTime, endTime                        |                |
+|futures24hrTicker()                                           <a href='#futures24hrTicker'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresPrices()                                                   <a href='#futuresPrices'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresOpenInterestStatistics()                   <a href='#futuresOpenInterestStatistics'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresOpenInterest()                                       <a href='#futuresOpenInterest'><sup>ref</sup></a>|symbol                                                                   |                                                         |                |
+|futuresBookTicker()                                           <a href='#futuresBookTicker'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresTopLongShortAccountRatio()               <a href='#futuresTopLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresTopLongShortPositionRatio()             <a href='#futuresTopLongShortPositionRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresGlobalLongShortAccountRatio()         <a href='#futuresGlobalLongShortAccountRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresTakerLongShortRatio()                         <a href='#futuresTakerLongShortRatio'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
+|futuresBLVTCandlesticks()                               <a href='#futuresBLVTCandlesticks'><sup>ref</sup></a>|symbol, interval                                                         |limit, startTime, endTime                                |                |
+|futuresIndexInfo()                                             <a href='#futuresIndexInfo'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresMultiAssetModeIndex()                         <a href='#futuresMultiAssetModeIndex'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresChangePositionSide()                           <a href='#futuresChangePositionSide'><sup>ref</sup></a>|dualSidePosition                                                         |                                                         |recvWindow      |
+|futuresGetPositionSide()                                 <a href='#futuresGetPositionSide'><sup>ref</sup></a>|multiAssetsMargin                                                        |                                                         |recvWindow      |
+|futuresChangeMultiAssetMargin()                   <a href='#futuresChangeMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresGetMultiAssetMargin()                         <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresMarketBuy()                                             <a href='#futuresMarketBuy'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
+|futuresMarketSell()                                           <a href='#futuresMarketSell'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
+|futuresBuy()                                                         <a href='#futuresBuy'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresSell()                                                       <a href='#futuresSell'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresTakeProfit()                                           <a href='#futuresTakeProfit'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresStopLoss()                                               <a href='#futuresStopLoss'><sup>ref</sup></a>|symbol, side, stopPrice                                                  |(ONE OF THE FOLLOWING) closePosition, quantity           |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresCreateOrder()                                         <a href='#futuresCreateOrder'><sup>ref</sup></a>|symbol, side, type                                                       |                                                         |positionSide, reduceOnly, closePosition, quantity, price, stopPrice, activationPrice, callbackRate, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
+|futuresMultipleOrders()                                   <a href='#futuresMultipleOrders'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresOrder()                                                     <a href='#futuresOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
+|futuresCancelOrder()                                         <a href='#futuresCancelOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
+|futuresCancelAll()                                             <a href='#futuresCancelAll'><sup>ref</sup></a>|symbol                                                                   |                                                         |recvWindow      |
+|futuresCancelBatchOrders()                             <a href='#futuresCancelBatchOrders'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresCountdownCancelAll()                           <a href='#futuresCountdownCancelAll'><sup>ref</sup></a>|symbol, countdownTime                                                    |                                                         |recvWindow      |
+|futuresOpenOrder()                                             <a href='#futuresOpenOrder'><sup>ref</sup></a>|symbol, orderId OR origClientOrderId                                     |                                                         |recvWindow      |
+|futuresOpenOrders()                                           <a href='#futuresOpenOrders'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresAllOrders()                                             <a href='#futuresAllOrders'><sup>ref</sup></a>|symbol                                                                   |orderId, limit, startTime, endTime                       |recvWindow      |
+|futuresBalance()                                                 <a href='#futuresBalance'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |recvWindow      |
+|futuresAccount()                                                 <a href='#futuresAccount'><sup>ref</sup></a>|                                                                         |(BOOLS ONLY): activePositionsOnly, activeAssets          |recvWindow      |
+|futuresLeverage()                                               <a href='#futuresLeverage'><sup>ref</sup></a>|symbol, leverage                                                         |                                                         |recvWindow, findHighest (BOOL)|
+|futuresLeverageBrackets()                               <a href='#futuresLeverageBrackets'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresMarginType()                                           <a href='#futuresMarginType'><sup>ref</sup></a>|symbol, amount, marginType                                               |                                                         |recvWindow      |
+|futuresPositionMargin()                                   <a href='#futuresPositionMargin'><sup>ref</sup></a>|symbol, amount, type_2                                                   |                                                         |positionSide, recvWindow|
+|futuresPositionMarginHistory()                     <a href='#futuresPositionMarginHistory'><sup>ref</sup></a>|symbol                                                                   |limit, type_2, startTime, endTime                        |recvWindow      |
+|futuresPositionRisk()                                       <a href='#futuresPositionRisk'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresOpenPositions()                                     <a href='#futuresOpenPositions'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresUserTrades()                                           <a href='#futuresUserTrades'><sup>ref</sup></a>|                                                                         |symbol, limit, incomeType, startTime, endTime            |recvWindow      |
+|futuresIncomeHistory()                                     <a href='#futuresIncomeHistory'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresADLQuantileEstimation()                     <a href='#futuresADLQuantileEstimation'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresForceOrders()                                         <a href='#futuresForceOrders'><sup>ref</sup></a>|                                                                         |symbol, limit, autoCloseType, startTime, endTime         |recvWindow      |
+|futuresQuantitativeRules()                             <a href='#futuresQuantitativeRules'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresUserCommissionRate()                           <a href='#futuresUserCommissionRate'><sup>ref</sup></a>|                                                                         |symbol                                                   |recvWindow      |
+|futuresTransactionHistoryDownloadId()       <a href='#futuresTransactionHistoryDownloadId'><sup>ref</sup></a>|startTime, endTime                                                       |                                                         |recvWindow      |
+|futuresGetTransactionHistoryLinkByDownloadId()<a href='#futuresGetTransactionHistoryLinkByDownloadId'><sup>ref</sup></a>|downloadId                                                  |                                                         |recvWindow      |
+|futuresPortfolioMarginExchangeInfo()         <a href='#futuresPortfolioMarginExchangeInfo'><sup>ref</sup></a>|symbol                                                                   |                                                         |                |
+|futuresPortfolioMarginAccountInfo()           <a href='#futuresPortfolioMarginAccountInfo'><sup>ref</sup></a>|asset                                                                    |                                                         |recvWindow      |
+
+
 
 ## **FUTURES MARKET DATA**
 
@@ -1427,12 +1436,17 @@ OR
 ```js
   let btc_bookTicker = await binance.futuresBookTicker('BTCUSDT');
   console.log(btc_bookTicker);
+
+  // OR
+  
+  let bookTickers = await binance.futuresBookTicker();
+  console.log(bookTickers);
 ```
 <details>
 <summary>View Response</summary>
 
 ```js
-{
+{ // for symbole symbol
   symbol: 'BTCUSDT',
   bidPrice: 18414.8,
   bidQty: 4.629,
@@ -1440,16 +1454,8 @@ OR
   askQty: 24.508,
   time: 1665673452329
 }
-```
-</details>
 
-OR
-
-<details>
-<summary>View Response</summary>
-
-```js
-[
+[ // for ALL symbols
   {
     symbol: 'BTCUSDT',
     bidPrice: 18419.9,
@@ -2548,6 +2554,7 @@ OR
 
   // for futuresTakeProfit() /
 
+  // TODO finish documentation for for futuresStopLoss()
 ```
 
 ### .futuresCreateOrder():
@@ -3632,26 +3639,319 @@ order2 =>
 
 ### .futuresADLQuantileEstimation():
 ```js
-  // TODO
+  let ADLQuantile = await binance.futuresADLQuantileEstimation();
+
+  let BTC_ADLQuantile = await binance.futuresADLQuantileEstimation('BTCUSDT');
 ```
+<details>
+<summary>View Response</summary>
 
-// TODO theres 3 or more functions left to include
+```js
+[
+    {
+        "symbol": "ETHUSDT", 
+        "adlQuantile": 
+            {
+                // if the positions of the symbol are crossed margined in Hedge Mode, "LONG" and "SHORT" will be returned a same quantile value, and "HEDGE" will be returned instead of "BOTH".
+                "LONG": 3,  
+                "SHORT": 3, 
+                "HEDGE": 0   // only a sign, ignore the value
+            }
+        },
+    {
+        "symbol": "BTCUSDT", 
+        "adlQuantile": 
+            {
+                // for positions of the symbol are in One-way Mode or isolated margined in Hedge Mode
+                "LONG": 1,  // adl quantile for "LONG" position in hedge mode
+                "SHORT": 2,     // adl qauntile for "SHORT" position in hedge mode
+                "BOTH": 0       // adl qunatile for position in one-way mode
+            }
+    },
+    ...
+ ]
+```
+</details>
 
+### .futuresForceOrders():
+```js
+  let forceOrders = await binance.futuresForceOrders();
 
+  let BTC_last_5_forceOrders = await binance.futuresForceOrders('BTCUSDT', 5);
 
+  let BTC_last_5_LIQ_orders_only = await binance.futuresForceOrders('BTCUSDT', 5, 'LIQUIDATION');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+[
+  {
+    "orderId": 6071832819, 
+    "symbol": "BTCUSDT", 
+    "status": "FILLED", 
+    "clientOrderId": "autoclose-1596107620040000020", 
+    "price": "10871.09", 
+    "avgPrice": "10913.21000", 
+    "origQty": "0.001", 
+    "executedQty": "0.001", 
+    "cumQuote": "10.91321", 
+    "timeInForce": "IOC", 
+    "type": "LIMIT", 
+    "reduceOnly": false, 
+    "closePosition": false, 
+    "side": "SELL", 
+    "positionSide": "BOTH", 
+    "stopPrice": "0", 
+    "workingType": "CONTRACT_PRICE", 
+    "origType": "LIMIT", 
+    "time": 1596107620044, 
+    "updateTime": 1596107620087
+  }
+  {
+    "orderId": 6072734303, 
+    "symbol": "BTCUSDT", 
+    "status": "FILLED", 
+    "clientOrderId": "adl_autoclose", 
+    "price": "11023.14", 
+    "avgPrice": "10979.82000", 
+    "origQty": "0.001", 
+    "executedQty": "0.001", 
+    "cumQuote": "10.97982", 
+    "timeInForce": "GTC", 
+    "type": "LIMIT", 
+    "reduceOnly": false, 
+    "closePosition": false, 
+    "side": "BUY", 
+    "positionSide": "SHORT", 
+    "stopPrice": "0", 
+    "workingType": "CONTRACT_PRICE", 
+    "origType": "LIMIT", 
+    "time": 1596110725059, 
+    "updateTime": 1596110725071
+  },
+  ...
+]
+```
+</details>
 
+### .futuresQuantitativeRules():
+```js
+  let APITradingStatus = await binance.futuresQuantitativeRules();
 
+  let BTC_APITradingStatus = await binance.futuresQuantitativeRules('BTCUSDT');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "indicators": { // indicator: quantitative rules indicators, value: user's indicators value, triggerValue: trigger indicator value threshold of quantitative rules. 
+        "BTCUSDT": [
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "UFR",  // Unfilled Ratio (UFR)
+                "value": 0.05,  // Current value
+                "triggerValue": 0.995  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "IFER",  // IOC/FOK Expiration Ratio (IFER)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "GCR",  // GTC Cancellation Ratio (GCR)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "DR",  // Dust Ratio (DR)
+                "value": 0.99,  // Current value
+                "triggerValue": 0.99  // Trigger value
+            }
+        ],
+        "ETHUSDT": [
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "UFR",
+                "value": 0.05,
+                "triggerValue": 0.995
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "IFER",
+                "value": 0.99,
+                "triggerValue": 0.99
+            },
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "GCR",
+                "value": 0.99,
+                "triggerValue": 0.99
+            }
+            {
+                "isLocked": true,
+                "plannedRecoverTime": 1545741270000,
+                "indicator": "DR",
+                "value": 0.99,
+                "triggerValue": 0.99
+            }
+        ]
+    },
+    "updateTime": 1545741270000
+}
+```
+***Or (Account violation triggered):***
+```js
+{
+    "indicators":{
+        "ACCOUNT":[
+            {
+                "indicator":"TMV",  //  Too many violations under multiple symbols trigger account violation
+                "value":10,
+                "triggerValue":1,
+                "plannedRecoverTime":1644919865000,
+                "isLocked":true
+            }
+        ]
+    },
+    "updateTime":1644913304748
+}
+```
+</details>
 
+### .futuresUserCommissionRate():
+```js
+  let BTC_CommissionRate = await binance.futuresUserCommissionRate('BTCUSDT');
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+  symbol: 'BTCUSDT',
+  makerCommissionRate: 0.0002,  // For LIMIT orders
+  takerCommissionRate: 0.0004   // For MARKET orders
+}
+```
+</details>
 
+### .futuresTransactionHistoryDownloadId():
+```js
+  const startTime = Date.now() - (5 * 24 * 60 * 60 * 1000); // last 5 days
+  const endTime = Date.now();
 
+  let TxHistoryDownloadId = await binance.futuresTransactionHistoryDownloadId(startTime, endTime);
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "avgCostTimestampOfLast30d":7241837, // Average time taken for data download in the past 30 days
+    "downloadId":"545923594199212032",
+}
+```
+</details>
 
+### .futuresGetTransactionHistoryLinkByDownloadId():
+```js
+  let downloadLink = await binance.futuresGetTransactionHistoryLinkByDownloadId(TxHistoryDownloadId); // which is '545923594199212032' from the last request above
+```
+<details>
+<summary>View Response</summary>
 
+```js
+{
+    "downloadId":"545923594199212032",
+    "status":"completed",     // Enum：completed，processing
+    "url":"www.binance.com",  // The link is mapped to download id
+    "notified":true,          // ignore
+    "expirationTimestamp":1645009771000,  // The link would expire after this timestamp
+    "isExpired":null,
+}
 
+// OR when server is still processing
+{
+    "downloadId":"545923594199212032",
+    "status":"processing",
+    "url":"", 
+    "notified":false,
+    "expirationTimestamp":-1
+    "isExpired":null,
+}
+```
+</details>
 
+### .futuresPortfolioMarginExchangeInfo():
+```js
+  let portfolioMarginAccountInfo = await binance.futuresPortfolioMarginExchangeInfo('BTCUSDT');
+  
+  let FULL_portfolioMarginAccountInfo = await binance.futuresPortfolioMarginExchangeInfo();
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  notionalLimits: 
+    [ 
+      { 
+        symbol: 'BTCUSDT', notionalLimit: 100000000 
+      } 
+    ] 
+}
+
+{ // for ALL symbols
+  notionalLimits: [
+    { symbol: 'BTCUSDT', notionalLimit: 100000000 },
+    { symbol: 'ETHUSDT', notionalLimit: 20000000 },
+    { symbol: 'BCHUSDT', notionalLimit: 3000000 },
+    { symbol: 'XRPUSDT', notionalLimit: 6000000 },
+    { symbol: 'EOSUSDT', notionalLimit: 3000000 },
+    { symbol: 'LTCUSDT', notionalLimit: 3000000 },
+    { symbol: 'TRXUSDT', notionalLimit: 3000000 },
+    { symbol: 'ETCUSDT', notionalLimit: 3000000 },
+    { symbol: 'LINKUSDT', notionalLimit: 6000000 },
+    { symbol: 'XLMUSDT', notionalLimit: 3000000 },
+    { symbol: 'ADAUSDT', notionalLimit: 6000000 },
+    { symbol: 'XMRUSDT', notionalLimit: 3000000 },
+    { symbol: 'DASHUSDT', notionalLimit: 1000000 },
+    { symbol: 'ZECUSDT', notionalLimit: 2000000 },
+    { symbol: 'XTZUSDT', notionalLimit: 3000000 },
+    { symbol: 'BNBUSDT', notionalLimit: 3000000 },
+    ...,
+    ...,
+  ]
+}
+```
+</details>
+
+### .futuresPortfolioMarginAccountInfo():
+```js
+  let BTC_marginAccountInfo = await binance.futuresPortfolioMarginAccountInfo('BTC');
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+    "maxWithdrawAmountUSD": "1627523.32459208", // Portfolio margin maximum virtual amount for transfer out in USD
+    "asset": "BTC",                             // asset name
+    "maxWithdrawAmount": "27.43689636",         // maximum amount for transfer out
+}
+```
+</details>
 
 
 
@@ -3659,9 +3959,14 @@ order2 =>
 ## SPOT<a href='#WebSocket-Spot'><sup>ref</sup></a>
 ## FUTURES<a href='#WebSocket-Futures'><sup>ref</sup></a>
 
-### How To Use<a href='#How-To-Use'><sup>ref</sup></a>
-### How To Subscribe<a href='#How-To-Subscribe'><sup>ref</sup></a>
-### How To Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
+### How to Use<a href='#How-To-Use'><sup>ref</sup></a>
+### How to Subscribe to a new Stream<a href='#How-To-Subscribe'><sup>ref</sup></a>
+### How to Close<a href='#How-To-Close'><sup>ref</sup></a>
+### How to Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
+### How to Add Additional Streams to a Connection ***VERY USEFUL***<a href='#Add-Streams-To-Socket'><sup>ref</sup></a>
+### Handling Websocket Errors<a href='#Handling-Websocket-Errors'><sup>ref</sup></a>
+
+### Websocket Parameter Explanation<a href='#Websocket-Parameters-Explanation'><sup>ref</sup></a>
 
 
 ## HOW TO USE:
@@ -3679,75 +3984,166 @@ order2 =>
 ```
 - Each websocket block contains it's own subscriptions property that contains its currently active websocket connections:
 ```js
-  let futuresSubscriptions = binance.websockets.spot.subscriptions;
+  let futuresSubscriptions = await binance.websockets.spot.subscriptions();
 
-  let spotSubscriptions = binance.websockets.futures.subscriptions;
+  let spotSubscriptions = await binance.websockets.futures.subscriptions();
 ```
 - Each function has AT LEAST 1 mandatory parameter ***callback***, and can have optional parameters:
 - - Mandatory parameters are always the first parameters to be passed to the function.
 - - But if there are other mandatory parameters than ***callback***, they will come first, that is the reason why ***callback*** sometimes comes first, and sometimes comes last
 - - Some examples:
 ```js
-  binance.websockets.futures.candlesticks(symbol, interval, callback); <= callback comes last because all the others are mandatory
+  await binance.websockets.futures.candlesticks(symbol, interval, callback); <= callback comes last because all the others are mandatory
 
-  binance.websockets.futures.miniTicker(callback, [symbol]) <= callback comes first, because symbol is NOT mandatory
+  await binance.websockets.futures.miniTicker(callback, [symbol]) <= callback comes first, because symbol is NOT mandatory
 ```
 
 ## HOW TO SUBSCRIBE:
 There are two main ways to subscribe:
-- You can either use the built-in library functions (that you can see inside your editor when typing the general path like 'binance.websockets.futures.': when you type the final dot '.', your editor will most likely show you all the options you have)
+- You can either use the built-in library functions:
 ```js
-  let aggTrade = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
 
   function handleAggTrades(data) { // <= this is your 'callback' function, which is called everytime there is new data sent by binance
     console.log(data);
   }
 ```
-- Or you can subscribe youself via the .subscribe() method of each websocket block:
+- Or you can subscribe youself via the `.subscribe()` method of each websocket block:
 ```js
-  let aggTrade = binance.websockets.futures.subscribe('btcusdt@aggTrade');
+  let aggTrade = await binance.websockets.futures.subscribe('btcusdt@aggTrade');
+  // It is NOT RECOMMENDED to use this method, as it will not come with the added benefits of having the library rename the properties of the message
+  // The library renames all the properties of the websocket response for clarity, it is instead recommended to use one of the other methods
+```
+
+## HOW TO CLOSE:
+- All Websocket function return an object that you can use to close the connection comepletely, just like the following:
+```js
+  const candlestick_stream = await binance.websockets.futures.candlesticks('BTCUSDT', '1m', console.log);
+  
+  candlestick_stream.close(); // this closes the connection permanently, the callback function will not be triggered anymore
 ```
 
 ## HOW TO UNSUBSCRIBE:
-- Any websocket function returns an object that you can use to unsubscribe from the connection, just like the following:
+- All Websocket function return an object that you can use to unsubscribe from a stream, just like the following:
 ```js
-  const aggTrades = binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
+  const aggTrades_stream = await binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
     // to something here with the data
   });
-
-  // 'aggTrades' here is the object which contains a .unsubscribe() method
-  aggTrades.unsubscribe(); // This here is how you unsubscribe from it
+  
+  const subscriptions = await aggTrades_stream.subscriptions(); // this function gets the subscriptions,
+  aggTrades_stream.unsubscribe(subscriptions); // This here is how you unsubscribe from a subscription, or array of subscriptions
 ```
 
-- Or you can unsubscribe using the binance.websockets.spot/futures.subscriptions:
+- Or you can unsubscribe using the await binance.websockets.spot/futures.subscriptions:
 ```js
-  let subscriptions = binance.websockets.futures.subscriptions;
+  let subscriptions = await binance.websockets.futures.subscriptions;
 
-  binance.websockets.futures.unsubscribe(subscriptions);
+  await binance.websockets.futures.unsubscribe(subscriptions);
   // OR
   // for example: subscriptions => ['btcusdt@aggTrade', ...];
-  binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
+  await binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
 ```
 
+## ADD STREAMS TO SOCKET:
+- ***IMPORTANT***: **ONLY SUBSCRIBE TO THE SAME TYPES OF STREAMS, ONLY SIMILAR-TYPE STREAMS CAN BE ACCESSED VIA THE SAME SOCKET OBJECT**
+- All Websocket function return an object that you can use to subscribe to a new stream
+- The library renames the properties for more clarity, so subscribing to the same streams via the websocket is recommended
+- To use the `.subscribe()` function correctly, all you need to do is pass the same parameters the original(in the same order too) except for the callback function.
+```js
+  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', (data) => {
+    // do something with the data
+  });
 
-## Websocket Parameters Explanation:
+
+  // now remember, .lastPrice(<symbol>, <callback>) has 2 parameters, but ignoring 'callback' since it isnt needed, we only need to pass the new symbol
+  lastPrice_stream.subscribe('ETHUSDT');
+  lastPrice_stream.subscribe('XRPUSDT');
+```
+- Another example with the more 'complicated' functions:
+```js
+  let continuousKline_stream = await binance.websockets.futures.continuousContractKline('BTCUSDT','PERPETUAL', '1m', (data) => {
+    // do something with the data
+  });
+
+  // the function has 3 parameters, all of them mandatory => pair, contractType, interval
+  continuousKline_stream.subscribe('ETHUSDT','PERPETUAL', '1m');
+  continuousKline_stream.subscribe('XRPUSDT','PERPETUAL', '3m');
+```
+- Same for optional parameters:
+```js
+  let miniTicker_stream = binance.websockets.futures.miniTicker('BTCUSDT', (data) => console.log());
+
+  miniTicker_stream.unsubscribe(await miniTicker_stream.subscriptions()); // unsubscribing from the single stream to sub to the main stream on the next request
+  miniTicker_stream.subscribe('');  // Because symbol is an 'optional' parameter, the function will accept an empty symbol as a parameter and will subscribe to the ALL symbols' stream
+
+  // .markPrice() also has 0 mandatory parameters, and 2 optional parameters, you can also enter blank parameters, or none at all(since there's no mandatory parameter needed)
+```
+
+## HANDLING WEBSOCKET ERRORS:
+- All Websocket functions return an object that can be used for many purposes, like `.subscribe()`, `.unsubscribe()` and fetching subscriptions via the `.subscriptions()`
+- All of those functions return promises that can be handled via the `await` keyword
+- Opening the stream:
+```js
+  // use this when you are still testing out the function or checking if the parameters are valid
+  let stream = await binance.websockets.futures.lastPrice('', (data) => console.log()); // '' is not a valid argument for lastPrice(), since 'symbol' is mandatory
+  if (stream.error) {
+    console.log(stream);
+    // handle the error here, or just reset and check the parameters
+  }
+```
+<details>
+<summary>View the Error Response</summary>
+
+```js
+{
+  error: {
+    status: 400,
+    statusText: 'Websocket Error',
+    code: -3,
+    msg: "Parameter 'symbol' is required for this request."
+  }
+}
+```
+</details>
+
+- All requests that awaits for 'data'(Like for .subscriptions(), which returns the subscriptions in the socket) will return as normal
+- But all requests that do not anticipate a reply of data(Like for .subscribe() or .unsubscribe()) will instead only need to be checked for .error property if it is urgent to know that it was a success:
+- - `.subscriptions()`:
+```js
+  let stream = await binance.websockets.futures...;
+  // ...
+  // ...
+  let subscriptions = await stream.subscriptions(); // this returns a list of all the subscriptions in the CURRENT socket `stream`
+  console.log(subscriptions);
+```
+- - `.unsubscribe()`:
+```js
+  // assuming we have the subscriptions from the .subscriptions() method
+  let response = await stream.unsubscribe(subscriptions);
+  if(response.error) {
+    // this means an error happened, altho very unlikely since the connection is already established
+  }
+```
+- - same for `.subscribe()`
+
+## WEBSOCKET PARAMETERS EXPLANATION:
 - ***callback***: It's a function that you define anywhere (can be a simple arrow function), that is passed to the websocket function, that will be called on every message received from the websocket connection, for example:
 ```js
   let callbackFunc = (msg) => {
     console.log(msg);
   }
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
 
   // OR
 
   function callbackFunc(msg) {
     console.log(msg)
   }
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
 
   // OR SIMPLY
 
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', (msg) => {
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', (msg) => {
     console.log(msg)
   }); // simple arrow function :D
 ```
@@ -3765,13 +4161,13 @@ There are two main ways to subscribe:
 |bookTicker()                             <a href='#spot-bookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
+|subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
 |userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|                                                                                  |                                                  |
-
 
 ### spot .aggTrade():
 **Update Speed**: *Realtime*
 ```js
-  let BTC_aggTrade_stream = binance.websockets.spot.aggTrade('BTCUSDT', (data) => {
+  let BTC_aggTrade_stream = await binance.websockets.spot.aggTrade('BTCUSDT', (data) => {
     // do something with data
   });
 ```
@@ -3792,8 +4188,9 @@ There are two main ways to subscribe:
 
 
 ### spot .trade():
+**Update Speed**: *Realtime*
 ```js
-  let BTC_trade_stream = binance.websockets.spot.trade('BTCUSDT', (data) => {
+  let BTC_trade_stream = await binance.websockets.spot.trade('BTCUSDT', (data) => {
     // do something with data
   })
 ```
@@ -3813,8 +4210,9 @@ There are two main ways to subscribe:
 
 
 ### spot .candlesticks():
+**Update Speed**: 2000ms
 ```js
-let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1m', handleCandlestick)
+let BTC_candlesticks_stream = await binance.websockets.spot.candlesticks('BTCUSDT', '1m', handleCandlestick)
 ```
 ```js
 {
@@ -3844,10 +4242,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .miniTicker():
+**Update Speed**: 1000ms
 ```js
-  let BTCUSDT_miniTicker_stream = binance.websockets.spot.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let BTCUSDT_miniTicker_stream = await binance.websockets.spot.miniTicker(handleMiniTicker, 'BTCUSDT');
   // OR
-  let miniTicker_stream = binance.websockets.spot.miniTicker(handleMiniTicker);
+  let miniTicker_stream = await binance.websockets.spot.miniTicker(handleMiniTicker);
 ```
 ```js
 { // for single symbol
@@ -3903,10 +4302,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .ticker():
+**Update Speed**: 1000ms
 ```js
-  let BTC_ticker_stream = binance.websockets.spot.ticker(handleTicker, 'BTCUSDT');
+  let BTC_ticker_stream = await binance.websockets.spot.ticker(handleTicker, 'BTCUSDT');
   // OR
-  let icker_stream = binance.websockets.spot.ticker(handleTicker);
+  let icker_stream = await binance.websockets.spot.ticker(handleTicker);
 ```
 ```js
 { // for single symbol
@@ -3993,8 +4393,291 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .rollingWindowStats():
+**Update Speed**: 1000ms
+**Window Sizes**: 1h,4h,1d
+**Note**: This stream is different from the `ticker()` stream. The open time `.close` always starts on a minute, while the closing time `.close` is the current time of the update.
+As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
+  let 4h_windowStat_stream = await binance.websockets.spot.rollingWindowStats('BTCUSDT', '4h', console.log)
+  // OR
+  let 4h_windowStat_stream = await binance.websockets.spot.rollingWindowStats('', '4h', console.log)
+```
+```js
+{ // for single symbol
+  event: '4hTicker',
+  time: 1666535268773,
+  symbol: 'BTCUSDT',
+  priceChange: 6.42,
+  percentChange: 0.033,
+  open: 19176.98,
+  high: 19210.54,
+  low: 19070.11,
+  lastPrice: 19183.4,
+  weightedAvgPrice: 19153.32130309,
+  totalTraded_baseAssetVolume: 23573.27327,
+  totalTraded_quoteAssetVolume: '451506477.10578530',
+  stats_openTime: 1666520820000,
+  stats_closeTime: 1666535268511,
+  firstTradeId: 2009712739,
+  lastTradeId: 2010333945,
+  tradeCount: 621207
+}
 
+[ // for ALL symbols
+  {
+    event: '4hTicker',
+    time: 1666535310775,
+    symbol: 'BNBBTC',
+    priceChange: 0.00001,
+    percentChange: 0.071,
+    open: 0.014067,
+    high: 0.014096,
+    low: 0.014045,
+    lastPrice: 0.014077,
+    weightedAvgPrice: 0.01407548,
+    totalTraded_baseAssetVolume: 2711.348,
+    totalTraded_quoteAssetVolume: 38.16352924,
+    stats_openTime: 1666520880000,
+    stats_closeTime: 1666535310610,
+    firstTradeId: 206189368,
+    lastTradeId: 206194077,
+    tradeCount: 4710
+  },
+  {
+    event: '4hTicker',
+    time: 1666535310775,
+    symbol: 'BTCUSDT',
+    priceChange: 7.84,
+    percentChange: 0.041,
+    open: 19176.17,
+    high: 19210.54,
+    low: 19070.11,
+    lastPrice: 19184.01,
+    weightedAvgPrice: 19153.30896216,
+    totalTraded_baseAssetVolume: 23549.83751,
+    totalTraded_quoteAssetVolume: '451057313.83759810',
+    stats_openTime: 1666520880000,
+    stats_closeTime: 1666535310761,
+    firstTradeId: 2009714306,
+    lastTradeId: 2010335189,
+    tradeCount: 620884
+  },
+  ...,
+  ...
+]
+```
+
+
+### spot .bookTicker():
+**Update Speed**: *Realtime*
+```js
+  let bookTicker_BTC_stream = await binance.websockets.spot.bookTicker(handleBookTicker, 'BTCUSDT');
+  // OR
+  let bookTicker_stream = await binance.websockets.spot.bookTicker(handleBookTicker); // this will be removed in November 2022 by binance
+```
+```js
+{
+  updateId: 26122319805,
+  symbol: 'BTCUSDT',
+  bestBidPrice: 19183.98,
+  bestBidQty: 0.0026,
+  bestAskPrice: 19184.32,
+  bestAskQty: 0.01796
+}
+```
+
+
+### spot .partialBookTicker():
+**Update Speed**: 1000ms or 100ms
+```js
+  let partialBookTicker_BTC_5_100ms_stream = await binance.websockets.spot.partialBookTicker('BTCUSDT', 5, '100ms', console.log);
+  // OR
+  let partialBookTicker_BTC_10_1000ms_stream = await binance.websockets.spot.partialBookTicker('BTCUSDT', 10, '1000ms', console.log);
+```
+```js
+{
+  lastUpdateId: 26123167083,
+  bids: [
+    [ 19202.51, 0.09507 ],
+    [ 19202.5, 0.01401 ],
+    [ 19202.48, 0.48268 ],
+    [ 19202.47, 0.04646 ],
+    [ 19202.46, 0.48329 ]
+  ],
+  asks: [
+    [ 19203.19, 0.7855 ],
+    [ 19203.24, 0.46866 ],
+    [ 19203.25, 0.46862 ],
+    [ 19203.26, 0.03222 ],
+    [ 19203.27, 0.008 ]
+  ]
+}
+```
+
+### spot .diffBookTicker():
+**Update Speed**: 1000ms or 100ms
+Open a stream via `binance.websockets.spot.diffBookTicker()`.
+Buffer the events you receive from the stream.
+Get a depth snapshot from https://api.binance.com/api/v3/depth?symbol=BNBBTC&limit=1000.  // unfortunately spot isn't supported in the library yet, so will need to do that manually
+Drop any event where `finalUpdateId` is <= lastUpdateId in the snapshot.
+The first processed event should have `firstUpdateId` <= lastUpdateId+1 AND `finalUpdateId` >= lastUpdateId+1.
+While listening to the stream, each new event's `firstUpdateId` should be equal to the previous event's `finalUpdateId` + 1.
+The data in each event is the absolute quantity for a price level.
+**If the quantity is 0, remove the price level.**
+Receiving an event that removes a price level that is not in your local order book can happen and is normal.
+***Note***: Due to depth snapshots having a limit on the number of price levels, a price level outside of the initial snapshot that doesn't have a quantity change won't have an update in the Diff. Depth Stream. Consequently, those price levels will not be visible in the local order book even when applying all updates from the Diff. Depth Stream correctly and cause the local order book to have some slight differences with the real order book. However, for most use cases the depth limit of 5000 is enough to understand the market and trade effectively.
+```js
+  let diffBookTicker_BTC_100ms_stream = await binance.websockets.spot.diffBookTicker('BTCUSDT', '100ms', console.log)
+  // OR
+  let diffBookTicker_BTC_1000ms_stream = await binance.websockets.spot.diffBookTicker('BTCUSDT', '1000ms', console.log)
+```
+```js
+{
+  event: 'depthUpdate',
+  time: 1666537508157,
+  symbol: 'BTCUSDT',
+  firstUpdateId: 26123220498,
+  finalUpdateId: 26123220915,
+  bids: [
+    [ 19198.45, 0.39239 ], [ 19198.44, 0.01283 ], [ 19198.37, 0.02 ],
+    [ 19198.3, 0.02 ],     [ 19198.22, 0.02 ],    [ 19198.13, 0.23642 ],
+    [ 19198.1, 0.33518 ],  [ 19198.09, 0.04497 ], [ 19198.08, 0.21981 ],
+    [ 19198.07, 0.0129 ],  [ 19198.06, 0.02604 ], [ 19198.05, 0 ],
+    [ 19198.04, 0 ],       [ 19197.98, 0 ],       [ 19197.91, 0.18957 ],
+    [ 19197.9, 0.21579 ],  [ 19197.87, 0.02603 ], [ 19197.82, 0.001 ],
+    [ 19197.8, 0.39999 ],  [ 19197.79, 0.00277 ], [ 19197.75, 0.02604 ],
+    [ 19197.67, 0 ],       [ 19197.66, 0 ],       [ 19197.63, 0 ],
+    [ 19197.62, 0 ],       [ 19197.6, 0.076 ],    [ 19197.55, 0.05267 ],
+    [ 19197.36, 0 ],       [ 19197.35, 0 ],       [ 19197.16, 0.10023 ],
+    [ 19197.15, 0.08386 ], [ 19197.12, 0 ],       [ 19197.08, 0 ],
+    [ 19197.07, 0 ],       [ 19197.05, 0 ],       [ 19197.04, 0.00271 ],
+    [ 19197.03, 0.01716 ], [ 19197.01, 0.0172 ],  [ 19196.99, 0.01762 ],
+    [ 19196.96, 0.1009 ],  [ 19196.95, 0 ],       [ 19196.94, 0 ],
+    ...,                   ...,                   ...,
+    ...
+  ],
+  asks: [
+    [ 19198.72, 0 ],       [ 19198.73, 0 ],       [ 19198.74, 0 ],
+    [ 19198.75, 0 ],       [ 19198.76, 0 ],       [ 19198.77, 0 ],
+    [ 19198.78, 0 ],       [ 19198.79, 0 ],       [ 19199.02, 0.00173 ],
+    [ 19199.03, 0.00061 ], [ 19199.08, 0 ],       [ 19199.1, 0 ],
+    [ 19199.15, 0.001 ],   [ 19199.19, 0 ],       [ 19199.23, 0.04975 ],
+    [ 19199.24, 0.00156 ], [ 19199.39, 0 ],       [ 19199.43, 0.00499 ],
+    [ 19199.49, 0.00499 ], [ 19199.59, 0.39698 ], [ 19199.6, 0.19551 ],
+    [ 19199.61, 0.19979 ], [ 19199.62, 0 ],       [ 19199.63, 0.0008 ],
+    [ 19199.64, 0 ],       [ 19199.65, 0 ],       [ 19199.77, 0.0054 ],
+    [ 19199.78, 0.0052 ],  [ 19199.79, 0.10009 ], [ 19199.8, 0.05725 ],
+    [ 19199.81, 0 ],       [ 19199.82, 0 ],       [ 19199.83, 0.43191 ],
+    [ 19199.92, 0.015 ],   [ 19199.99, 0 ],       [ 19200.07, 0.00056 ],
+    [ 19200.1, 0.00057 ],  [ 19200.34, 0.00523 ], [ 19200.35, 0.05555 ],
+    [ 19200.49, 0 ],       [ 19200.68, 0 ],       [ 19200.71, 0 ],
+    [ 19200.93, 0 ],       [ 19201.06, 0.04 ],    [ 19201.2, 0.00572 ],
+    ...,                   ...,                   ...,
+    ...
+  ]
+}
+```
+
+
+### spot .userData():
+- `outboundAccountPosition` is sent any time an account balance has changed and contains the assets that were possibly changed by the event that generated the balance change.
+```js
+{
+  event: 'outboundAccountPosition',
+  time: 1564034571105,
+  lastAccountUpdateTime: 1564034571073,
+  balances: [ { asset: 'ETH', free: '10000.000000', locked: '0.000000' } ]
+}
+```
+- `balanceUpdate` occurs during the following:
+- - Deposits or withdrawals from the account
+- - Transfer of funds between accounts (e.g. Spot to Margin)
+```js
+{
+  event: 'balanceUpdate',
+  time: 1573200697110,
+  asset: 'BTC',
+  balanceDelta: '100.00000000',
+  clearTime: 1573200697068
+}
+```
+- Orders are updated with the `executionReport` event.
+- Check the <a href='https://binance-docs.github.io/apidocs/spot/en/#public-api-definitions'>Public API Definitions</a> and below for relevant enum definitions.
+- Average price can be found by doing `cumulative_quoteAssetTransactedQty` divided by `cumulativeFilledQty`.
+- ***Execution Types:***
+- - **NEW** - The order has been accepted into the engine.
+- - **CANCELED** - The order has been canceled by the user.
+- - **REPLACED** (currently unused)
+- - **REJECTED** - The order has been rejected and was not processed. (This is never pushed into the User Data Stream)
+- - **TRADE** - Part of the order or all of the order's quantity has filled.
+- - **EXPIRED** - The order was canceled according to the order type's rules (e.g. LIMIT FOK orders with no fill, LIMIT IOC or MARKET orders that partially fill) or by the exchange, (e.g. orders canceled during liquidation, orders canceled during maintenance)
+- If the order is an OCO, an event will be displayed named `listStatus` in addition to the `executionReport` event.
+
+***executionReport:***
+```js
+{
+  event: 'executionReport',
+  time: 1499405658658,
+  symbol: 'ETHBTC',
+  clientOrderId: 'mUvoqJxFIILMdfAW5iGSOW',
+  side: 'BUY',
+  orderType: 'LIMIT',
+  timeInForce: 'GTC',
+  qty: '1.00000000',
+  price: '0.10264410',
+  stopPrice: '0.00000000',
+  trailingDelta: 4,
+  icebergQty: '0.00000000',
+  orderListId: -1,
+  origClientOrderId: '',
+  currentExecutionType: 'NEW',
+  currentOrderType: 'NEW',
+  orderRejectReason: 'NONE',
+  orderId: 4293153,
+  lastExecutedQty: '0.00000000',
+  cumulativeFilledQty: '0.00000000',
+  lastExecutedPrice: '0.00000000',
+  commissionAmount: '0',
+  commissionAsset: null,
+  transactionId: 1499405658657,
+  tradeId: -1,
+  isOrderInBook: true,
+  maker: false,
+  orderCreationTime: 1499405658657,
+  cumulative_quoteAssetTransactedQty: '0.00000000',
+  lastQuote_assetTrasactedQty: '0.00000000',
+  quoteOrderQty: '0.00000000',
+  strategyId: 1,
+  strategyType: 1000000
+}
+```
+
+***listStatus:***
+```js
+{
+  event: 'listStatus',
+  time: 1564035303637,
+  symbol: 'ETHBTC',
+  orderListId: 2,
+  contingencyType: 'OCO',
+  listStatusType: 'EXEC_STARTED',
+  listOrderStatus: 'EXECUTING',
+  listRejectReason: 'NONE',
+  listClientOrderId: 'F4QN4G8DlFATFlIUQ0cjdD',
+  transactionTime: 1564035303625,
+  orders: [
+    {
+      symbol: 'ETHBTC',
+      orderId: 17,
+      clientOrderId: 'AJYsMjErWJesZvqlJCTUgL'
+    },
+    {
+      symbol: 'ETHBTC',
+      orderId: 18,
+      clientOrderId: 'bfYPSQdLoqAJeNrOr9adzq'
+    }
+  ]
+}
 ```
 
 
@@ -4013,19 +4696,20 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 |partialBookTicker()            <a href='#futures-partialBookTicker'><sup>ref</sup></a>|symbol, levels, speed, callback                                                   |                                                  |
 |diffBookTicker()                  <a href='#futures-diffBookTicker'><sup>ref</sup></a>|symbol, speed, callback                                                           |                                                  |
 |compositeIndexSymbol()      <a href='#futures-compositeIndexSymbol'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
+|subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
 |userData()                              <a href='#futures-userData'><sup>ref</sup></a>|callback                                                                          |tries (how many times to try to get the listenKey)|
 
 
 ### futures .aggTrade():
 **Update Speed**: 100ms
 ```js
-  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
     // do something with the data
   });
 
   // OR
 
-  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrade);
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrade);
 
   function handleAggTrade(data) {
     // do something with the data
@@ -4055,11 +4739,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
     // do something with the data
   }
 
-  let markPrice_BTC_stream = binance.websockets.futures.markPrice(handleMarkPrices, 'BTCUSDT');
+  let markPrice_BTC_stream = await binance.websockets.futures.markPrice(handleMarkPrices, 'BTCUSDT');
 
   // OR
 
-  let markPrices_stream = binance.websockets.futures.markPrice(handleMarkPrices);
+  let markPrices_stream = await binance.websockets.futures.markPrice(handleMarkPrices);
 ```
 ```js
 {
@@ -4115,7 +4799,7 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 **Update Speed**: 250ms
 ```js
   // this is using the candlesticks() websocket, but filtering out all the other data
-  let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', console.log);
+  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', console.log);
 ```
 ```js
 { BTCUSDT: 19849.1 }
@@ -4125,15 +4809,15 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### futures .candlesticks():
 **Update Speed**: 250ms
 ```js
-  let candleSticks_1m = binance.websockets.futures.candlesticks('BTCUSDT', '1m', (data) => {
+  let candleSticks_1m = await binance.websockets.futures.candlesticks('BTCUSDT', '1m', (data) => {
     //  do something with the data
   });
   // OR
-  let candleSticks_3m = binance.websockets.futures.candlesticks('BTCUSDT', '3m', ...);
+  let candleSticks_3m = await binance.websockets.futures.candlesticks('BTCUSDT', '3m', ...);
   // OR
   ...
   // OR
-  let candleSticks_1w = binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
+  let candleSticks_1w = await binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
 ```
 ```js
 {
@@ -4167,7 +4851,7 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ```js
   let contractType = 'PERPETUAL' /*OR*/ 'CURRENT_QUARTER' /*OR*/ 'NEXT_QUARTER';  // PERPETUAL in this example
 
-  let contKline_stream = binance.websockets.futures.continuousContractKline('BTCUSDT', contractType, '1m', (data) => {
+  let contKline_stream = await binance.websockets.futures.continuousContractKline('BTCUSDT', contractType, '1m', (data) => {
     // do something with the data
   })
 ```
@@ -4200,11 +4884,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### futures .miniTicker():
 **Update Speed**: 500ms with symbol, 1000ms without
 ```js
-  let miniTicker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let miniTicker_BTC_stream = await binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
 
   // OR
 
-  let miniTickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+  let miniTickers_stream = await binance.websockets.futures.miniTicker(handleMiniTicker);
 
   function handleMiniTicker(data) { 
     /* Do something with data */ 
@@ -4268,11 +4952,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 **Update Speed**: 500ms with symbol, 1000ms without
 ***Differs from .miniTicker() by the fact that it includes some extra info***
 ```js
-  let ticker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let ticker_BTC_stream = await binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
 
   // OR
 
-  let tickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+  let tickers_stream = await binance.websockets.futures.miniTicker(handleMiniTicker);
 
   function handleTicker(data) { 
     /* Do something with data */ 
@@ -4351,11 +5035,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### futures .bookTicker():
 **Update Speed**: *Realtime*: approx 5000 updates/second for ALL symbols, but each symbol differs immensely, BTCUSDT averages 300 updates/second
 ```js
-  let bookTicker_BTC_stream = binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
+  let bookTicker_BTC_stream = await binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
 
   // OR
 
-  let bookTicker_stream = binance.websockets.futures.bookTicker(handleBookTicker);
+  let bookTicker_stream = await binance.websockets.futures.bookTicker(handleBookTicker);
 ```
 ```js
 {
@@ -4375,11 +5059,11 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### futures .liquidationOrders():
 **Update Speed**: 1000ms
 ```js
-  let liquidations_BTC_stream = binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT');
+  let liquidations_BTC_stream = await binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT');
 
   // OR
 
-  let liquidations_stream = binance.websockets.futures.liquidationOrders(handleLiquidations);
+  let liquidations_stream = await binance.websockets.futures.liquidationOrders(handleLiquidations);
 
   function handleLiquidations(data) {
     // do something with the data
@@ -4422,11 +5106,11 @@ Receiving an event that removes a price level that is not in your local order bo
 
 **Maybe when I use this and understand this better myself, I can add this to the library, send me a message if you are interested in me adding this.**
 ```js
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '500ms', handleBookTickers);
+  await .futures.partialBookTicker('BTCUSDT', 5, '500ms', handleBookTickers);
   // OR
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '250ms', handleBookTickers);
+  await binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '250ms', handleBookTickers);
   // OR
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '100ms', handleBookTickers);
+  await binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '100ms', handleBookTickers);
 ```
 ```js
 {
@@ -4460,7 +5144,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ### futures .compositeIndexSymbol():
 **Update Speed**: 1000ms
 ```js
-  let DEFI_compositeIndex_stream = binance.websockets.futures.compositeIndexSymbol('BTCUSDT', handleCompositeIndex);
+  let DEFI_compositeIndex_stream = await binance.websockets.futures.compositeIndexSymbol('BTCUSDT', handleCompositeIndex);
 ```
 ```js
 {
@@ -4508,7 +5192,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ### futures .userData():
 **Update Speed**: *Realtime*
 ```js
-  let userData = binance.websockets.futures.userData((data) => {
+  let userData = await binance.websockets.futures.userData((data) => {
     if(data.event == 'MARGIN_CALL') handleMarginCall(data);
     else if(data.event == 'ACCOUNT_UPDATE') handleAccountUpdate(data);
     else if(data.event == 'ORDER_TRADE_UPDATE') handleOrderUpdate(data);
