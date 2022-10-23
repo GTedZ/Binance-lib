@@ -4163,6 +4163,7 @@ There are two main ways to subscribe:
 |bookTicker()                             <a href='#spot-bookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
+|subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
 |userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|                                                                                  |                                                  |
 // TODO need to add all spot websockets, their documentation and add formData() to all the already created spot websockets
 
@@ -4190,6 +4191,7 @@ There are two main ways to subscribe:
 
 
 ### spot .trade():
+**Update Speed**: *Realtime*
 ```js
   let BTC_trade_stream = binance.websockets.spot.trade('BTCUSDT', (data) => {
     // do something with data
@@ -4211,6 +4213,7 @@ There are two main ways to subscribe:
 
 
 ### spot .candlesticks():
+**Update Speed**: 2000ms
 ```js
 let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1m', handleCandlestick)
 ```
@@ -4242,6 +4245,7 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .miniTicker():
+**Update Speed**: 1000ms
 ```js
   let BTCUSDT_miniTicker_stream = binance.websockets.spot.miniTicker(handleMiniTicker, 'BTCUSDT');
   // OR
@@ -4301,6 +4305,7 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .ticker():
+**Update Speed**: 1000ms
 ```js
   let BTC_ticker_stream = binance.websockets.spot.ticker(handleTicker, 'BTCUSDT');
   // OR
@@ -4391,8 +4396,12 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 
 
 ### spot .rollingWindowStats():
+**Update Speed**: 1000ms
+**Window Sizes**: 1h,4h,1d
+**Note**: This stream is different from the `ticker()` stream. The open time `.close` always starts on a minute, while the closing time `.close` is the current time of the update.
+As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
-
+  // TODO
 ```
 
 
@@ -4411,6 +4420,7 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 |partialBookTicker()            <a href='#futures-partialBookTicker'><sup>ref</sup></a>|symbol, levels, speed, callback                                                   |                                                  |
 |diffBookTicker()                  <a href='#futures-diffBookTicker'><sup>ref</sup></a>|symbol, speed, callback                                                           |                                                  |
 |compositeIndexSymbol()      <a href='#futures-compositeIndexSymbol'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
+|subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
 |userData()                              <a href='#futures-userData'><sup>ref</sup></a>|callback                                                                          |tries (how many times to try to get the listenKey)|
 
 

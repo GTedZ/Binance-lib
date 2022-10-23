@@ -1379,6 +1379,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         spot: {
 
+            /**
+             * Subscribes to any stream, not recommended as it will not rename the properties, for better clarity, please use the relevant websocket function
+             * @param {String, Array} subscriptions - string OR array
+             * @param {Function} callback - the callback function that will be called on any new websocket message
+             */
+            subscribe: function (subscriptions, callback) {
+                const params = {
+                    baseURL: fWSS,
+                    path: subscriptions
+                }
+
+                return connect(params, callback, (path) => { return path });
+            },
+
             aggTrade: function (symbol, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
@@ -1413,7 +1427,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@aggTrade')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@aggTrade`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             trade: function (symbol, callback) {
@@ -1450,7 +1472,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format)
+                this.formPath = (symbol) => {
+                    if (symbol && symbol.includes('@trade')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+                    return `${symbol.toLowerCase()}@trade`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             candlesticks: function (symbol, interval, callback) {
@@ -1502,7 +1532,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol, interval) => {
+                    if (symbol && symbol.includes('@kline_')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!interval) { return ERROR('interval', 'required'); }
+                    if (!equal(interval, intervals)) return ERROR('interval', 'value', false, intervals)
+
+                    return `${symbol.toLowerCase()}@kline_${interval}`;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             miniTicker: function (callback, symbol = false) {
@@ -1535,7 +1577,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('miniTicker')) return symbol;
+                    let origPath = '!miniTicker@arr';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@miniTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath)
             },
 
             ticker: function (callback, symbol = false) {
@@ -1582,7 +1631,65 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     callback(msg);
                 }
 
-                return connect(params, this.format);
+                this.formPath = (symbol = false) => {
+                    if (symbol && symbol.includes('ticker')) return symbol;
+                    let origPath = '!ticker@arr';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@ticker`;;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath)
+            },
+
+            rollingWindowStats: function (symbol = false, windowSize, callback) {
+                if (!windowSize) { return ERROR('windowSize', 'required'); }
+                if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
+
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `!ticker_${windowSize}@arr`
+                }
+                if (symbol) params.path = `${symbol}@ticker_${windowSize}`;
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'p=priceChange',
+                    'P=percentChange',
+                    'o=open',
+                    'h=high',
+                    'l=low',
+                    'c=lastPrice',
+                    'w=weightedAvgPrice',
+                    'v=totalTraded_baseAssetVolume',
+                    'O=stats_openTime',
+                    'C=stats_closeTime',
+                    'F=firstTradeId',
+                    'L=lastTradeId',
+                    'n=tradeCount'
+                ]
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol = false, windowSize) => {
+                    if (symbol.includes('ticker_')) return symbol;
+
+                    if (!windowSize) { return ERROR('windowSize', 'required'); }
+                    if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
+                    let origPath = `!ticker_${windowSize}@arr`;
+                    if (symbol) origPath = `${symbol}@ticker_${windowSize}`;
+                    return origPath;
+                }
             }
 
         },
