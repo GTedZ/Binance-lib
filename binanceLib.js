@@ -1795,7 +1795,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                     if (!symbol) { ERROR('symbol', 'required'); return; }
                     if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                    return `${symbol}@aggTrade`;
+                    return `${symbol.toLowerCase()}@aggTrade`;
                 }
 
                 return connect(params, this.format, this.formPath);
@@ -3290,7 +3290,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
 
     this.test = () => {
-        
+
     }
     if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
 }
