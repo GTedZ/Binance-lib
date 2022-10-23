@@ -898,7 +898,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.futuresCancelBatchOrders = async (symbol, orderIdList, origClientOrderIdList, opts = {}) => {
-        return ERR('This request currently isnt working (in library)');
+        return ERR('This request currently isnt working (in library)'); // TODO
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/batchOrders',
