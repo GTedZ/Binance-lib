@@ -4595,6 +4595,14 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 
 ### spot .userData():
+```js
+  let userData = await binance.websockets.spot.userData((data) => {
+    if(data.event == 'outboundAccountPosition') handleAccountPositions(data);
+    else if(data.event == 'balanceUpdate') handleBalanceUpdates(data);
+    else if(data.event == 'executionReport') handleExecutionReports(data);
+    else if(data.event == 'listStatus') handleListStatuses(data);
+  })
+```
 - `outboundAccountPosition` is sent any time an account balance has changed and contains the assets that were possibly changed by the event that generated the balance change.
 ```js
 {
