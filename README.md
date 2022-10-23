@@ -4162,7 +4162,7 @@ There are two main ways to subscribe:
 |partialBookTicker()               <a href='#spot-partialBookTicker'><sup>ref</sup></a>|symbol, levels, speed, callback                                                   |                                                  |
 |diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|symbol, speed, callback                                                           |                                                  |
 |subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
-|userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|callback                                                                          |                                                  |
+|userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|callback                                                                          |tries (how many times to try to get the listenKey)|
 
 ### spot .aggTrade():
 **Update Speed**: *Realtime*
