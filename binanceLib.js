@@ -1,6 +1,5 @@
 // timeInForce is GTX for post, and GTC for limit orders apparently
 
-
 let api = function everything(APIKEY = false, APISecret = false, options = { hedgeMode: false, recvWindow: 5000 }) {
     if (!new.target) return new api(options); // Legacy support for calling the constructor without 'new';
     const axios = require('axios')
@@ -1405,24 +1404,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@aggTrade`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'a=aggTradeId',
-                    'p=price',
-                    'q=qty',
-                    'f=firstTradeId',
-                    'l=lastTradeId',
-                    'T=tradeTime',
-                    'm=maker',
-                    'M=ignore'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_AGGTRADE_KEYS
                     );
                     callback(msg);
                 }
@@ -1450,24 +1435,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@trade`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    't=tradeId',
-                    'p=price',
-                    'q=qty',
-                    'b=buyOrderId',
-                    'a=sellerOrderId',
-                    'T=tradeId',
-                    'm=maker',
-                    'M=ignore'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_TRADE_KEYS
                     );
                     callback(msg);
                 }
@@ -1498,36 +1469,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@kline_${interval}`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        's=symbol',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=baseAssetVolume',
-                        'n=tradeCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_baseAssetVolume',
-                        'Q=takerBuy_quoteAssetVolume',
-                        'B=ignore'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_CANDLESTICKS_KEYS
                     );
                     callback(msg);
                 }
@@ -1557,22 +1502,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@miniTicker`;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'c=close',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_MINITICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -1597,36 +1530,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@ticker`;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=priceChange',
-                    'P=percentChange',
-                    'w=weightedAvgPrice',
-                    'x=previousStream_firstTradePrice',
-                    'Q=lastQty',
-                    'b=bestBidPrice',
-                    'B=bestBidQty',
-                    'a=bestAskPrice',
-                    'A=bestAskQty',
-                    'o=open',
-                    'c=close',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume',
-                    'O=stats_openTime',
-                    'C=stats_closeTime',
-                    'F=firstTradeId',
-                    'L=lastTradedId',
-                    'n=tradeCount'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_TICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -1654,30 +1561,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@ticker_${windowSize.toLowerCase()}`;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=priceChange',
-                    'P=percentChange',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'c=lastPrice',
-                    'w=weightedAvgPrice',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume',
-                    'O=stats_openTime',
-                    'C=stats_closeTime',
-                    'F=firstTradeId',
-                    'L=lastTradeId',
-                    'n=tradeCount'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_ROLLINGWINDOWSTATS_KEYS
                     );
                     callback(msg);
                 }
@@ -1705,19 +1592,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (symbol) params.path = `${symbol.toLowerCase()}@bookTicker`;
 
-                const newKeys = [
-                    'u=updateId',
-                    's=symbol',
-                    'b=bestBidPrice',
-                    'B=bestBidQty',
-                    'a=bestAskPrice',
-                    'A=bestAskQty'
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_BOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -1789,24 +1667,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (speed == '100ms') params.path += '@100ms';
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'U=firstUpdateId',
-                    'u=finalUpdateId',
-                    [
-                        'b=bids'
-                    ],
-                    [
-                        'a=asks'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        SPOT_DIFFBOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -1826,6 +1690,36 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 return connect(params, this.format, this.formPath);
+            },
+
+            userData: async function (callback) {
+                if (!callback) return ERROR('callback', 'required');
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const reqParams = {
+                    baseURL: sapi,
+                    path: '/api/v3/userDataStream'
+                }
+                const postParams = {
+                    ...reqParams,
+                    method: 'post'
+                }
+                const putParams = {
+                    ...reqParams,
+                    method: 'put'
+                }
+                const deleteParams = {
+                    ...reqParams,
+                    method: 'delete'
+                }
+
+                let resp = await request(postParams, {}, 'DATA');
+                if (resp.error) {
+                    if (resp.error.code == -1) return resp;
+                    await delay(binance.timeout)
+                    if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
+                    return binance.websockets.futures.userData(callback, --tries);
+                }
             }
 
         },
@@ -1860,24 +1754,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@aggTrade`
                 }
 
-                const newKeys =
-                    [
-                        'e=event',
-                        'E=time',
-                        's=symbol',
-                        'a=aggTradeId',
-                        'p=price',
-                        'q=qty',
-                        'f=firstTradeId',
-                        'l=lastTradeId',
-                        'T=timestamp',
-                        'm=maker'
-                    ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_AGGTRADE_KEYS
                     );
                     callback(msg);
                 };
@@ -1905,21 +1785,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (symbol) params.path = `${symbol.toLowerCase()}@markPrice@1s`
                 if (slow) params.path = params.path.slice(0, -3);
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=markPrice',
-                    'i=indexPrice',
-                    'P=estimatedSettlePrice',
-                    'r=fundingRate',
-                    'T=nextFundingTime'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_MARKPRICE_KEYS
                     );
 
                     callback(msg);
@@ -1984,36 +1853,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@kline_${interval}`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        's=symbol',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=baseAssetVolume',
-                        'n=tradesCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_baseAssetVolume',
-                        'Q=takerBuy_quoteAssetVolume',
-                        'B=ignore'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_CANDLESTICKS_KEYS
                     );
                     callback(msg);
                 }
@@ -2048,36 +1891,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${pair.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval}`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'ps=pair',
-                    'ct=contractType',
-                    [
-                        'k=candle',
-                        't=startTime',
-                        'T=closeTime',
-                        'i=interval',
-                        'f=firstTradeId',
-                        'L=lastTradeId',
-                        'o=open',
-                        'c=close',
-                        'h=high',
-                        'l=low',
-                        'v=volume',
-                        'n=tradesCount',
-                        'x=closed',
-                        'q=quoteAssetVolume',
-                        'V=takerBuy_volume',
-                        'Q=takerBuy_volume',
-                        'B=ignore'  // anything that is 'ignore' will be ignored
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_CONTINUOUSCONTRACTKLINE_KEYS
                     );
                     callback(msg);
                 }
@@ -2113,22 +1930,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@miniTicker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'c=close',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAsset'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_MINITICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -2159,31 +1964,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@ticker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=priceChange',
-                    'P=percentChange',
-                    'w=weightedAvgPrice',
-                    'c=lastPrice',
-                    'Q=lastQty',
-                    'o=open',
-                    'h=high',
-                    'l=low',
-                    'v=totalTraded_baseAssetVolume',
-                    'q=totalTraded_quoteAssetVolume',
-                    'O=stats_openTime',
-                    'C=stats_closeTime',
-                    'F=firstTradeId',
-                    'L=lastTradeId',
-                    'n=tradesCount'
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_TICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -2214,22 +1998,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@bookTicker`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'u=updateId',
-                    'E=time',
-                    'T=transactionTime',
-                    's=symbol',
-                    'b=bestBidPrice',
-                    'B=bestBidQty',
-                    'a=bestAskPrice',
-                    'A=bestAskQty',
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_BOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -2260,29 +2032,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     params.path = `${symbol.toLowerCase()}@forceOrder`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    [
-                        'o=order',
-                        's=symbol',
-                        'S=side',
-                        'o=orderType',
-                        'f=timeInForce',
-                        'q=qty',
-                        'p=price',
-                        'ap=avgPrice',
-                        'X=status',
-                        'l=order_lastFilledQty',
-                        'z=order_filledAccumulatedQty',
-                        'T=order_tradeTime',
-                    ]
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_LIQUIDATIONORDERS_KEYS
                     );
                     callback(msg);
                 }
@@ -2318,26 +2071,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (speed != '250ms') params.path += '@' + speed;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    's=symbol',
-                    'U=firstUpdateId',
-                    'u=finalUpdateId',
-                    'pu=previousStream_finalUpdateId',
-                    [
-                        'b=bids'
-                    ],
-                    [
-                        'a=asks'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_PARTIALBOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -2378,26 +2115,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 if (speed != '250ms') params.path += '@' + speed;
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transationTime',
-                    's=symbol',
-                    'U=firstUpdateId',
-                    'u=finalUpdateId',
-                    'pu=previousStream_finalUpdateId',
-                    [
-                        'b=bids'
-                    ],
-                    [
-                        'a=asks'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_DIFFBOOKTICKER_KEYS
                     );
                     callback(msg);
                 }
@@ -2430,25 +2151,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: `${symbol.toLowerCase()}@compositeIndex`
                 }
 
-                const newKeys = [
-                    'e=event',
-                    'E=time',
-                    's=symbol',
-                    'p=price',
-                    'C=baseAsset',
-                    [
-                        'c=composition',
-                        'q=quoteAsset',
-                        'w=weightInQty',
-                        'W=weightInPercentage',
-                        'i=indexPrice'
-                    ]
-                ]
-
                 this.format = (msg) => {
                     msg = advancedRenameObjectProperties(
                         msg,
-                        newKeys
+                        FUTURES_COMPOSITEINDEXSYMBOL_KEYS
                     );
                     callback(msg);
                 }
@@ -2497,132 +2203,22 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     path: resp.listenKey
                 }
 
-
-                const marginCallKeys = [
-                    'e=event',
-                    'E=time',
-                    'cw=crossWalletBalance',
-                    [
-                        'p=positions',    // this is the main object key before the subkeys
-                        's=symbol',
-                        'ps=positionSide',
-                        'pa=positionAmt',
-                        'mt=marginType',
-                        'iw=isolatedWallet',
-                        'mp=markPrice',
-                        'up=unrealizedPnl',
-                        'mm=maintenanceMarginRequired'
-                    ]
-                ];
-
-                const accountUpdateKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'a=updateData',
-                        'm=eventType',
-                        [
-                            'B=balances',
-                            'a=asset',
-                            'wb=walletBalance',
-                            'cw=crossWalletBalance',
-                            'bc=balanceChange'
-                        ],
-                        [
-                            'P=positions',
-                            's=symbol',
-                            'ma=quoteAsset',
-                            'pa=positionAmt',
-                            'ep=entryPrice',
-                            'cr=accumulatedRealized',
-                            'up=unrealizedPnl',
-                            'mt=marginType',
-                            'iw=isolatedWallet',
-                            'ps=positionSide'
-                        ]
-                    ]
-                ];
-
-                const orderTradeUpdateKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'o=order',
-                        's=symbol',
-                        'c=clientOrderId',
-                        'S=side',
-                        'o=orderType',
-                        'f=timeInForce',
-                        'q=origQty',
-                        'p=origPrice',
-                        'ap=avgPrice',
-                        'sp=stopPrice',
-                        'x=executionType',
-                        'X=orderStatus',
-                        'i=orderId',
-                        'l=lastFilledQty',
-                        'z=filledAccumulatedQty',
-                        'L=lastFilledPrice',
-                        'N=commissionAsset',
-                        'n=commission',
-                        'T=tradeTime',
-                        't=tradeId',
-                        'b=bidsNotional',
-                        'a=askNotional',
-                        'm=maker',
-                        'R=reduceOnly',
-                        'wt=stopPrice_workingType',
-                        'ot=originalOrderType',
-                        'ps=positionSide',
-                        'cp=closeAll',
-                        'AP=activationPrice',
-                        'cr=callbackRate',
-                        'rp=realizedProfit',
-                        'pP=ignore',
-                        'si=ignore',
-                        'ss=ignore'
-                    ]
-                ];
-
-                const accountConfigLeverageChangeKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'ac=newLeverage',
-                        's=symbol',
-                        'l=leverage'
-                    ]
-                ];
-
-                const accountConfigMarginModeChangeKeys = [
-                    'e=event',
-                    'E=time',
-                    'T=transactionTime',
-                    [
-                        'ai=newMarginMode',
-                        'j=mode'
-                    ]
-                ];
-
                 this.format = (msg) => {
                     if (msg.e == 'MARGIN_CALL') {
-                        msg = advancedRenameObjectProperties(msg, marginCallKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_MARGINCALL_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ACCOUNT_UPDATE') {
-                        msg = advancedRenameObjectProperties(msg, accountUpdateKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTUPDATE_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ORDER_TRADE_UPDATE') {
-                        msg = advancedRenameObjectProperties(msg, orderTradeUpdateKeys);
+                        msg = advancedRenameObjectProperties(msg, FUTURES_ORDERTRADEUPDATE_KEYS);
                         callback(msg);
                     } else if (msg.e == 'ACCOUNT_CONFIG_UPDATE') {
                         if (msg.ac) {
-                            msg = advancedRenameObjectProperties(msg, accountConfigLeverageChangeKeys);
+                            msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTCONFIGLEVERAGECHANGE_KEYS);
                             callback(msg);
                         } else if (msg.ai) {
-                            msg = advancedRenameObjectProperties(msg, accountConfigMarginModeChangeKeys);
+                            msg = advancedRenameObjectProperties(msg, FUTURES_ACCOUNTCONFIGMARGINMODECHANGE_KEYS);
                             callback(msg);
                         }
                     } else callback(msg);
@@ -2643,7 +2239,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // futures websocket ////
 
 
-    // functions necessary for websocket
+    // functions necessary for websocket    \\\\
 
     connect = (params, callback, formMessageFunc) => {
         if (!params.path) { return ERROR('streamName', 'required'); }
@@ -2860,7 +2456,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
     }
 
-    // websockets ////
+    // functions necessary for websocket    ////
 
     // private functions \\\\
 
@@ -3125,9 +2721,468 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
-    // private functions \\\\
+    // private functions ////
 
-    if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
+    // constants \\\\
+
+    // SPOT WEBSOCKET KEYS \\\\
+
+    const SPOT_AGGTRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'a=aggTradeId',
+        'p=price',
+        'q=qty',
+        'f=firstTradeId',
+        'l=lastTradeId',
+        'T=tradeTime',
+        'm=maker',
+        'M=ignore'
+    ];
+
+    const SPOT_TRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        't=tradeId',
+        'p=price',
+        'q=qty',
+        'b=buyOrderId',
+        'a=sellerOrderId',
+        'T=tradeId',
+        'm=maker',
+        'M=ignore'
+    ];
+
+    const SPOT_CANDLESTICKS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            's=symbol',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=baseAssetVolume',
+            'n=tradeCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_baseAssetVolume',
+            'Q=takerBuy_quoteAssetVolume',
+            'B=ignore'
+        ]
+    ];
+
+    const SPOT_MINITICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=close',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume'
+    ];
+
+    const SPOT_TICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'w=weightedAvgPrice',
+        'x=previousStream_firstTradePrice',
+        'Q=lastQty',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty',
+        'o=open',
+        'c=close',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradedId',
+        'n=tradeCount'
+    ];
+
+    const SPOT_ROLLINGWINDOWSTATS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'o=open',
+        'h=high',
+        'l=low',
+        'c=lastPrice',
+        'w=weightedAvgPrice',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradeId',
+        'n=tradeCount'
+    ];
+
+    const SPOT_BOOKTICKER_KEYS = [
+        'u=updateId',
+        's=symbol',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty'
+    ];
+
+    const SPOT_PARTIALBOOKTICKER_KEYS = [
+        // not in use, for now
+    ];
+
+    const SPOT_DIFFBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    // SPOT USERDATA KEYS \\\\
+
+    // SPOT USERDATA KEYS ////
+
+
+    // SPOT WEBSOCKET KEYS ////
+
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+
+    // FUTURES WEBSOCKET KEYS \\\\
+
+    const FUTURES_AGGTRADE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'a=aggTradeId',
+        'p=price',
+        'q=qty',
+        'f=firstTradeId',
+        'l=lastTradeId',
+        'T=timestamp',
+        'm=maker'
+    ];
+
+    const FUTURES_MARKPRICE_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=markPrice',
+        'i=indexPrice',
+        'P=estimatedSettlePrice',
+        'r=fundingRate',
+        'T=nextFundingTime'
+    ];
+
+    const FUTURES_CANDLESTICKS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            's=symbol',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=baseAssetVolume',
+            'n=tradesCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_baseAssetVolume',
+            'Q=takerBuy_quoteAssetVolume',
+            'B=ignore'
+        ]
+    ];
+
+    const FUTURES_CONTINUOUSCONTRACTKLINE_KEYS = [
+        'e=event',
+        'E=time',
+        'ps=pair',
+        'ct=contractType',
+        [
+            'k=candle',
+            't=startTime',
+            'T=closeTime',
+            'i=interval',
+            'f=firstTradeId',
+            'L=lastTradeId',
+            'o=open',
+            'c=close',
+            'h=high',
+            'l=low',
+            'v=volume',
+            'n=tradesCount',
+            'x=closed',
+            'q=quoteAssetVolume',
+            'V=takerBuy_volume',
+            'Q=takerBuy_volume',
+            'B=ignore'  // anything that is 'ignore' will be ignored
+        ]
+    ];
+
+    const FUTURES_MINITICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=close',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAsset'
+    ];
+
+    const FUTURES_TICKER_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=priceChange',
+        'P=percentChange',
+        'w=weightedAvgPrice',
+        'c=lastPrice',
+        'Q=lastQty',
+        'o=open',
+        'h=high',
+        'l=low',
+        'v=totalTraded_baseAssetVolume',
+        'q=totalTraded_quoteAssetVolume',
+        'O=stats_openTime',
+        'C=stats_closeTime',
+        'F=firstTradeId',
+        'L=lastTradeId',
+        'n=tradesCount'
+    ];
+
+    const FUTURES_BOOKTICKER_KEYS = [
+        'e=event',
+        'u=updateId',
+        'E=time',
+        'T=transactionTime',
+        's=symbol',
+        'b=bestBidPrice',
+        'B=bestBidQty',
+        'a=bestAskPrice',
+        'A=bestAskQty',
+    ];
+
+    const FUTURES_LIQUIDATIONORDERS_KEYS = [
+        'e=event',
+        'E=time',
+        [
+            'o=order',
+            's=symbol',
+            'S=side',
+            'o=orderType',
+            'f=timeInForce',
+            'q=qty',
+            'p=price',
+            'ap=avgPrice',
+            'X=status',
+            'l=order_lastFilledQty',
+            'z=order_filledAccumulatedQty',
+            'T=order_tradeTime',
+        ]
+    ];
+
+    const FUTURES_PARTIALBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        'pu=previousStream_finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    const FUTURES_DIFFBOOKTICKER_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transationTime',
+        's=symbol',
+        'U=firstUpdateId',
+        'u=finalUpdateId',
+        'pu=previousStream_finalUpdateId',
+        [
+            'b=bids'
+        ],
+        [
+            'a=asks'
+        ]
+    ];
+
+    const FUTURES_COMPOSITEINDEXSYMBOL_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'p=price',
+        'C=baseAsset',
+        [
+            'c=composition',
+            'q=quoteAsset',
+            'w=weightInQty',
+            'W=weightInPercentage',
+            'i=indexPrice'
+        ]
+    ];
+
+    // FUTURES USERDATA KEYS \\\\
+
+    const FUTURES_MARGINCALL_KEYS = [
+        'e=event',
+        'E=time',
+        'cw=crossWalletBalance',
+        [
+            'p=positions',    // this is the main object key before the subkeys
+            's=symbol',
+            'ps=positionSide',
+            'pa=positionAmt',
+            'mt=marginType',
+            'iw=isolatedWallet',
+            'mp=markPrice',
+            'up=unrealizedPnl',
+            'mm=maintenanceMarginRequired'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'a=updateData',
+            'm=eventType',
+            [
+                'B=balances',
+                'a=asset',
+                'wb=walletBalance',
+                'cw=crossWalletBalance',
+                'bc=balanceChange'
+            ],
+            [
+                'P=positions',
+                's=symbol',
+                'ma=quoteAsset',
+                'pa=positionAmt',
+                'ep=entryPrice',
+                'cr=accumulatedRealized',
+                'up=unrealizedPnl',
+                'mt=marginType',
+                'iw=isolatedWallet',
+                'ps=positionSide'
+            ]
+        ]
+    ];
+
+    const FUTURES_ORDERTRADEUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'o=order',
+            's=symbol',
+            'c=clientOrderId',
+            'S=side',
+            'o=orderType',
+            'f=timeInForce',
+            'q=origQty',
+            'p=origPrice',
+            'ap=avgPrice',
+            'sp=stopPrice',
+            'x=executionType',
+            'X=orderStatus',
+            'i=orderId',
+            'l=lastFilledQty',
+            'z=filledAccumulatedQty',
+            'L=lastFilledPrice',
+            'N=commissionAsset',
+            'n=commission',
+            'T=tradeTime',
+            't=tradeId',
+            'b=bidsNotional',
+            'a=askNotional',
+            'm=maker',
+            'R=reduceOnly',
+            'wt=stopPrice_workingType',
+            'ot=originalOrderType',
+            'ps=positionSide',
+            'cp=closeAll',
+            'AP=activationPrice',
+            'cr=callbackRate',
+            'rp=realizedProfit',
+            'pP=ignore',
+            'si=ignore',
+            'ss=ignore'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTCONFIGLEVERAGECHANGE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'ac=newLeverage',
+            's=symbol',
+            'l=leverage'
+        ]
+    ];
+
+    const FUTURES_ACCOUNTCONFIGMARGINMODECHANGE_KEYS = [
+        'e=event',
+        'E=time',
+        'T=transactionTime',
+        [
+            'ai=newMarginMode',
+            'j=mode'
+        ]
+    ];
+
+    // FUTURES USERDATA KEYS ////
+
+    // FUTURES WEBSOCKET KEYS ////
+
+    // constants ////   XXX
+
 
     this.test = () => {
         let obj = {
@@ -3170,6 +3225,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let resp = advancedRenameObjectProperties(obj, newKey);
         console.log(resp);
     }
+    if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
 }
 
 module.exports = api;
