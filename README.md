@@ -4394,7 +4394,9 @@ let BTC_candlesticks_stream = await binance.websockets.spot.candlesticks('BTCUSD
 
 ### spot .rollingWindowStats():
 **Update Speed**: 1000ms
+
 **Window Sizes**: 1h,4h,1d
+
 **Note**: This stream is different from the `ticker()` stream. The open time `.close` always starts on a minute, while the closing time `.close` is the current time of the update.
 As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
@@ -4517,15 +4519,25 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### spot .diffBookTicker():
 **Update Speed**: 1000ms or 100ms
 Open a stream via `binance.websockets.spot.diffBookTicker()`.
+
 Buffer the events you receive from the stream.
+
 Get a depth snapshot from https://api.binance.com/api/v3/depth?symbol=BNBBTC&limit=1000.  // unfortunately spot isn't supported in the library yet, so will need to do that manually
+
 Drop any event where `finalUpdateId` is <= lastUpdateId in the snapshot.
+
 The first processed event should have `firstUpdateId` <= lastUpdateId+1 AND `finalUpdateId` >= lastUpdateId+1.
+
 While listening to the stream, each new event's `firstUpdateId` should be equal to the previous event's `finalUpdateId` + 1.
+
 The data in each event is the absolute quantity for a price level.
+
 **If the quantity is 0, remove the price level.**
+
 Receiving an event that removes a price level that is not in your local order book can happen and is normal.
+
 ***Note***: Due to depth snapshots having a limit on the number of price levels, a price level outside of the initial snapshot that doesn't have a quantity change won't have an update in the Diff. Depth Stream. Consequently, those price levels will not be visible in the local order book even when applying all updates from the Diff. Depth Stream correctly and cause the local order book to have some slight differences with the real order book. However, for most use cases the depth limit of 5000 is enough to understand the market and trade effectively.
+
 ```js
   let diffBookTicker_BTC_100ms_stream = await binance.websockets.spot.diffBookTicker('BTCUSDT', '100ms', console.log)
   // OR
@@ -4950,6 +4962,7 @@ Receiving an event that removes a price level that is not in your local order bo
 
 ### futures .ticker():
 **Update Speed**: 500ms with symbol, 1000ms without
+
 ***Differs from .miniTicker() by the fact that it includes some extra info***
 ```js
   let ticker_BTC_stream = await binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
@@ -5094,14 +5107,23 @@ Receiving an event that removes a price level that is not in your local order bo
 **Update Speed**: 500ms, 250ms or 100ms
 
 **How to manage a local order book correctly**
+
 Open a stream via partialBookTicker(<symbol>, ...)
+
 Buffer the events you receive from the stream. For same price, latest received update covers the previous one.
+
 Get a depth snapshot from futuresOrderBook(<symbol>, 1000).
+
 Drop any event where `u` is < `lastUpdateId` in the snapshot.
+
 The first processed event should have `U` <= `lastUpdateId` AND `u` >= `lastUpdateId`
+
 While listening to the stream, each new event's `pu` should be equal to the previous event's `u`, otherwise initialize the process from step 3.
+
 The data in each event is the absolute quantity for a price level.
+
 If the quantity is 0, remove the price level.
+
 Receiving an event that removes a price level that is not in your local order book can happen and is normal.
 
 **Maybe when I use this and understand this better myself, I can add this to the library, send me a message if you are interested in me adding this.**
