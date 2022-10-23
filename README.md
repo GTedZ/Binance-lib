@@ -4473,7 +4473,7 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
   let bookTicker_BTC_stream = await binance.websockets.spot.bookTicker(handleBookTicker, 'BTCUSDT');
   // OR
-  let bookTicker_stream = await binance.websockets.spot.bookTicker(handleBookTicker);
+  let bookTicker_stream = await binance.websockets.spot.bookTicker(handleBookTicker); // this will be removed in November 2022 by binance
 ```
 ```js
 {
@@ -4516,6 +4516,16 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 ### spot .diffBookTicker():
 **Update Speed**: 1000ms or 100ms
+Open a stream via `binance.websockets.spot.diffBookTicker()`.
+Buffer the events you receive from the stream.
+Get a depth snapshot from https://api.binance.com/api/v3/depth?symbol=BNBBTC&limit=1000.  // unfortunately spot isn't supported in the library yet, so will need to do that manually
+Drop any event where `finalUpdateId` is <= lastUpdateId in the snapshot.
+The first processed event should have `firstUpdateId` <= lastUpdateId+1 AND `finalUpdateId` >= lastUpdateId+1.
+While listening to the stream, each new event's `firstUpdateId` should be equal to the previous event's `finalUpdateId` + 1.
+The data in each event is the absolute quantity for a price level.
+**If the quantity is 0, remove the price level.**
+Receiving an event that removes a price level that is not in your local order book can happen and is normal.
+***Note***: Due to depth snapshots having a limit on the number of price levels, a price level outside of the initial snapshot that doesn't have a quantity change won't have an update in the Diff. Depth Stream. Consequently, those price levels will not be visible in the local order book even when applying all updates from the Diff. Depth Stream correctly and cause the local order book to have some slight differences with the real order book. However, for most use cases the depth limit of 5000 is enough to understand the market and trade effectively.
 ```js
   let diffBookTicker_BTC_100ms_stream = await binance.websockets.spot.diffBookTicker('BTCUSDT', '100ms', console.log)
   // OR
@@ -4564,6 +4574,108 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
     [ 19200.93, 0 ],       [ 19201.06, 0.04 ],    [ 19201.2, 0.00572 ],
     ...,                   ...,                   ...,
     ...
+  ]
+}
+```
+
+
+### spot .userData():
+- `outboundAccountPosition` is sent any time an account balance has changed and contains the assets that were possibly changed by the event that generated the balance change.
+```js
+{
+  event: 'outboundAccountPosition',
+  time: 1564034571105,
+  lastAccountUpdateTime: 1564034571073,
+  balances: [ { asset: 'ETH', free: '10000.000000', locked: '0.000000' } ]
+}
+```
+- `balanceUpdate` occurs during the following:
+- - Deposits or withdrawals from the account
+- - Transfer of funds between accounts (e.g. Spot to Margin)
+```js
+{
+  event: 'balanceUpdate',
+  time: 1573200697110,
+  asset: 'BTC',
+  balanceDelta: '100.00000000',
+  clearTime: 1573200697068
+}
+```
+- Orders are updated with the `executionReport` event.
+- Check the <a href='https://binance-docs.github.io/apidocs/spot/en/#public-api-definitions'>Public API Definitions</a> and below for relevant enum definitions.
+- Average price can be found by doing `cumulative_quoteAssetTransactedQty` divided by `cumulativeFilledQty`.
+- ***Execution Types:***
+- - **NEW** - The order has been accepted into the engine.
+- - **CANCELED** - The order has been canceled by the user.
+- - **REPLACED** (currently unused)
+- - **REJECTED** - The order has been rejected and was not processed. (This is never pushed into the User Data Stream)
+- - **TRADE** - Part of the order or all of the order's quantity has filled.
+- - **EXPIRED** - The order was canceled according to the order type's rules (e.g. LIMIT FOK orders with no fill, LIMIT IOC or MARKET orders that partially fill) or by the exchange, (e.g. orders canceled during liquidation, orders canceled during maintenance)
+- If the order is an OCO, an event will be displayed named `listStatus` in addition to the `executionReport` event.
+
+***executionReport:***
+```js
+{
+  event: 'executionReport',
+  time: 1499405658658,
+  symbol: 'ETHBTC',
+  clientOrderId: 'mUvoqJxFIILMdfAW5iGSOW',
+  side: 'BUY',
+  orderType: 'LIMIT',
+  timeInForce: 'GTC',
+  qty: '1.00000000',
+  price: '0.10264410',
+  stopPrice: '0.00000000',
+  trailingDelta: 4,
+  icebergQty: '0.00000000',
+  orderListId: -1,
+  origClientOrderId: '',
+  currentExecutionType: 'NEW',
+  currentOrderType: 'NEW',
+  orderRejectReason: 'NONE',
+  orderId: 4293153,
+  lastExecutedQty: '0.00000000',
+  cumulativeFilledQty: '0.00000000',
+  lastExecutedPrice: '0.00000000',
+  commissionAmount: '0',
+  commissionAsset: null,
+  transactionId: 1499405658657,
+  tradeId: -1,
+  isOrderInBook: true,
+  maker: false,
+  orderCreationTime: 1499405658657,
+  cumulative_quoteAssetTransactedQty: '0.00000000',
+  lastQuote_assetTrasactedQty: '0.00000000',
+  quoteOrderQty: '0.00000000',
+  strategyId: 1,
+  strategyType: 1000000
+}
+```
+
+***listStatus:***
+```js
+{
+  event: 'listStatus',
+  time: 1564035303637,
+  symbol: 'ETHBTC',
+  orderListId: 2,
+  contingencyType: 'OCO',
+  listStatusType: 'EXEC_STARTED',
+  listOrderStatus: 'EXECUTING',
+  listRejectReason: 'NONE',
+  listClientOrderId: 'F4QN4G8DlFATFlIUQ0cjdD',
+  transactionTime: 1564035303625,
+  orders: [
+    {
+      symbol: 'ETHBTC',
+      orderId: 17,
+      clientOrderId: 'AJYsMjErWJesZvqlJCTUgL'
+    },
+    {
+      symbol: 'ETHBTC',
+      orderId: 18,
+      clientOrderId: 'bfYPSQdLoqAJeNrOr9adzq'
+    }
   ]
 }
 ```

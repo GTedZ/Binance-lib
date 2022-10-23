@@ -1692,7 +1692,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            userData: async function (callback) {
+            userData: async function (callback, tries = 10) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -1718,8 +1718,36 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     if (resp.error.code == -1) return resp;
                     await delay(binance.timeout)
                     if (tries < 0) return ERROR(`Couldn't connect to get the listenKey.`);
-                    return binance.websockets.futures.userData(callback, --tries);
+                    return binance.websockets.spot.userData(callback, --tries);
                 }
+
+                const params = {
+                    baseURL: fWSS,
+                    path: resp.listenKey
+                }
+
+                this.format = (msg) => {
+                    if (msg.e == 'outboundAccountPosition ') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_OUTBOUNDACCOUNTPOSITION_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'balanceUpdate') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_BALANCEUPDATE_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'executionReport') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_EXECUTIONREPORT_KEYS);
+                        callback(msg);
+                    } else if (msg.e == 'listStatus') {
+                        msg = advancedRenameObjectProperties(msg, SPOT_LISTSTATUS_KEYS);
+                        callback(msg);
+                    } else callback(msg);
+                }
+
+                let obj = await connect(params, this.format, () => { return resp.listenKey });
+
+                obj.deleteKey = () => request(deleteParams, {}, 'DATA');
+                obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
+
+                return obj;
             }
 
         },
@@ -2224,7 +2252,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     } else callback(msg);
                 }
 
-                let obj = connect(params, this.format, () => { return resp.listenKey });
+                let obj = await connect(params, this.format, () => { return resp.listenKey });
 
                 obj.deleteKey = () => request(deleteParams, {}, 'DATA');
                 obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
@@ -2868,6 +2896,83 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // SPOT USERDATA KEYS \\\\
 
+    const SPOT_OUTBOUNDACCOUNTPOSITION_KEYS = [
+        'e=event',
+        'E=time',
+        'u=lastAccountUpdateTime',
+        [
+            'B=balances',
+            'a=asset',
+            'f=free',
+            'l=locked'
+        ]
+    ];
+
+    const SPOT_BALANCEUPDATE_KEYS = [
+        'e=event',
+        'E=time',
+        'a=asset',
+        'd=balanceDelta',
+        'T=clearTime'
+    ];
+
+    const SPOT_EXECUTIONREPORT_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'c=clientOrderId',
+        'S=side',
+        'o=orderType',
+        'f=timeInForce',
+        'q=qty',
+        'p=price',
+        'P=stopPrice',
+        'd=trailingDelta',
+        'F=icebergQty',
+        'g=orderListId',
+        'C=origClientOrderId',
+        'x=currentExecutionType',
+        'X=currentOrderType',
+        'r=orderRejectReason',
+        'i=orderId',
+        'l=lastExecutedQty',
+        'z=cumulativeFilledQty',
+        'L=lastExecutedPrice',
+        'n=commissionAmount',
+        'N=commissionAsset',
+        'T=transactionId',
+        't=tradeId',
+        'I=ignore',
+        'w=isOrderInBook',
+        'm=maker',
+        'M=ignore',
+        'O=orderCreationTime',
+        'Z=cumulative_quoteAssetTransactedQty',
+        'Y=lastQuote_assetTrasactedQty',
+        'Q=quoteOrderQty',
+        'j=strategyId',
+        'J=strategyType'
+    ];
+
+    const SPOT_LISTSTATUS_KEYS = [
+        'e=event',
+        'E=time',
+        's=symbol',
+        'g=orderListId',
+        'c=contingencyType',
+        'l=listStatusType',
+        'L=listOrderStatus',
+        'r=listRejectReason',
+        'C=listClientOrderId',
+        'T=transactionTime',
+        [
+            'O=orders',
+            's=symbol',
+            'i=orderId',
+            'c=clientOrderId'
+        ]
+    ];
+
     // SPOT USERDATA KEYS ////
 
 
@@ -3181,49 +3286,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // FUTURES WEBSOCKET KEYS ////
 
-    // constants ////   XXX
+    // constants ////
 
 
     this.test = () => {
-        let obj = {
-            hi: 100,
-            hi2: 200,
-            hi3: 300,
-            obj: {
-                hi: 200,
-                hi2: 300,
-                hi3: 400,
-                hi5: 123810
-            },
-            hi5: 'fuck you',
-            someObj: {
-                hi: 10,
-                ho: 200
-            },
-
-            obj2: {
-                x: 100
-            }
-        }
-
-        let newKey = [
-            'hi=lol',
-            'hi2=lol2',
-            'hi3=lol3',
-            [
-                'obj=obj1',
-                'hi=lol',
-                'hi2=lol2',
-                'hi3=lol3',
-            ],
-            [
-                'obj2=someNewObjectIDontKnowMuchAbout',
-                'x=singleObjectIknowAbout'
-            ]
-        ]
-
-        let resp = advancedRenameObjectProperties(obj, newKey);
-        console.log(resp);
+        
     }
     if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
 }
