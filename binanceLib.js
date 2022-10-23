@@ -1642,7 +1642,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
 
             rollingWindowStats: function (symbol = false, windowSize, callback) {
-                if (!windowSize) { return ERROR('windowSize', 'required'); }
+                if (!windowSize) { return ERROR('windowSize', 'required', false, ['1h', '4h', '1d']); }
                 if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
 
                 if (!callback) { return ERROR('callback', 'required'); }
@@ -1652,7 +1652,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     baseURL: sWSS,
                     path: `!ticker_${windowSize}@arr`
                 }
-                if (symbol) params.path = `${symbol}@ticker_${windowSize}`;
+                if (symbol) params.path = `${symbol.toLowerCase()}@ticker_${windowSize.toLowerCase()}`;
 
                 const newKeys = [
                     'e=event',
@@ -1666,6 +1666,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'c=lastPrice',
                     'w=weightedAvgPrice',
                     'v=totalTraded_baseAssetVolume',
+                    'q=totalTraded_quoteAssetVolume',
                     'O=stats_openTime',
                     'C=stats_closeTime',
                     'F=firstTradeId',
@@ -1686,10 +1687,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                     if (!windowSize) { return ERROR('windowSize', 'required'); }
                     if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
-                    let origPath = `!ticker_${windowSize}@arr`;
-                    if (symbol) origPath = `${symbol}@ticker_${windowSize}`;
+                    let origPath = `!ticker_${windowSize.toLowerCase()}@arr`;
+                    if (symbol) origPath = `${symbol.toLowerCase()}@ticker_${windowSize.toLowerCase()}`;
                     return origPath;
                 }
+
+                return connect(params, this.format, this.formPath);
             },
 
             bookTicker: function (callback, symbol = false) {
@@ -1711,7 +1714,118 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     'A=bestAskQty'
                 ];
 
-                // TODO
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol) => {
+                    if (symbol.includes('ticker_')) return symbol;
+
+                    let origPath = '!bookTicker';
+                    if (symbol) origPath = `${symbol.toLowerCase()}@bookTicker`;
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            partialBookTicker: function (symbol, levels, speed, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!levels) { return ERROR('levels', 'required', false, [5, 10, 20]); }
+                if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20])
+
+                if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@depth${levels}`
+                }
+                if (speed == '100ms') params.path += '@100ms';
+
+                this.format = (msg) => {
+                    callback(msg);
+                }
+
+                this.formPath = (symbol, levels, speed) => {
+                    if (symbol.includes('depth')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!levels) { return ERROR('levels', 'required', false, [5, 10, 20]); }
+                    if (!equal(levels, [5, 10, 20])) return ERROR('levels', 'value', false, [5, 10, 20])
+
+                    if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                    if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                    let origPath = `${symbol.toLowerCase()}@depth${levels}`;
+                    if (speed == '100ms') origPath += '@100ms';
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
+            },
+
+            diffBookTicker: function (symbol, speed, callback) {
+                if (!symbol) { return ERROR('symbol', 'required'); }
+                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                const params = {
+                    baseURL: sWSS,
+                    path: `${symbol.toLowerCase()}@depth`
+                }
+                if (speed == '100ms') params.path += '@100ms';
+
+                const newKeys = [
+                    'e=event',
+                    'E=time',
+                    's=symbol',
+                    'U=firstUpdateId',
+                    'u=finalUpdateId',
+                    [
+                        'b=bids'
+                    ],
+                    [
+                        'a=asks'
+                    ]
+                ];
+
+                this.format = (msg) => {
+                    msg = advancedRenameObjectProperties(
+                        msg,
+                        newKeys
+                    );
+                    callback(msg);
+                }
+
+                this.formPath = (symbol, speed) => {
+                    if (symbol.includes('depth')) return symbol;
+
+                    if (!symbol) { return ERROR('symbol', 'required'); }
+                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+
+                    if (!speed) { return ERROR('speed', 'required', false, ['100ms', '1000ms']); }
+                    if (!equal(speed, ['100ms', '1000ms'])) return ERROR('speed', 'value', false, ['100ms', '1000ms'])
+
+                    let origPath = `${symbol.toLowerCase()}@depth`;
+                    if (speed == '100ms') origPath += '@100ms';
+                    return origPath;
+                }
+
+                return connect(params, this.format, this.formPath);
             }
 
         },
@@ -2650,12 +2764,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 // For non .subscriptions() requests ////
             },
-            resolves: {}
+            resolves: {},
+            originalResolve: -1
         }
+
 
         new newSocket(params, callback, object);
 
-        return object;
+        return new Promise(res => {
+            object.originalResolve = res;
+        })
     }
 
     newSocket = function (params, callback, object) {
@@ -2670,6 +2788,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         let socket = object.socket;
 
         socket.on('open', () => {
+            if (typeof object.originalResolve == 'function') object.originalResolve(object);
+            object.originalResolve = -1;
             if (binance.ws) console.log(streamPath + ' is open');
             if (!allSubsDone) {
                 allSubsDone = true;

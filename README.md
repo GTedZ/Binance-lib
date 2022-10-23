@@ -3984,25 +3984,25 @@ order2 =>
 ```
 - Each websocket block contains it's own subscriptions property that contains its currently active websocket connections:
 ```js
-  let futuresSubscriptions = binance.websockets.spot.subscriptions;
+  let futuresSubscriptions = await binance.websockets.spot.subscriptions();
 
-  let spotSubscriptions = binance.websockets.futures.subscriptions;
+  let spotSubscriptions = await binance.websockets.futures.subscriptions();
 ```
 - Each function has AT LEAST 1 mandatory parameter ***callback***, and can have optional parameters:
 - - Mandatory parameters are always the first parameters to be passed to the function.
 - - But if there are other mandatory parameters than ***callback***, they will come first, that is the reason why ***callback*** sometimes comes first, and sometimes comes last
 - - Some examples:
 ```js
-  binance.websockets.futures.candlesticks(symbol, interval, callback); <= callback comes last because all the others are mandatory
+  await binance.websockets.futures.candlesticks(symbol, interval, callback); <= callback comes last because all the others are mandatory
 
-  binance.websockets.futures.miniTicker(callback, [symbol]) <= callback comes first, because symbol is NOT mandatory
+  await binance.websockets.futures.miniTicker(callback, [symbol]) <= callback comes first, because symbol is NOT mandatory
 ```
 
 ## HOW TO SUBSCRIBE:
 There are two main ways to subscribe:
 - You can either use the built-in library functions:
 ```js
-  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrades);
 
   function handleAggTrades(data) { // <= this is your 'callback' function, which is called everytime there is new data sent by binance
     console.log(data);
@@ -4010,7 +4010,7 @@ There are two main ways to subscribe:
 ```
 - Or you can subscribe youself via the `.subscribe()` method of each websocket block:
 ```js
-  let aggTrade = binance.websockets.futures.subscribe('btcusdt@aggTrade');
+  let aggTrade = await binance.websockets.futures.subscribe('btcusdt@aggTrade');
   // It is NOT RECOMMENDED to use this method, as it will not come with the added benefits of having the library rename the properties of the message
   // The library renames all the properties of the websocket response for clarity, it is instead recommended to use one of the other methods
 ```
@@ -4018,9 +4018,7 @@ There are two main ways to subscribe:
 ## HOW TO CLOSE:
 - All Websocket function return an object that you can use to close the connection comepletely, just like the following:
 ```js
-  const delay = (ms) => new Promise(r => setTimeout(r,ms));
-
-  const candlestick_stream = binance.websockets.futures.candlesticks('BTCUSDT', '1m', console.log);
+  const candlestick_stream = await binance.websockets.futures.candlesticks('BTCUSDT', '1m', console.log);
   
   candlestick_stream.close(); // this closes the connection permanently, the callback function will not be triggered anymore
 ```
@@ -4028,7 +4026,7 @@ There are two main ways to subscribe:
 ## HOW TO UNSUBSCRIBE:
 - All Websocket function return an object that you can use to unsubscribe from a stream, just like the following:
 ```js
-  const aggTrades_stream = binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
+  const aggTrades_stream = await binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
     // to something here with the data
   });
   
@@ -4036,14 +4034,14 @@ There are two main ways to subscribe:
   aggTrades_stream.unsubscribe(subscriptions); // This here is how you unsubscribe from a subscription, or array of subscriptions
 ```
 
-- Or you can unsubscribe using the binance.websockets.spot/futures.subscriptions:
+- Or you can unsubscribe using the await binance.websockets.spot/futures.subscriptions:
 ```js
-  let subscriptions = binance.websockets.futures.subscriptions;
+  let subscriptions = await binance.websockets.futures.subscriptions;
 
-  binance.websockets.futures.unsubscribe(subscriptions);
+  await binance.websockets.futures.unsubscribe(subscriptions);
   // OR
   // for example: subscriptions => ['btcusdt@aggTrade', ...];
-  binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
+  await binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
 ```
 
 ## ADD STREAMS TO SOCKET:
@@ -4052,7 +4050,7 @@ There are two main ways to subscribe:
 - The library renames the properties for more clarity, so subscribing to the same streams via the websocket is recommended
 - To use the `.subscribe()` function correctly, all you need to do is pass the same parameters the original(in the same order too) except for the callback function.
 ```js
-  let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', (data) => {
+  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', (data) => {
     // do something with the data
   });
 
@@ -4063,7 +4061,7 @@ There are two main ways to subscribe:
 ```
 - Another example with the more 'complicated' functions:
 ```js
-  let continuousKline_stream = binance.websockets.futures.continuousContractKline('BTCUSDT','PERPETUAL', '1m', (data) => {
+  let continuousKline_stream = await binance.websockets.futures.continuousContractKline('BTCUSDT','PERPETUAL', '1m', (data) => {
     // do something with the data
   });
 
@@ -4087,7 +4085,7 @@ There are two main ways to subscribe:
 - Opening the stream:
 ```js
   // use this when you are still testing out the function or checking if the parameters are valid
-  let stream = binance.websockets.futures.lastPrice('', (data) => console.log()); // '' is not a valid argument for lastPrice(), since 'symbol' is mandatory
+  let stream = await binance.websockets.futures.lastPrice('', (data) => console.log()); // '' is not a valid argument for lastPrice(), since 'symbol' is mandatory
   if (stream.error) {
     console.log(stream);
     // handle the error here, or just reset and check the parameters
@@ -4112,7 +4110,7 @@ There are two main ways to subscribe:
 - But all requests that do not anticipate a reply of data(Like for .subscribe() or .unsubscribe()) will instead only need to be checked for .error property if it is urgent to know that it was a success:
 - - `.subscriptions()`:
 ```js
-  let stream = binance.websockets.futures...;
+  let stream = await binance.websockets.futures...;
   // ...
   // ...
   let subscriptions = await stream.subscriptions(); // this returns a list of all the subscriptions in the CURRENT socket `stream`
@@ -4134,18 +4132,18 @@ There are two main ways to subscribe:
   let callbackFunc = (msg) => {
     console.log(msg);
   }
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
 
   // OR
 
   function callbackFunc(msg) {
     console.log(msg)
   }
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', callbackFunc);
 
   // OR SIMPLY
 
-  let websocketStream = binance.futures.websockets.markPrice('BTCUSDT', (msg) => {
+  let websocketStream = await binance.futures.websockets.markPrice('BTCUSDT', (msg) => {
     console.log(msg)
   }); // simple arrow function :D
 ```
@@ -4165,12 +4163,11 @@ There are two main ways to subscribe:
 |diffBookTicker()                     <a href='#spot-diffBookTicker'><sup>ref</sup></a>|                                                                                  |                                                  |
 |subscribe()                               <a href='#spot-subscribe'><sup>ref</sup></a>|subscriptions, callback                                                           |                                                  |
 |userData()                                 <a href='#spot-userData'><sup>ref</sup></a>|                                                                                  |                                                  |
-// TODO need to add all spot websockets, their documentation and add formData() to all the already created spot websockets
 
 ### spot .aggTrade():
 **Update Speed**: *Realtime*
 ```js
-  let BTC_aggTrade_stream = binance.websockets.spot.aggTrade('BTCUSDT', (data) => {
+  let BTC_aggTrade_stream = await binance.websockets.spot.aggTrade('BTCUSDT', (data) => {
     // do something with data
   });
 ```
@@ -4193,7 +4190,7 @@ There are two main ways to subscribe:
 ### spot .trade():
 **Update Speed**: *Realtime*
 ```js
-  let BTC_trade_stream = binance.websockets.spot.trade('BTCUSDT', (data) => {
+  let BTC_trade_stream = await binance.websockets.spot.trade('BTCUSDT', (data) => {
     // do something with data
   })
 ```
@@ -4215,7 +4212,7 @@ There are two main ways to subscribe:
 ### spot .candlesticks():
 **Update Speed**: 2000ms
 ```js
-let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1m', handleCandlestick)
+let BTC_candlesticks_stream = await binance.websockets.spot.candlesticks('BTCUSDT', '1m', handleCandlestick)
 ```
 ```js
 {
@@ -4247,9 +4244,9 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### spot .miniTicker():
 **Update Speed**: 1000ms
 ```js
-  let BTCUSDT_miniTicker_stream = binance.websockets.spot.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let BTCUSDT_miniTicker_stream = await binance.websockets.spot.miniTicker(handleMiniTicker, 'BTCUSDT');
   // OR
-  let miniTicker_stream = binance.websockets.spot.miniTicker(handleMiniTicker);
+  let miniTicker_stream = await binance.websockets.spot.miniTicker(handleMiniTicker);
 ```
 ```js
 { // for single symbol
@@ -4307,9 +4304,9 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 ### spot .ticker():
 **Update Speed**: 1000ms
 ```js
-  let BTC_ticker_stream = binance.websockets.spot.ticker(handleTicker, 'BTCUSDT');
+  let BTC_ticker_stream = await binance.websockets.spot.ticker(handleTicker, 'BTCUSDT');
   // OR
-  let icker_stream = binance.websockets.spot.ticker(handleTicker);
+  let icker_stream = await binance.websockets.spot.ticker(handleTicker);
 ```
 ```js
 { // for single symbol
@@ -4401,7 +4398,99 @@ let BTC_candlesticks_stream = binance.websockets.spot.candlesticks('BTCUSDT', '1
 **Note**: This stream is different from the `ticker()` stream. The open time `.close` always starts on a minute, while the closing time `.close` is the current time of the update.
 As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
-  // TODO
+  let 4h_windowStat_stream = await binance.websockets.spot.rollingWindowStats('BTCUSDT', '4h', console.log)
+  // OR
+  let 4h_windowStat_stream = await binance.websockets.spot.rollingWindowStats('', '4h', console.log)
+```
+```js
+{ // for single symbol
+  event: '4hTicker',
+  time: 1666535268773,
+  symbol: 'BTCUSDT',
+  priceChange: 6.42,
+  percentChange: 0.033,
+  open: 19176.98,
+  high: 19210.54,
+  low: 19070.11,
+  lastPrice: 19183.4,
+  weightedAvgPrice: 19153.32130309,
+  totalTraded_baseAssetVolume: 23573.27327,
+  totalTraded_quoteAssetVolume: '451506477.10578530',
+  stats_openTime: 1666520820000,
+  stats_closeTime: 1666535268511,
+  firstTradeId: 2009712739,
+  lastTradeId: 2010333945,
+  tradeCount: 621207
+}
+
+[ // for ALL symbols
+  {
+    event: '4hTicker',
+    time: 1666535310775,
+    symbol: 'BNBBTC',
+    priceChange: 0.00001,
+    percentChange: 0.071,
+    open: 0.014067,
+    high: 0.014096,
+    low: 0.014045,
+    lastPrice: 0.014077,
+    weightedAvgPrice: 0.01407548,
+    totalTraded_baseAssetVolume: 2711.348,
+    totalTraded_quoteAssetVolume: 38.16352924,
+    stats_openTime: 1666520880000,
+    stats_closeTime: 1666535310610,
+    firstTradeId: 206189368,
+    lastTradeId: 206194077,
+    tradeCount: 4710
+  },
+  {
+    event: '4hTicker',
+    time: 1666535310775,
+    symbol: 'BTCUSDT',
+    priceChange: 7.84,
+    percentChange: 0.041,
+    open: 19176.17,
+    high: 19210.54,
+    low: 19070.11,
+    lastPrice: 19184.01,
+    weightedAvgPrice: 19153.30896216,
+    totalTraded_baseAssetVolume: 23549.83751,
+    totalTraded_quoteAssetVolume: '451057313.83759810',
+    stats_openTime: 1666520880000,
+    stats_closeTime: 1666535310761,
+    firstTradeId: 2009714306,
+    lastTradeId: 2010335189,
+    tradeCount: 620884
+  },
+  ...,
+  ...
+]
+```
+
+
+### spot .bookTicker():
+```js
+  let bookTicker_BTC_stream = await binance.websockets.spot.bookTicker(handleBookTicker, 'BTCUSDT');
+  // OR
+  let bookTicker_stream = await binance.websockets.spot.bookTicker(handleBookTicker);
+```
+```js
+{
+  updateId: 26122319805,
+  symbol: 'BTCUSDT',
+  bestBidPrice: 19183.98,
+  bestBidQty: 0.0026,
+  bestAskPrice: 19184.32,
+  bestAskQty: 0.01796
+}
+```
+
+
+### spot .partialBookTicker():
+```js
+  let partialBookTicker_BTC = await 
+```
+```js
 ```
 
 
@@ -4427,13 +4516,13 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### futures .aggTrade():
 **Update Speed**: 100ms
 ```js
-  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', (data) => {
     // do something with the data
   });
 
   // OR
 
-  let aggTrade_stream = binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrade);
+  let aggTrade_stream = await binance.websockets.futures.aggTrade('BTCUSDT', handleAggTrade);
 
   function handleAggTrade(data) {
     // do something with the data
@@ -4463,11 +4552,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
     // do something with the data
   }
 
-  let markPrice_BTC_stream = binance.websockets.futures.markPrice(handleMarkPrices, 'BTCUSDT');
+  let markPrice_BTC_stream = await binance.websockets.futures.markPrice(handleMarkPrices, 'BTCUSDT');
 
   // OR
 
-  let markPrices_stream = binance.websockets.futures.markPrice(handleMarkPrices);
+  let markPrices_stream = await binance.websockets.futures.markPrice(handleMarkPrices);
 ```
 ```js
 {
@@ -4523,7 +4612,7 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 **Update Speed**: 250ms
 ```js
   // this is using the candlesticks() websocket, but filtering out all the other data
-  let lastPrice_stream = binance.websockets.futures.lastPrice('BTCUSDT', console.log);
+  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', console.log);
 ```
 ```js
 { BTCUSDT: 19849.1 }
@@ -4533,15 +4622,15 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### futures .candlesticks():
 **Update Speed**: 250ms
 ```js
-  let candleSticks_1m = binance.websockets.futures.candlesticks('BTCUSDT', '1m', (data) => {
+  let candleSticks_1m = await binance.websockets.futures.candlesticks('BTCUSDT', '1m', (data) => {
     //  do something with the data
   });
   // OR
-  let candleSticks_3m = binance.websockets.futures.candlesticks('BTCUSDT', '3m', ...);
+  let candleSticks_3m = await binance.websockets.futures.candlesticks('BTCUSDT', '3m', ...);
   // OR
   ...
   // OR
-  let candleSticks_1w = binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
+  let candleSticks_1w = await binance.websockets.futures.candlesticks('BTCUSDT', '1w', ...);
 ```
 ```js
 {
@@ -4575,7 +4664,7 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ```js
   let contractType = 'PERPETUAL' /*OR*/ 'CURRENT_QUARTER' /*OR*/ 'NEXT_QUARTER';  // PERPETUAL in this example
 
-  let contKline_stream = binance.websockets.futures.continuousContractKline('BTCUSDT', contractType, '1m', (data) => {
+  let contKline_stream = await binance.websockets.futures.continuousContractKline('BTCUSDT', contractType, '1m', (data) => {
     // do something with the data
   })
 ```
@@ -4608,11 +4697,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### futures .miniTicker():
 **Update Speed**: 500ms with symbol, 1000ms without
 ```js
-  let miniTicker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let miniTicker_BTC_stream = await binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
 
   // OR
 
-  let miniTickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+  let miniTickers_stream = await binance.websockets.futures.miniTicker(handleMiniTicker);
 
   function handleMiniTicker(data) { 
     /* Do something with data */ 
@@ -4676,11 +4765,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 **Update Speed**: 500ms with symbol, 1000ms without
 ***Differs from .miniTicker() by the fact that it includes some extra info***
 ```js
-  let ticker_BTC_stream = binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
+  let ticker_BTC_stream = await binance.websockets.futures.miniTicker(handleMiniTicker, 'BTCUSDT');
 
   // OR
 
-  let tickers_stream = binance.websockets.futures.miniTicker(handleMiniTicker);
+  let tickers_stream = await binance.websockets.futures.miniTicker(handleMiniTicker);
 
   function handleTicker(data) { 
     /* Do something with data */ 
@@ -4759,11 +4848,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### futures .bookTicker():
 **Update Speed**: *Realtime*: approx 5000 updates/second for ALL symbols, but each symbol differs immensely, BTCUSDT averages 300 updates/second
 ```js
-  let bookTicker_BTC_stream = binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
+  let bookTicker_BTC_stream = await binance.websockets.futures.bookTicker(handleBookTicker, 'BTCUSDT');
 
   // OR
 
-  let bookTicker_stream = binance.websockets.futures.bookTicker(handleBookTicker);
+  let bookTicker_stream = await binance.websockets.futures.bookTicker(handleBookTicker);
 ```
 ```js
 {
@@ -4783,11 +4872,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 ### futures .liquidationOrders():
 **Update Speed**: 1000ms
 ```js
-  let liquidations_BTC_stream = binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT');
+  let liquidations_BTC_stream = await binance.websockets.futures.liquidationOrders(handleLiquidations, 'BTCUSDT');
 
   // OR
 
-  let liquidations_stream = binance.websockets.futures.liquidationOrders(handleLiquidations);
+  let liquidations_stream = await binance.websockets.futures.liquidationOrders(handleLiquidations);
 
   function handleLiquidations(data) {
     // do something with the data
@@ -4830,11 +4919,11 @@ Receiving an event that removes a price level that is not in your local order bo
 
 **Maybe when I use this and understand this better myself, I can add this to the library, send me a message if you are interested in me adding this.**
 ```js
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '500ms', handleBookTickers);
+  await .futures.partialBookTicker('BTCUSDT', 5, '500ms', handleBookTickers);
   // OR
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '250ms', handleBookTickers);
+  await binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '250ms', handleBookTickers);
   // OR
-  binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '100ms', handleBookTickers);
+  await binance.websockets.futures.partialBookTicker('BTCUSDT', 5, '100ms', handleBookTickers);
 ```
 ```js
 {
@@ -4868,7 +4957,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ### futures .compositeIndexSymbol():
 **Update Speed**: 1000ms
 ```js
-  let DEFI_compositeIndex_stream = binance.websockets.futures.compositeIndexSymbol('BTCUSDT', handleCompositeIndex);
+  let DEFI_compositeIndex_stream = await binance.websockets.futures.compositeIndexSymbol('BTCUSDT', handleCompositeIndex);
 ```
 ```js
 {
@@ -4916,7 +5005,7 @@ Receiving an event that removes a price level that is not in your local order bo
 ### futures .userData():
 **Update Speed**: *Realtime*
 ```js
-  let userData = binance.websockets.futures.userData((data) => {
+  let userData = await binance.websockets.futures.userData((data) => {
     if(data.event == 'MARGIN_CALL') handleMarginCall(data);
     else if(data.event == 'ACCOUNT_UPDATE') handleAccountUpdate(data);
     else if(data.event == 'ORDER_TRADE_UPDATE') handleOrderUpdate(data);
