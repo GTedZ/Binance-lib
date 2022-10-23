@@ -4518,6 +4518,7 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 ### spot .diffBookTicker():
 **Update Speed**: 1000ms or 100ms
+
 Open a stream via `binance.websockets.spot.diffBookTicker()`.
 
 Buffer the events you receive from the stream.
