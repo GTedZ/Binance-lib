@@ -1690,6 +1690,28 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     if (symbol) origPath = `${symbol}@ticker_${windowSize}`;
                     return origPath;
                 }
+            },
+
+            bookTicker: function (callback, symbol = false) {
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS,
+                    path: '!bookTicker'
+                }
+                if (symbol) params.path = `${symbol.toLowerCase()}@bookTicker`;
+
+                const newKeys = [
+                    'u=updateId',
+                    's=symbol',
+                    'b=bestBidPrice',
+                    'B=bestBidQty',
+                    'a=bestAskPrice',
+                    'A=bestAskQty'
+                ];
+
+                // TODO
             }
 
         },
@@ -2644,7 +2666,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             streamPath = params.path[0];
         }
 
-        object.socket = new ws(params.baseURL + '/ws/' + params.path);
+        object.socket = new ws(params.baseURL + '/ws/' + streamPath);
         let socket = object.socket;
 
         socket.on('open', () => {
