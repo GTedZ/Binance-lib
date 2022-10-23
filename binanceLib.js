@@ -648,6 +648,29 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options);
     }
 
+    this.futuresConvertToQty = async (symbol, USDT_or_BUSD_size, leverage = 1) => {
+        if (typeof futures_exchangeInfo != 'object' || !futures_exchangeInfo[symbol]) {
+            futures_exchangeInfo = await this.futuresExchangeInfo(true, 3,
+                {
+                    symbols: true,
+                    quantityPrecision: true,
+                    pricePrecision: true,
+
+                }
+            );
+
+            if (futures_exchangeInfo.error) return ERR('Unexpected error, please try again');
+            if (!futures_exchangeInfo.symbols.includes(symbol)) return ERR('It looks like the symbol is invalid, please check the symbol and try again');
+        }
+
+        const totalQuoteSize = USDT_or_BUSD_size * leverage;
+        if (totalQuoteSize < 5) return ERR('The total position size cannot be lower than 5USDT');
+        const symbolPriceObj = await this.futuresPrices(symbol);
+        if (!symbolPriceObj.price) return ERR('Error fetching price of symbol, please check the symbol and try again.');
+
+        return bigInt.parse((totalQuoteSize / symbolPriceObj.price).toFixed(futures_exchangeInfo[symbol].quantityPrecision))
+    }
+
     // futures Market DATA ////
 
     // futures Account/Trade Endpoints \\\\
@@ -3287,6 +3310,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // FUTURES WEBSOCKET KEYS ////
 
     // constants ////
+
+
+
+    // library-reserved variables \\\\
+
+    let spot_exchangeInfo;
+
+    let futures_exchangeInfo;
+
+    // library-reserved variables ////
 
 
     this.test = () => {
