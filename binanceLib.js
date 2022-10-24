@@ -648,7 +648,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options);
     }
 
-    this.futuresConvertToQty = async (symbol, USDT_or_BUSD_size, leverage = 1) => {
+    this.futuresConvertToQuantity = async (symbol, USDT_or_BUSD_margin, leverage = 1) => {
+        return this.futuresConvertToQty(symbol, USDT_or_BUSD_margin, leverage);
+    }
+
+    this.futuresConvertToQty = async (symbol, USDT_or_BUSD_margin, leverage = 1) => {
         if (typeof futures_exchangeInfo != 'object' || !futures_exchangeInfo[symbol]) {
             futures_exchangeInfo = await this.futuresExchangeInfo(true, 3,
                 {
@@ -663,12 +667,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (!futures_exchangeInfo.symbols.includes(symbol)) return ERR('It looks like the symbol is invalid, please check the symbol and try again');
         }
 
-        const totalQuoteSize = USDT_or_BUSD_size * leverage;
+        const totalQuoteSize = USDT_or_BUSD_margin * leverage;
         if (totalQuoteSize < 5) return ERR('The total position size cannot be lower than 5USDT');
         const symbolPriceObj = await this.futuresPrices(symbol);
         if (!symbolPriceObj.price) return ERR('Error fetching price of symbol, please check the symbol and try again.');
 
-        return bigInt.parse((totalQuoteSize / symbolPriceObj.price).toFixed(futures_exchangeInfo[symbol].quantityPrecision))
+        return bigInt.parse((totalQuoteSize / symbolPriceObj.price).toFixedNoRounding(futures_exchangeInfo[symbol].quantityPrecision))
     }
 
     // futures Market DATA ////
@@ -3320,6 +3324,21 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     let futures_exchangeInfo;
 
     // library-reserved variables ////
+
+    // prototypes \\\\
+
+    Number.prototype.toFixedNoRounding = function (n) {
+        const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g")
+        const a = this.toString().match(reg)[0];
+        const dot = a.indexOf(".");
+        if (dot === -1) { // integer, insert decimal dot and pad up zeros
+            return a + "." + "0".repeat(n);
+        }
+        const b = n - (a.length - dot) + 1;
+        return b > 0 ? (a + "0".repeat(b)) : a;
+    }
+
+    // prototypes ////
 
 
     this.test = () => {

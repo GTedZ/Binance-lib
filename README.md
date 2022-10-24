@@ -161,6 +161,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresGetPositionSide()                                 <a href='#futuresGetPositionSide'><sup>ref</sup></a>|multiAssetsMargin                                                        |                                                         |recvWindow      |
 |futuresChangeMultiAssetMargin()                   <a href='#futuresChangeMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
 |futuresGetMultiAssetMargin()                         <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
+|futuresConvertToQuantity()                           <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|symbol, USDT_or_BUSD_margin                                              |leverage                                                 |
 |futuresMarketBuy()                                             <a href='#futuresMarketBuy'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
 |futuresMarketSell()                                           <a href='#futuresMarketSell'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
 |futuresBuy()                                                         <a href='#futuresBuy'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
@@ -2180,6 +2181,26 @@ OR
 }
 ```
 </details>
+
+
+### .futuresConvertToQuantity():
+This function is used to convert USDT or BUSD size into the quantity that you need for new Orders.
+It also respects the quantityPrecision rules:
+```js
+  UDST_Margin = 10;   // BTCUSDT current price => 19340
+  leverage = 25;      // totalSize => 250USDT
+                      // Normal  calculations would return a quantity of '0.01292658' => will immediately be rejected by binance for precision error
+  let quantity = await binance.futuresConvertToQuantity('BTCUSDT', USDT_Margin, leverage);  // leverage is optional, instead you can ommit it and use the total Notional size of your order
+  if(quantity.error) {
+    // handle error here, error might be internet disconnection, invalid symbol, or that your order doesn't fit binance's positionSize rules
+    return;
+  }
+  // quantity of value '0' will now show up as an error
+  console.log(quantity);  // => valid quantity would be 0.012, as BTCUSDT has a pricePrecision of 3
+```
+```js
+  0.012
+```
 
 
 ### .futuresMarketBuy():
