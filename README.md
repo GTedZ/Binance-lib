@@ -4176,6 +4176,7 @@ There are two main ways to subscribe:
 |aggTrade()                                 <a href='#spot-aggTrade'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
 |trade()                                       <a href='#spot-trade'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
 |candlesticks()                         <a href='#spot-candlesticks'><sup>ref</sup></a>|symbol, interval, callback                                                        |                                                  |
+|lastPrice()                               <a href='#spot-lastPrice'><sup>ref</sup></a>|callback                                                                          |symbol, isFast                                    |
 |miniTicker()                             <a href='#spot-miniTicker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
 |ticker()                                     <a href='#spot-ticker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
 |rollingWindowStats()             <a href='#spot-rollingWindowStats'><sup>ref</sup></a>|windowSize, callback                                                              |symbol                                            |
@@ -4258,6 +4259,31 @@ let BTC_candlesticks_stream = await binance.websockets.spot.candlesticks('BTCUSD
     takerBuy_baseAssetVolume: 56.94057,
     takerBuy_quoteAssetVolume: '1085117.01622170'
   }
+}
+```
+
+
+### spot .lastPrice():
+```js
+  let allSymbols_lastPrice = await binance.websockets.spot.lastPrice(console.log);
+  // OR
+  let BTC_lastPrice = await binance.websockets.spot.lastPrice(console.log, 'BTCUSDT');
+  // OR
+  let BTC_fast_lastPrice = await binance.websockets.spot.lastPrice(console.log, 'BTCUSDT', true); // This uses the trades stream to get the lastPrice, very effective and fast paced
+```
+```js
+{ // for ALL symbols, there will be 25-60 of those symbols per second
+  LTCBTC: 0.002735 
+}
+
+// OR
+
+{ // for single symbols
+  BTCUSDT: 19352.85   // update speed: 1000ms
+}
+
+{
+  BTCUSDT: 19352.85   // Realtime: approx 5-15 updates per second
 }
 ```
 
@@ -4730,7 +4756,7 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 |:-------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------:|:------------------------------------------------:|
 |aggTrade()                              <a href='#futures-aggTrade'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
 |markPrice()                            <a href='#futures-markPrice'><sup>ref</sup></a>|callback                                                                          |symbol, slow(bool)                                |
-|lastPrice()                            <a href='#futures-lastPrice'><sup>ref</sup></a>|symbol, callback                                                                  |                                                  |
+|lastPrice()                            <a href='#futures-lastPrice'><sup>ref</sup></a>|callback                                                                          |symbol, isFast                                    |
 |candlesticks()                      <a href='#futures-candlesticks'><sup>ref</sup></a>|symbol, interval, callback                                                        |                                                  |
 |continuousContractKline()<a href='#futures-continuousContractKline'><sup>ref</sup></a>|pair, contractType, interval, callback                                            |                                                  |
 |miniTicker()                          <a href='#futures-miniTicker'><sup>ref</sup></a>|callback                                                                          |symbol                                            |
@@ -4840,10 +4866,13 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 
 ### futures .lastPrice():
-**Update Speed**: 250ms
+**Update Speed**: 1000ms, 250ms or 100ms
 ```js
-  // this is using the candlesticks() websocket, but filtering out all the other data
-  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', console.log);
+  let allSymbols_lastPrice = await binance.websockets.futures.lastPrice(console.log);     // Update Speed: 1000ms
+  // OR
+  let BTC_lastPrice = await binance.websockets.futures.lastPrice(console.log, 'BTCUSDT'); // Update Speed: 250ms
+  // OR
+  let BTC_fast_lastPrice = await binance.websockets.futures.lastPrice(console.log, 'BTCUSDT', true);  // Update Speed: 100ms
 ```
 ```js
 { BTCUSDT: 19849.1 }

@@ -1519,6 +1519,54 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
+            lastPrice: function (callback, symbol = false, isFast = false) {
+                if (!callback) { return ERROR('callback', 'required'); }
+                if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+                const params = {
+                    baseURL: sWSS
+                }
+
+                let formatFunction;
+
+                if (!symbol) {
+                    params.path = '!miniTicker@arr';
+                    formatFunction = (msg) => {
+                        for (const item of msg) {
+                            const obj = {};
+                            obj[item.s] = item.c;
+                            callback(obj);
+                        }
+                    }
+                } else {
+                    if (isFast) {
+                        params.path = `${symbol.toLowerCase()}@trade`;
+                        formatFunction = (msg) => {
+                            const obj = {};
+                            obj[msg.s] = msg.p;
+                            callback(obj);
+                        }
+                    } else {
+                        params.path = `${symbol.toLowerCase()}@miniTicker`;
+                        formatFunction = (msg) => {
+                            const obj = {};
+                            obj[msg.s] = msg.c;
+                            callback(obj);
+                        }
+                    }
+                }
+
+                this.formPath = (symbol = false, isFast = false) => {
+                    if (symbol || symbol.includes('miniTicker') || symbol.includes('trade')) return symbol;
+
+                    if (!symbol) return '!miniTicker@arr';
+                    if (isFast) return `${symbol.toLowerCase()}@trade`;
+                    return `${symbol.toLowerCase()}@miniTicker`;
+                }
+
+                return connect(params, formatFunction, this.formPath);
+            },
+
             miniTicker: function (callback, symbol = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
@@ -1861,32 +1909,50 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            lastPrice: function (symbol, callback) {
-                if (!symbol) return ERROR('symbol', 'required');
-                if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
+            lastPrice: function (callback, symbol = false, isFast = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const params = {
-                    baseURL: fWSS,
-                    path: `${symbol.toLowerCase()}@kline_1m`
+                    baseURL: fWSS
                 }
 
-                this.format = (msg) => {
-                    let obj = {};
-                    obj[msg.s] = msg.k.c;
-                    callback(obj);
+                let formatFunction;
+
+                if (!symbol) {
+                    params.path = '!miniTicker@arr';
+                    formatFunction = (msg) => {
+                        for (const item of msg) {
+                            const obj = {};
+                            obj[item.s] = item.c;
+                            callback(obj);
+                        }
+                    }
+                } else if (!isFast) {
+                    params.path = `${symbol.toLowerCase()}@kline_1m`;
+                    formatFunction = (msg) => {
+                        const obj = {};
+                        obj[msg.s] = msg.c;
+                        callback(obj);
+                    }
+                } else {
+                    params.path = `${symbol.toLowerCase()}@aggTrade`;
+                    formatFunction = (msg) => {
+                        const obj = {};
+                        obj[msg.s] = msg.p;
+                        callback(obj);
+                    }
                 }
 
-                this.formPath = (symbol) => {
-                    if (symbol && symbol.includes('kline_')) return symbol;
+                this.formPath = (symbol = false, isFast = false) => {
+                    if (symbol && symbol.includes('miniTicker') || symbol.includes('kline') || symbol.includes('aggTrade')) return symbol;
 
-                    if (!symbol) return ERROR('symbol', 'required');
-                    if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
-                    return `${symbol.toLowerCase()}@kline_1m`;
+                    if (!symbol) return '!miniTicker@arr';
+                    if (!isFast) return `${symbol.toLowerCase()}@kline_1m`;
+                    return `${symbol.toLowerCase()}@aggTrade`;
                 }
 
-                return connect(params, this.format, this.formPath);
+                return connect(params, formatFunction, this.formPath)
             },
 
             /**
