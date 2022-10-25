@@ -3984,7 +3984,7 @@ order2 =>
 ### How to Subscribe to a new Stream<a href='#How-To-Subscribe'><sup>ref</sup></a>
 ### How to Close<a href='#How-To-Close'><sup>ref</sup></a>
 ### How to Unsubscribe<a href='#How-To-Unsubscribe'><sup>ref</sup></a>
-### How to Add Additional Streams to a Connection ***VERY USEFUL***<a href='#Add-Streams-To-Socket'><sup>ref</sup></a>
+### How to Add Additional Streams to a Connection ****VERY USEFUL****<a href='#Add-Streams-To-Socket'><sup>ref</sup></a>
 ### Handling Websocket Errors<a href='#Handling-Websocket-Errors'><sup>ref</sup></a>
 
 ### Websocket Parameter Explanation<a href='#Websocket-Parameters-Explanation'><sup>ref</sup></a>
