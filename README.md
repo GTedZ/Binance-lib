@@ -5169,11 +5169,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 ***HOW TO MANAGE A LOCAL ORDER BOOK CORRECTLY***
 
-1. Open a stream via partialBookTicker(<symbol>, ...)
+1. Open a stream via partialBookTicker('<symbol>', ...)
 
 2. Buffer the events you receive from the stream. For same price, latest received update covers the previous one.
 
-3. Get a depth snapshot from futuresOrderBook(<symbol>, 1000).
+3. Get a depth snapshot from futuresOrderBook('<symbol>', 1000).
 
 4. Drop any event where `u` is < `lastUpdateId` in the snapshot.
 
