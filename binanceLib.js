@@ -1527,34 +1527,27 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     baseURL: sWSS
                 }
 
-                let formatFunction;
-
-                if (!symbol) {
-                    params.path = '!miniTicker@arr';
-                    formatFunction = (msg) => {
+                let formatFunction = (msg) => {
+                    if (Array.isArray(msg)) {
                         for (const item of msg) {
                             const obj = {};
                             obj[item.s] = item.c;
                             callback(obj);
                         }
-                    }
-                } else {
-                    if (isFast) {
-                        params.path = `${symbol.toLowerCase()}@trade`;
-                        formatFunction = (msg) => {
-                            const obj = {};
-                            obj[msg.s] = msg.p;
-                            callback(obj);
-                        }
+                    } else if (msg.p) {
+                        const obj = {};
+                        obj[msg.s] = msg.p;
+                        callback(obj);
                     } else {
-                        params.path = `${symbol.toLowerCase()}@miniTicker`;
-                        formatFunction = (msg) => {
-                            const obj = {};
-                            obj[msg.s] = msg.c;
-                            callback(obj);
-                        }
+                        const obj = {};
+                        obj[msg.s] = msg.c;
+                        callback(obj);
                     }
-                }
+                };
+
+                if (!symbol) params.path = '!miniTicker@arr';
+                else if (isFast) params.path = `${symbol.toLowerCase()}@trade`;
+                else params.path = `${symbol.toLowerCase()}@miniTicker`;
 
                 this.formPath = (symbol = false, isFast = false) => {
                     if (symbol || symbol.includes('miniTicker') || symbol.includes('trade')) return symbol;
@@ -1917,32 +1910,27 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     baseURL: fWSS
                 }
 
-                let formatFunction;
-
-                if (!symbol) {
-                    params.path = '!miniTicker@arr';
-                    formatFunction = (msg) => {
+                let formatFunction = (msg) => {
+                    if (Array.isArray(msg)) {
                         for (const item of msg) {
                             const obj = {};
                             obj[item.s] = item.c;
                             callback(obj);
                         }
-                    }
-                } else if (!isFast) {
-                    params.path = `${symbol.toLowerCase()}@kline_1m`;
-                    formatFunction = (msg) => {
+                    } else if (msg.k) {
                         const obj = {};
-                        obj[msg.s] = msg.c;
+                        obj[msg.s] = msg.k.c;
                         callback(obj);
-                    }
-                } else {
-                    params.path = `${symbol.toLowerCase()}@aggTrade`;
-                    formatFunction = (msg) => {
+                    } else {
                         const obj = {};
                         obj[msg.s] = msg.p;
                         callback(obj);
                     }
-                }
+                };
+
+                if (!symbol) params.path = '!miniTicker@arr';
+                else if (!isFast) params.path = `${symbol.toLowerCase()}@kline_1m`;
+                else params.path = `${symbol.toLowerCase()}@aggTrade`;
 
                 this.formPath = (symbol = false, isFast = false) => {
                     if (symbol && symbol.includes('miniTicker') || symbol.includes('kline') || symbol.includes('aggTrade')) return symbol;
