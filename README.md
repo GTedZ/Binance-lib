@@ -5175,11 +5175,11 @@ As such, the effective window might be up to 59999ms wider that <window_size>.
 
 3. Get a depth snapshot from futuresOrderBook("SYMBOL", 1000).
 
-4. Drop any event where `u` is < `lastUpdateId` in the snapshot.
+4. Drop any event where `finalUpdateId` is < `lastUpdateId` in the snapshot.
 
-5. The first processed event should have `U` <= `lastUpdateId` AND `u` >= `lastUpdateId`
+5. The first processed event should have `firstUpdateId` <= `lastUpdateId` AND `finalUpdateId` >= `lastUpdateId`
 
-6. While listening to the stream, each new event's `pu` should be equal to the previous event's `u`, otherwise initialize the process from step 3.
+6. While listening to the stream, each new event's `previousStream_finalUpdateId` should be equal to the previous event's `finalUpdateId`, otherwise initialize the process from step 3.
 
 - The data in each event is the absolute quantity for a price level.
 
