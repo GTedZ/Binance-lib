@@ -4003,12 +4003,6 @@ order2 =>
   // OR
   binance.websockets.futures.'<streamFunctionName>'
 ```
-- Each websocket block contains it's own subscriptions property that contains its currently active websocket connections:
-```js
-  let futuresSubscriptions = await binance.websockets.spot.subscriptions();
-
-  let spotSubscriptions = await binance.websockets.futures.subscriptions();
-```
 - Each function has AT LEAST 1 mandatory parameter ***callback***, and can have optional parameters:
 - - Mandatory parameters are always the first parameters to be passed to the function.
 - - But if there are other mandatory parameters than ***callback***, they will come first, that is the reason why ***callback*** sometimes comes first, and sometimes comes last
@@ -4037,7 +4031,7 @@ There are two main ways to subscribe:
 ```
 
 ## HOW TO CLOSE:
-- All Websocket function return an object that you can use to close the connection comepletely, just like the following:
+- All Websocket functions return an object that you can use to close the connection completely, just like the following:
 ```js
   const candlestick_stream = await binance.websockets.futures.candlesticks('BTCUSDT', '1m', console.log);
   
@@ -4045,40 +4039,47 @@ There are two main ways to subscribe:
 ```
 
 ## HOW TO UNSUBSCRIBE:
-- All Websocket function return an object that you can use to unsubscribe from a stream, just like the following:
+- All Websocket functions return an object that you can use to unsubscribe from a stream, just like the following:
 ```js
   const aggTrades_stream = await binance.websockets.futures.aggTrade("BTCUSDT", (data) => {
     // to something here with the data
   });
   
-  const subscriptions = await aggTrades_stream.subscriptions(); // this function gets the subscriptions,
+  const subscriptions = await aggTrades_stream.subscriptions(); // this function returns the subscriptions in an array
   aggTrades_stream.unsubscribe(subscriptions); // This here is how you unsubscribe from a subscription, or array of subscriptions
 ```
 
 - Or you can unsubscribe using the await binance.websockets.spot/futures.subscriptions:
 ```js
-  let subscriptions = await binance.websockets.futures.subscriptions;
+  let subscriptions = await binance.websockets.futures.subscriptions();
 
   await binance.websockets.futures.unsubscribe(subscriptions);
   // OR
   // for example: subscriptions => ['btcusdt@aggTrade', ...];
-  await binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using subscriptions[0] or subscriptions[1] or any other index...
+  await binance.websockets.futures.unsubscribe('btcusdt@aggTrade'); // or of course instead using the full array or any specific element   of that array
 ```
 
 ## ADD STREAMS TO SOCKET:
-- ***IMPORTANT***: **ONLY SUBSCRIBE TO THE SAME TYPES OF STREAMS, ONLY SIMILAR-TYPE STREAMS CAN BE ACCESSED VIA THE SAME SOCKET OBJECT**
+- ***IMPORTANT***: **ONLY SUBSCRIBE TO THE SAME TYPES OF STREAMS, ONLY SIMILAR-TYPE STREAMS CAN BE ACCESSED VIA THE SAME SOCKET OBJECT:**
+```js
+  const lastPrice_stream = await binance.websockets.futures.lastPrice(console.log, 'BTCUSDT');
+
+  // using the `.subscribe()` function, you only subscribe to additional `lastPrice` streams, and not any other type
+
+  lastPrice_stream.subscribe('ETHUSDT');
+```
 - All Websocket function return an object that you can use to subscribe to a new stream
 - The library renames the properties for more clarity, so subscribing to the same streams via the websocket is recommended
 - To use the `.subscribe()` function correctly, all you need to do is pass the same parameters the original(in the same order too) except for the callback function.
 ```js
-  let lastPrice_stream = await binance.websockets.futures.lastPrice('BTCUSDT', (data) => {
+  let lastPrice_stream = await binance.websockets.futures.lastPrice((data) => {
     // do something with the data
-  });
+  }, 'BTCUSDT');
 
 
-  // now remember, .lastPrice(<symbol>, <callback>) has 2 parameters, but ignoring 'callback' since it isnt needed, we only need to pass the new symbol
+  // now remember, .lastPrice(<callback>, [symbol], [isFast]) has 1 mandatory parameters, but ignoring 'callback' since it isnt needed, we only need to pass the optional parameters
   lastPrice_stream.subscribe('ETHUSDT');
-  lastPrice_stream.subscribe('XRPUSDT');
+  lastPrice_stream.subscribe('XRPUSDT', true);
 ```
 - Another example with the more 'complicated' functions:
 ```js
@@ -4106,7 +4107,7 @@ There are two main ways to subscribe:
 - Opening the stream:
 ```js
   // use this when you are still testing out the function or checking if the parameters are valid
-  let stream = await binance.websockets.futures.lastPrice('', (data) => console.log()); // '' is not a valid argument for lastPrice(), since 'symbol' is mandatory
+  let stream = await binance.websockets.futures.aggTrade('', (data) => console.log()); // '' is not a valid argument for lastPrice(), since 'symbol' is mandatory
   if (stream.error) {
     console.log(stream);
     // handle the error here, or just reset and check the parameters
