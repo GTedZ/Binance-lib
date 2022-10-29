@@ -8,11 +8,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const bigInt = require('json-bigint')({ storeAsString: true });
     const binance = this;
 
-    const base = 'https://api.binance.com';
-    const wapi = 'https://api.binance.com';
+    const api = 'https://api.binance.com'
     const sapi = 'https://api.binance.com';
     const fapi = 'https://fapi.binance.com';
     const dapi = 'https://dapi.binance.com';
+    const wapi = 'https://api.binance.com';
 
     const sWSS = 'wss://stream.binance.com:9443'
     const fWSS = 'wss://fstream.binance.com';
@@ -24,6 +24,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const shortenedContractTypes = ["PERPETUAL", "CURRENT_QUARTER", "NEXT_QUARTER"]
     const periods = ["5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d"];
     const bools = [true, false];
+
+    const SPOT_EXCHANGEINFO_PERMISSIONS = ["SPOT", "MARGIN", "LEVERAGED", "TRD_GRP_002", "TRD_GRP_003", "TRD_GRP_004", "TRD_GRP_005"]
 
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
@@ -42,7 +44,338 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // public functions ////
 
+    // spot \\\\
 
+    this.ping = async (reconnect = false, tries = -1) => {
+        let resp;
+        let startTime = Date.now();
+        resp = await request(
+            {
+                baseURL: api,
+                path: '/api/v3/ping',
+                method: 'get'
+            }
+        );
+        let endTime = Date.now();
+
+        if (resp.error) {
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else {
+                await delay(binance.timeout);
+                return this.ping(reconnect, tries);
+            }
+        }
+        resp.roundtrip_time_millis = endTime - startTime;
+        this.ping = resp.roundtrip_time_millis;
+        return resp;
+    }
+
+    this.serverTime = async (reconnect = false, tries = -1) => {
+        let resp;
+        resp = await request(
+            {
+                baseURL: api,
+                path: '/api/v3/time',
+                method: 'get'
+            });
+
+        if (resp.error) {
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else {
+                await delay(binance.timeout);
+                return this.serverTime(reconnect, tries);
+            }
+        }
+
+        return resp.serverTime;
+    }
+
+    this.exchangeInfo = async (symbols = false, permissions = false) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/exchangeInfo',
+            method: 'get'
+        }
+
+        const options = {}
+        if (symbols) {
+            if (typeof symbols == 'string') options.symbol = symbols;
+            else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
+        }
+        if (permissions) {
+            if (typeof permissions == 'string') if (!equal(permissions, SPOT_EXCHANGEINFO_PERMISSIONS)) return ERR('permissions', 'value', false, SPOT_EXCHANGEINFO_PERMISSIONS); else options.permissions = permissions;
+            else options.permissions = `[${permissions.map(permissions => `"${permissions}"`).toString()}]`;
+        }
+
+        let resp = await request(params, options);  // TODO add the extra options parameters
+
+        return resp;
+    }
+
+    this.orderBook = (symbol, limit = 100) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/depth',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            limit: limit
+        }
+
+        return request(params, options);
+    }
+
+    this.trades = (symbol, limit = 500) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/trades',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            limit: limit
+        }
+
+        return request(params, options);
+    }
+
+    this.oldTrades = (symbol, limit = 500, fromId = 0) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/historicalTrades',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            limit: limit
+        }
+
+        if (fromId) options.fromId = fromId;
+
+        return request(params, options, 'DATA');
+    }
+
+    this.aggTrades = async (symbol, limit = 500, fromId = 0, startTime = 0, endTime = 0) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/aggTrades',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            limit: limit
+        }
+
+        if (fromId) options.fromId = fromId;
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        let resp = await request(params, options);
+
+        return renameObjectProperties(
+            resp,
+            [
+                'aggTradeId',
+                'price',
+                'qty',
+                'firstTradeId',
+                'lastTradeId',
+                'timestamp',
+                'maker',
+                'isBestPriceMatch'
+            ]
+        )
+    }
+
+    this.candlesticks = async (symbol, interval, limit = 500, startTime = 0, endTime = 0) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!equal(interval, intervals)) return ERR('interval', 'value', false, intervals)
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/klines',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            interval: interval,
+            limit: limit
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        let resp = await request(params, options);
+
+        return handleArrayResponse(
+            resp,
+            [
+                'openTime',
+                'open',
+                'high',
+                'low',
+                'close',
+                'volume',
+                'closeTime',
+                'quoteAssetVolume',
+                'tradesCount',
+                'takerBuy_baseAssetVolume',
+                'takerBuy_quoteAssetVolume',
+                'ignore'
+            ]
+        )
+    }
+
+    this.UIKlines = async (symbol, interval, limit = 500, startTime = 0, endTime = 0) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!equal(interval, intervals)) return ERR('interval', 'value', false, intervals)
+        if (!limit) return ERR('limit', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/uiKlines',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            interval: interval,
+            limit: limit
+        }
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        let resp = await request(params, options);
+
+        return handleArrayResponse(
+            resp,
+            [
+                'openTime',
+                'open',
+                'high',
+                'low',
+                'close',
+                'volume',
+                'closeTime',
+                'quoteAssetVolume',
+                'tradesCount',
+                'takerBuy_baseAssetVolume',
+                'takerBuy_quoteAssetVolume',
+                'ignore'
+            ]
+        )
+    }
+
+    this.avgPrice = (symbol) => {
+        if (!symbol) return ERR('symbol', 'required');
+        const params = {
+            baseURL: api,
+            path: '/api/v3/avgPrice',
+            method: 'get'
+        }
+
+        return request(params, { symbol: symbol });
+    }
+
+    this.ticker24h = (symbols_or_count = false) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/ticker/24hr',
+            method: 'get'
+        }
+
+        const options = {}
+
+        if (symbols_or_count) {
+            if (typeof symbols_or_count == 'string') options.symbol = symbols_or_count;
+            else if (Array.isArray(symbols_or_count)) options.symbols = `[${symbols_or_count.map(symbol => `"${symbol}"`).toString()}]`;
+        }
+
+        return request(params, options)
+    }
+
+    this.price = (symbols = false) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/ticker/price',
+            method: 'get'
+        }
+
+        const options = {}
+
+        if (symbols) {
+            if (typeof symbols == 'string') options.symbol = symbols;
+            else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
+        }
+
+        return request(params, options)
+    }
+
+    this.bookTicker = (symbols = false) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/ticker/bookTicker',
+            method: 'get'
+        }
+
+        const options = {}
+        if (symbols) {
+            if (typeof symbols == 'string') options.symbol = symbols;
+            else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
+        }
+
+        return request(params, options);
+    }
+
+    this.rollingWindowStats = (symbols, windowSize = false, type = false) => {
+        if (!symbols) return ERR('symbol', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/ticker',
+            method: 'get'
+        }
+
+        const options = {}
+        if (symbols) {
+            if (typeof symbols == 'string') options.symbol = symbols;
+            else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
+        }
+
+        if (windowSize) {
+            if (!windowSize.includes('m') && !windowSize.includes('h') && !windowSize.includes('d')) return ERR('windowSize', 'value', false, ['1m', '2m', '...', '59m', '1h', '2h', '...', '23h', '1d', '2d', '...', '7d'])
+            options.windowSize = windowSize;
+        }
+
+        if (type) {
+            if (!equal(type, ['FULL', 'MINI'])) return ERR('type', 'value', false, ['FULL', 'MINI'])
+            options.type = type;
+        }
+
+        return request(params, options);
+    }
+
+    // spot ////
 
     // futures \\\\
 
@@ -2570,8 +2903,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // private functions \\\\
 
     request = async (params, options = {}, type = 'default') => {
-        if (!options.recvWindow) options.recvWindow = this.recvWindow;
-
         if (type == "DATA" || type == 'SIGNED') {
             if (!this.APIKEY) return ERR('APIKEY is required for this request');
             params.headers = axios.defaults.headers[params.method];
@@ -2580,6 +2911,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let query;
         if (type == "SIGNED") {
+            if (!options.recvWindow) options.recvWindow = this.recvWindow;
             if (!this.APISECRET) return ERR('APISECRET is required for this request.');
             options.timestamp = Date.now() + this.timestamp_offset;
             query = makeQueryString(options);
@@ -2619,14 +2951,15 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             if (this.fetchFloats) return parseAllPropertiesToFloat(response.data); else return response.data;
 
-        } catch (err) {
+        } catch (err) { // TODO
             let error;
             if (err.response && err.response.data) {
                 error = {
                     status: err.response.status,
                     statusText: err.response.statusText
                 };
-                Object.assign(error, err.response.data);
+                if (typeof err.response.data == 'object') Object.assign(error, err.response.data);
+                else Object.assign(error, { code: -1, msg: 'Endpoint not found' });
                 if (!err.code) err.code = -2;
                 if (!err.msg) err.msg = 'Unknown error, possibly connection error.'
             } else error = {
@@ -2667,10 +3000,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (tries < 3) fetchOffset(++tries); else this.callback();
     }
 
-    const handleArrayResponse = (Arr, keys, type) => {
+    const handleArrayResponse = (Arr, keys, type = 'number') => {
         return Arr.map(item => {
             let ret = {};
             keys.forEach((key, c) => {
+                if (key == 'ignore') return;
                 if (type == 'number') ret[key] = getNumberOrString(item[c]);
                 else ret[key] = item[c];
             });
@@ -2687,7 +3021,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             let oldKeys = Object.keys(obj);
             let newObj = {};
 
-            for (let x in keys) {
+            for (let x = 0; x < keys.length; x++) {
                 let newKey = keys[x];
                 let oldKey = oldKeys[x];
                 if (newKey == 'ignore') continue;

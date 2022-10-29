@@ -93,11 +93,19 @@ let response = await binance.futuresExchangeInfo(reconnect, tries, options); // 
 let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quantityPrecision: true})
 ```
 
+# ***SPOT DOCUMENTATION:***
+### Market Data<a href='#Spot-Market-Data'><sup>ref</sup></a>
+### Account/Trade<a href='#Spot-AccountTrade-Data'><sup>ref</sup></a>
+### Websockets<a href='#Websocket-Spot'><sup>ref</sup></a>
+
+## SPOT MARKET DATA:
+| // TODO
+
 # ***FUTURES DOCUMENTATION:***
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
 ### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>
 ### Account/Trade<a href='#Futures-AccountTrade-Data'><sup>ref</sup></a>
-### Websockets<a href='#Websockets'><sup>ref</sup></a>
+### Websockets<a href='#WebSocket-Futures'><sup>ref</sup></a>
 
 ## FUTURES PARAMETER EXPLANATION:
 - ***side***: *"BUY"* OR *"SELL"*.
@@ -129,7 +137,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***multiAssetMargin***: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
 - ***incomeType***: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
 
-## ALL FUTURES FUNCTIONS:
+## **ALL FUTURES FUNCTIONS**:
 |FUNCTIONS                                                                                                    |REQUIRED PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
 |:------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------:|:-------------------------------------------------------:|:--------------:|
 |futuresPing()                                                       <a href='#futuresPing'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
