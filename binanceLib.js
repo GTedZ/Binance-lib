@@ -38,7 +38,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.recvWindow) this.recvWindow = options.recvWindow; else this.recvWindow = 8000;
     if (options.query) this.query = true; else this.query = false;
     if (options.extraResponseInfo) this.extraResponseInfo = true; else this.extraResponseInfo = false;  // will cause errors, do not use it except for dev-testing
-    if (options.ws) this.ws = true; else this.ws = false;
+    if (options.ws) this.ws = options.ws; else this.ws = false;
 
     // public functions ////
 
@@ -2521,7 +2521,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return;
             }
             // normal websocket messages here \\
-            if (binance.ws) console.log(params.path + ' new message');
+            if (binance.ws && typeof binance.ws == 'boolean') console.log(params.path + ' new message');
             callback(obj);
             // normal websocket messages here //
         })
