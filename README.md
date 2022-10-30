@@ -1,5 +1,12 @@
 # Binance-lib
- A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
+A FULL JS library for the binance API, currently includes the FULL Spot, Margin (including Wallet, Savings, Mining API, etc...) and Futures API support, it is much more detailed in documentation, easiest error-handling, NO try-catch blocks whatsoever.
+
+## Currently includes:
+- SPOT API (Market Data, Account/Trade)
+- Margin API
+- Wallet API
+- Sub-Account API
+- 
 
  ***WILL include all SPOT, MARGIN, FUTURES<a href='#futures-documentation'><sup>ref</sup></a> and EUROPEAN market/account/trade/websocket<a href='#Websockets'><sup>ref</sup></a> options***
 
@@ -98,8 +105,252 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 ### Account/Trade<a href='#Spot-AccountTrade-Data'><sup>ref</sup></a>
 ### Websockets<a href='#Websocket-Spot'><sup>ref</sup></a>
 
-## SPOT MARKET DATA:
-| // TODO
+## PARAMETERS EXPLANATION:
+- ***reconnect***: *'true'* or *'false'* for if the library should keep sending requests until it receives a successful response
+- ***tries***: Number of fails before the library should stop sending requests (Used only with reconnect as 'true'): *'0'* for unlimited tries
+- ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w" or "1M"*
+- ***limit***: How many samples do you want to receive from binance, ex: for binance.orderBook(), limit of '100' means you will receive 100 orders from binance
+- ***windowSize***: *'1m', '2m', '...', '59m', '1h', '2h', '...', '23h', '1d', '2d', '...' or '7d'*
+- ***startTime***: A UNIX Time of when you want to start receiving samples from:
+- ***endTime***: A UNIX Time of when the latest sample can be from:
+- - You can get the current UNIX Time via 'Date.now()', or if you want to convert ANY time format to UNIX Time, you an use 'new Date('10/30/2022, 3:32:13 PM').getTime()'
+- ***fromId***: The orderId or tradeId that you want to start receiving orders/trades from
+
+## **SPOT MARKET DATA:**
+|FUNCTIONS                                                            |REQUIRED PARAMETERS      |OPTIONAL PARAMETERS              |OPTIONS
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|
+|ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |
+|serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |
+|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |// TODO
+|orderBook()                   <a href='#orderBook'><sup>ref</sup></a>|symbol                   |limit                            |
+|trades()                         <a href='#trades'><sup>ref</sup></a>|symbol                   |limit                            |
+|oldTrades()                   <a href='#oldTrades'><sup>ref</sup></a>|symbol                   |limit, fromId                    |
+|aggTrades()                   <a href='#aggTrades'><sup>ref</sup></a>|symbol                   |limit, fromId, startTime, endTime|
+|candlesticks()             <a href='#candlesticks'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |
+|UIKlines()                     <a href='#UIKlines'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |
+|avgPrice()                     <a href='#avgPrice'><sup>ref</sup></a>|symbol                   |                                 |
+|ticker24h()                   <a href='#ticker24h'><sup>ref</sup></a>|symbols_or_count         |                                 |
+|price()                           <a href='#price'><sup>ref</sup></a>|                         |symbols                          |
+|bookTicker()                 <a href='#bookTicker'><sup>ref</sup></a>|                         |symbols                          |
+|rollingWindowStats() <a href='#rollingWindowStats'><sup>ref</sup></a>|symbols                  |windowSize, type                 |
+
+### .ping():
+```js
+  let ping = await binance.ping();
+  if(ping.error) {
+    // handle error here
+    console.log(ping.error);
+  }
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+ { 
+  roundtrip_time_millis: 410 // <= in millis
+ }
+ ```
+</details>
+
+### .serverTime():
+```js
+  let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
+  console.log(serverTime); // <= 1665491953938
+```
+
+### .exchangeInfo():
+```js
+  // TODO
+```
+
+### .orderBook():
+```js
+  let BTC_orderBook = await binance.orderBook("BTCUSDT");
+  // OR
+  let BTC_orderBook = await binance.orderBook("BTCUSDT", 3);
+  console.log(BTC_orderBook);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  lastUpdateId: 26552654486,
+  bids: [
+    [ 20676.27, 0.23493 ], [ 20675.74, 0.73224 ], [ 20675.62, 0.00241 ],
+    [ 20675.49, 0.01437 ], [ 20675.46, 0.00775 ], [ 20675.45, 0.02419 ],
+    [ 20675.44, 0.003 ],   [ 20675.41, 0.02419 ], [ 20675.36, 0.02358 ],
+    ...                  , ...                  , ... ,
+    ...,
+    ...
+  ],
+  asks: [
+    [ 20677.54, 0.04484 ], [ 20677.76, 0.04484 ], [ 20677.89, 0.1215 ],
+    [ 20678, 0.00061 ],    [ 20678.19, 0.03153 ], [ 20678.32, 0.01424 ],
+    [ 20678.38, 0.00519 ], [ 20678.4, 0.02 ],     [ 20678.64, 0.01876 ],
+    ...                  , ...                  , ... ,
+    ...,
+    ...
+  ]
+}
+```
+</details>
+
+
+### .trades():
+```js
+  let BTC_trades = await binance.trades("BTCUSDT");
+  // OR
+  let BTC_trades = await binance.trades("BTCUSDT", 3);
+  console.log(BTC_trades);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    id: 2057664850,
+    price: 20652.95,
+    qty: 0.93534,
+    quoteQty: 19317.530253,
+    time: 1667137211248,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057664851,
+    price: 20652.95,
+    qty: 0.83161,
+    quoteQty: 17175.1997495,
+    time: 1667137211249,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057664852,
+    price: 20652.94,
+    qty: 0.0005,
+    quoteQty: 10.32647,
+    time: 1667137211249,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .oldTrades():
+```js
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT');
+  // OR
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT', 5);
+  // OR
+  fromId = 12313912;
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT', 5, fromId);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    id: 2057673976,
+    price: 20683,
+    qty: 0.00061,
+    quoteQty: 12.61663,
+    time: 1667137320150,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057673977,
+    price: 20682.23,
+    qty: 0.00872,
+    quoteQty: 180.3490456,
+    time: 1667137320171,
+    isBuyerMaker: false,
+    isBestMatch: true
+  },
+  {
+    id: 2057673978,
+    price: 20682.38,
+    qty: 0.0073,
+    quoteQty: 150.981374,
+    time: 1667137320410,
+    isBuyerMaker: false,
+    isBestMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .aggTrades():
+- Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+- If startTime and endTime are sent, time between startTime and endTime must be less than 1 hour.
+- If fromId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
+- Note that if a trade has the following values, this was a duplicate aggregate trade and marked as invalid:
+  - p = '0' // price
+  - q = '0' // qty
+  - f = -1 // ﬁrst_trade_id
+  - l = -1 // last_trade_id
+```js
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT');
+  // OR
+  let fromId = 1293813
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT', 5, fromId);
+  // OR
+  let startTime = new Date('10/30/2022, 3:45:13 PM').getTime()
+  let endTime = new Date('10/30/2022, 2:30:00 PM').getTime()
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT', 5, false, startTime, endTime);
+
+  console.log(BTC_aggTrades);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    aggTradeId: 1765373713,
+    price: 20658.89,
+    qty: 0.04245,
+    firstTradeId: 2057687959,
+    lastTradeId: 2057687959,
+    timestamp: 1667137561340,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  {
+    aggTradeId: 1765373714,
+    price: 20658.89,
+    qty: 0.105,
+    firstTradeId: 2057687960,
+    lastTradeId: 2057687960,
+    timestamp: 1667137561344,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  {
+    aggTradeId: 1765373715,
+    price: 20658.89,
+    qty: 0.00096,
+    firstTradeId: 2057687961,
+    lastTradeId: 2057687961,
+    timestamp: 1667137561345,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
 
 # ***FUTURES DOCUMENTATION:***
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
