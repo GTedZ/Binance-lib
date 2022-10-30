@@ -117,7 +117,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***fromId***: The orderId or tradeId that you want to start receiving orders/trades from
 
 ## **SPOT MARKET DATA:**
-|FUNCTIONS                                                            |REQUIRED PARAMETERS      |OPTIONAL PARAMETERS              |OPTIONS|
+|FUNCTIONS                                                            |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
 |:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
 |ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
 |serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
@@ -348,6 +348,235 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
   ...,
   ...
 ]
+```
+</details>
+
+### .candlesticks():
+```js
+  let BTC_candles = await binance.candlesticks('BTCUSDT', '1m');
+  console.log(BTC_candles);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    openTime: 1667107920000,
+    open: 20768.89,
+    high: 20783.94,
+    low: 20767.9,
+    close: 20778.5,
+    volume: 157.02531,
+    closeTime: 1667107979999,
+    quoteAssetVolume: '3262697.34942430',
+    tradesCount: 3386,
+    takerBuy_baseAssetVolume: 94.70767,
+    takerBuy_quoteAssetVolume: '1967798.43659910'
+  },
+  {
+    openTime: 1667107980000,
+    open: 20779.09,
+    high: 20788.87,
+    low: 20775.98,
+    close: 20786.21,
+    volume: 120.47402,
+    closeTime: 1667108039999,
+    quoteAssetVolume: '2503620.37108910',
+    tradesCount: 3407,
+    takerBuy_baseAssetVolume: 80.2267,
+    takerBuy_quoteAssetVolume: '1667236.82104980'
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .UIKlines():
+```js
+  let BTC_UIKlines = await binance.UIKlines('BTCUSDT', '1m');
+  console.log(BTC_UIKlines);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    openTime: 1667107980000,
+    open: 20779.09,
+    high: 20788.87,
+    low: 20775.98,
+    close: 20786.21,
+    volume: 120.47402,
+    closeTime: 1667108039999,
+    quoteAssetVolume: '2503620.37108910',
+    tradesCount: 3407,
+    takerBuy_baseAssetVolume: 80.2267,
+    takerBuy_quoteAssetVolume: '1667236.82104980'
+  },
+  {
+    openTime: 1667108040000,
+    open: 20786.77,
+    high: 20793.84,
+    low: 20783.51,
+    close: 20788.87,
+    volume: 181.78061,
+    closeTime: 1667108099999,
+    quoteAssetVolume: '3779000.16373600',
+    tradesCount: 4871,
+    takerBuy_baseAssetVolume: 87.91026,
+    takerBuy_quoteAssetVolume: '1827607.39244490'
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .avgPrice():
+```js
+  let BTC_avgPrice = await binance.avgPrice("BTCUSDT");
+  console.log(BTC_avgPrice);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  mins: 5,
+  price: 20682.01742593 
+}
+```
+</details>
+
+### .ticker24h():
+```js
+  let BTC_ticker = await binance.ticker24h('BTCUSDT');
+  console.log(BTC_ticker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'BTCUSDT',
+  priceChange: -90.4,
+  priceChangePercent: -0.436,
+  weightedAvgPrice: 20804.04211614,
+  prevClosePrice: 20728.59,
+  lastPrice: 20638.19,
+  lastQty: 0.03213,
+  bidPrice: 20636.84,
+  bidQty: 0.00495,
+  askPrice: 20637.97,
+  askQty: 0.00062,
+  openPrice: 20728.59,
+  highPrice: 20982.86,
+  lowPrice: 20589.18,
+  volume: 221764.74157,
+  quoteVolume: '4613603023.49792550',
+  openTime: 1667051808417,
+  closeTime: 1667138208417,
+  firstId: 2052049606,
+  lastId: 2057742265,
+  count: 5692660
+}
+```
+</details>
+
+### .price():
+```js
+  let BTC_price = await binance.price('BTCUSDT');
+  console.log(BTC_price);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  symbol: 'BTCUSDT', 
+  price: 20651.42 
+}
+```
+</details>
+
+### .bookTicker():
+```js
+  let bookTicker = await binance.bookTicker('BTCUSDT');
+  // OR
+  let bookTicker = await binance.bookTicker();
+
+  console.log(BTC_bookTicker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  symbol: 'BTCUSDT',
+  bidPrice: 20653.65,
+  bidQty: 0.0378,
+  askPrice: 20653.66,
+  askQty: 0.00739
+}
+
+[ // for ALL symbols
+  {
+    symbol: 'ETHBTC',
+    bidPrice: 0.076765,
+    bidQty: 33.0455,
+    askPrice: 0.076766,
+    askQty: 0.0453
+  },
+  {
+    symbol: 'LTCBTC',
+    bidPrice: 0.002677,
+    bidQty: 64.216,
+    askPrice: 0.002678,
+    askQty: 6.734
+  },
+  {
+    symbol: 'BNBBTC',
+    bidPrice: 0.014934,
+    bidQty: 19.961,
+    askPrice: 0.014935,
+    askQty: 9.705
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .rollingWindowStats():
+```js
+  let BTC_rollingWindowStats = await binance.rollingWindowStats('BTCUSDT', '5m');
+
+  console.log(BTC_rollingWindowStats);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'BTCUSDT',
+  priceChange: -1.76,
+  priceChangePercent: -0.009,
+  weightedAvgPrice: 20639.75759793,
+  openPrice: 20650.61,
+  highPrice: 20661,
+  lowPrice: 20589.18,
+  lastPrice: 20648.85,
+  volume: 1130.18702,
+  quoteVolume: '23326786.13312460',
+  openTime: 1667138100000,
+  closeTime: 1667138413844,
+  firstId: 2057730288,
+  lastId: 2057756431,
+  count: 26144
+}
 ```
 </details>
 
