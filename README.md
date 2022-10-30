@@ -118,7 +118,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 ## **SPOT MARKET DATA:**
 |FUNCTIONS                                                            |REQUIRED PARAMETERS      |OPTIONAL PARAMETERS              |OPTIONS|
-|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|       |
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
 |ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
 |serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
 |exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |// TODO|
