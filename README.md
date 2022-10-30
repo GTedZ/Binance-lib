@@ -117,22 +117,22 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***fromId***: The orderId or tradeId that you want to start receiving orders/trades from
 
 ## **SPOT MARKET DATA:**
-|FUNCTIONS                                                            |REQUIRED PARAMETERS      |OPTIONAL PARAMETERS              |OPTIONS
-|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|
-|ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |
-|serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |
-|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |// TODO
-|orderBook()                   <a href='#orderBook'><sup>ref</sup></a>|symbol                   |limit                            |
-|trades()                         <a href='#trades'><sup>ref</sup></a>|symbol                   |limit                            |
-|oldTrades()                   <a href='#oldTrades'><sup>ref</sup></a>|symbol                   |limit, fromId                    |
-|aggTrades()                   <a href='#aggTrades'><sup>ref</sup></a>|symbol                   |limit, fromId, startTime, endTime|
-|candlesticks()             <a href='#candlesticks'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |
-|UIKlines()                     <a href='#UIKlines'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |
-|avgPrice()                     <a href='#avgPrice'><sup>ref</sup></a>|symbol                   |                                 |
-|ticker24h()                   <a href='#ticker24h'><sup>ref</sup></a>|symbols_or_count         |                                 |
-|price()                           <a href='#price'><sup>ref</sup></a>|                         |symbols                          |
-|bookTicker()                 <a href='#bookTicker'><sup>ref</sup></a>|                         |symbols                          |
-|rollingWindowStats() <a href='#rollingWindowStats'><sup>ref</sup></a>|symbols                  |windowSize, type                 |
+|FUNCTIONS                                                            |REQUIRED PARAMETERS      |OPTIONAL PARAMETERS              |OPTIONS|
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|       |
+|ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
+|serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
+|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |// TODO|
+|orderBook()                   <a href='#orderBook'><sup>ref</sup></a>|symbol                   |limit                            |       |
+|trades()                         <a href='#trades'><sup>ref</sup></a>|symbol                   |limit                            |       |
+|oldTrades()                   <a href='#oldTrades'><sup>ref</sup></a>|symbol                   |limit, fromId                    |       |
+|aggTrades()                   <a href='#aggTrades'><sup>ref</sup></a>|symbol                   |limit, fromId, startTime, endTime|       |
+|candlesticks()             <a href='#candlesticks'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |       |
+|UIKlines()                     <a href='#UIKlines'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |       |
+|avgPrice()                     <a href='#avgPrice'><sup>ref</sup></a>|symbol                   |                                 |       |
+|ticker24h()                   <a href='#ticker24h'><sup>ref</sup></a>|symbols_or_count         |                                 |       |
+|price()                           <a href='#price'><sup>ref</sup></a>|                         |symbols                          |       |
+|bookTicker()                 <a href='#bookTicker'><sup>ref</sup></a>|                         |symbols                          |       |
+|rollingWindowStats() <a href='#rollingWindowStats'><sup>ref</sup></a>|symbols                  |windowSize, type                 |       |
 
 ### .ping():
 ```js
