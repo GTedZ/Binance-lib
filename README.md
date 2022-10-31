@@ -110,10 +110,11 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***tries***: Number of fails before the library should stop sending requests (Used only with reconnect as 'true'): *'0'* for unlimited tries
 - ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w" or "1M"*
 - ***limit***: How many samples do you want to receive from binance, ex: for binance.orderBook(), limit of '100' means you will receive 100 orders from binance
+- ***permissions***: *"SPOT", "MARGIN", "LEVERAGED", "TRD_GRP_002", "TRD_GRP_003", "TRD_GRP_004", "TRD_GRP_005"*
 - ***windowSize***: *'1m', '2m', '...', '59m', '1h', '2h', '...', '23h', '1d', '2d', '...' or '7d'*
 - ***startTime***: A UNIX Time of when you want to start receiving samples from:
 - ***endTime***: A UNIX Time of when the latest sample can be from:
-- - You can get the current UNIX Time via 'Date.now()', or if you want to convert ANY time format to UNIX Time, you an use 'new Date('10/30/2022, 3:32:13 PM').getTime()'
+  - You can get the current UNIX Time via 'Date.now()', or if you want to convert ANY time format to UNIX Time, you an use 'new Date('10/30/2022, 3:32:13 PM').getTime()'
 - ***fromId***: The orderId or tradeId that you want to start receiving orders/trades from
 
 ## **SPOT MARKET DATA:**
@@ -154,14 +155,239 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 ### .serverTime():
 ```js
-  let serverTime = await binance.futuresServerTime(true); // function parameters: (reconnect, tries, options {})
+  let serverTime = await binance.serverTime(true); // function parameters: (reconnect, tries, options {})
   console.log(serverTime); // <= 1665491953938
 ```
 
 ### .exchangeInfo():
 ```js
-  // TODO
+  let exchangeInfo = await binance.exchangeInfo();
+  // OR
+  let exchangeInfo = await binance.exchangeInfo('BTCUSDT');
+  // OR
+  let exchangeInfo = await binance.exchangeInfo(['BTCUSDT', 'ETHUSDT']);
 ```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  timezone: 'UTC',
+  serverTime: 1667219840834,
+  rateLimits: [
+    {
+      rateLimitType: 'REQUEST_WEIGHT',
+      interval: 'MINUTE',
+      intervalNum: 1,
+      limit: 1200
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'SECOND',
+      intervalNum: 10,
+      limit: 50
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'DAY',
+      intervalNum: 1,
+      limit: 160000
+    },
+    {
+      rateLimitType: 'RAW_REQUESTS',
+      interval: 'MINUTE',
+      intervalNum: 5,
+      limit: 6100
+    }
+  ],
+  exchangeFilters: [],
+  symbols: [
+    {
+    symbol: 'BTCUSDT',
+    status: 'TRADING',
+    baseAsset: 'BTC',
+    baseAssetPrecision: 8,
+    quoteAsset: 'USDT',
+    quotePrecision: 8,
+    quoteAssetPrecision: 8,
+    baseCommissionPrecision: 8,
+    quoteCommissionPrecision: 8,
+    orderTypes: [
+      'LIMIT',
+      'LIMIT_MAKER',
+      'MARKET',
+      'STOP_LOSS_LIMIT',
+      'TAKE_PROFIT_LIMIT'
+    ],
+    icebergAllowed: true,
+    ocoAllowed: true,
+    quoteOrderQtyMarketAllowed: true,
+    allowTrailingStop: true,
+    cancelReplaceAllowed: true,
+    isSpotTradingAllowed: true,
+    isMarginTradingAllowed: true,
+    filters: [
+      {
+      filterType: 'PRICE_FILTER',
+      minPrice: 0.01,
+      maxPrice: '1000000.00000000',
+      tickSize: 0.01
+    },
+    {
+      filterType: 'PERCENT_PRICE',
+      multiplierUp: 5,
+      multiplierDown: 0.2,
+      avgPriceMins: 5
+    },
+    {
+      filterType: 'LOT_SIZE',
+      minQty: 0.00001,
+      maxQty: 9000,
+      stepSize: 0.00001
+    },
+    {
+      filterType: 'MIN_NOTIONAL',
+      minNotional: 10,
+      applyToMarket: true,
+      avgPriceMins: 5
+    },
+    { filterType: 'ICEBERG_PARTS', limit: 10 },
+    {
+      filterType: 'MARKET_LOT_SIZE',
+      minQty: 0,
+      maxQty: 223.31464019,
+      stepSize: 0
+    },
+    {
+      filterType: 'TRAILING_DELTA',
+      minTrailingAboveDelta: 10,
+      maxTrailingAboveDelta: 2000,
+      minTrailingBelowDelta: 10,
+      maxTrailingBelowDelta: 2000
+    },
+    { filterType: 'MAX_NUM_ORDERS', maxNumOrders: 200 },
+    { filterType: 'MAX_NUM_ALGO_ORDERS', maxNumAlgoOrders: 5 }
+    ],
+    permissions: [ 'SPOT', 'MARGIN', 'TRD_GRP_004', 'TRD_GRP_005' ]
+  },
+    ...
+  ]
+}
+```
+</details>
+
+**OR USING OPTIONS PARAMETERS:**
+```js
+  let symbols = '';
+  let permissions = '';
+  let exchangeInfo = await binance.exchangeInfo(symbols, permissions, {
+    mapped: true
+  });
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbols: [
+    'ETHBTC',   'LTCBTC',   'BNBBTC',   'NEOBTC',  'QTUMETH', 'EOSETH',
+    'SNTETH',   'BNTETH',   'BCCBTC',   'GASBTC',  'BNBETH',  'BTCUSDT',
+    'ETHUSDT',  'HSRBTC',   'OAXETH',   'DNTETH',  'MCOETH',  'ICNETH',
+    'MCOBTC',   'WTCBTC',   'WTCETH',   'LRCBTC',  'LRCETH',  'QTUMBTC',
+    'YOYOBTC',  'OMGBTC',   'OMGETH',   'ZRXBTC',  'ZRXETH',  'STRATBTC',
+    'STRATETH', 'SNGLSBTC', 'SNGLSETH', 'BQXBTC',  'BQXETH',  'KNCBTC',
+    'KNCETH',   'FUNBTC',   'FUNETH',   'SNMBTC',  'SNMETH',  'NEOETH',
+    'IOTABTC',  'IOTAETH',  'LINKBTC',  'LINKETH', 'XVGBTC',  'XVGETH',
+    'SALTBTC',  'SALTETH',  'MDABTC',   'MDAETH',  'MTLBTC',  'MTLETH',
+    'SUBBTC',   'SUBETH',   'EOSBTC',   'SNTBTC',  'ETCETH',  'ETCBTC',
+    'MTHBTC',   'MTHETH',   'ENGBTC',   'ENGETH',  'DNTBTC',  'ZECBTC',
+    'ZECETH',   'BNTBTC',   'ASTBTC',   'ASTETH',  'DASHBTC', 'DASHETH',
+    'OAXBTC',   'ICNBTC',   'BTGBTC',   'BTGETH',  'EVXBTC',  'EVXETH',
+    'REQBTC',   'REQETH',   'VIBBTC',   'VIBETH',  'HSRETH',  'TRXBTC',
+    'TRXETH',   'POWRBTC',  'POWRETH',  'ARKBTC',  'ARKETH',  'YOYOETH',
+    'XRPBTC',   'XRPETH',   'MODBTC',   'MODETH',  'ENJBTC',  'ENJETH',
+    'STORJBTC', 'STORJETH', 'BNBUSDT',  'VENBNB',
+    ... 2020 more items
+  ],
+  exchangeInfo: {
+    timezone: 'UTC',
+    serverTime: 1667225071843,
+    rateLimits: [ [Object], [Object], [Object], [Object] ],
+    exchangeFilters: []
+  },
+  ETHBTC: {
+    symbol: 'ETHBTC',
+    status: 'TRADING',
+    baseAsset: 'ETH',
+    baseAssetPrecision: 8,
+    quoteAsset: 'BTC',
+    quotePrecision: 8,
+    quoteAssetPrecision: 8,
+    baseCommissionPrecision: 8,
+    quoteCommissionPrecision: 8,
+    icebergAllowed: true,
+    ocoAllowed: true,
+    quoteOrderQtyMarketAllowed: true,
+    allowTrailingStop: true,
+    cancelReplaceAllowed: true,
+    isSpotTradingAllowed: true,
+    isMarginTradingAllowed: true,
+    minNotional: 0.0001,
+    icebergLimit: 10,
+    orderTypes: [
+      'LIMIT',
+      'LIMIT_MAKER',
+      'MARKET',
+      'STOP_LOSS_LIMIT',
+      'TAKE_PROFIT_LIMIT'
+    ],
+    trailingFilters: {
+      filterType: 'TRAILING_DELTA',
+      minTrailingAboveDelta: 10,
+      maxTrailingAboveDelta: 2000,
+      minTrailingBelowDelta: 10,
+      maxTrailingBelowDelta: 2000
+    },
+    maxNumOrders: 200,
+    maxNumAlgoOrders: 5,
+    priceFilters: {
+      filterType: 'PRICE_FILTER',
+      minPrice: 0.000001,
+      maxPrice: 922327,
+      tickSize: 0.000001
+    },
+    percentPriceFilters: {
+      filterType: 'PERCENT_PRICE',
+      multiplierUp: 5,
+      multiplierDown: 0.2,
+      avgPriceMins: 5
+    },
+    lotFilters: {
+      filterType: 'LOT_SIZE',
+      minQty: 0.0001,
+      maxQty: 100000,
+      stepSize: 0.0001
+    },
+    notionalFilters: {
+      filterType: 'MIN_NOTIONAL',
+      minNotional: 0.0001,
+      applyToMarket: true,
+      avgPriceMins: 5
+    },
+    marketLotFilters: {
+      filterType: 'MARKET_LOT_SIZE',
+      minQty: 0,
+      maxQty: 1369.19160537,
+      stepSize: 0
+    }
+  },
+  LTCUSDT: {
+    ...
+  },
+  ...,
+}
+```
+</details>
 
 ### .orderBook():
 ```js
@@ -877,6 +1103,16 @@ Or using the options parameters:
     baseAsset: true,
     quoteAsset: true          // you can check the rest of the options parameters in the futures functions table above
   });
+
+  // OR
+
+  let exchangeInfo = await binance.futuresExchangeInfo(true, 0, {
+      mapped: true  // this will return the normal info
+                    // BUT 
+                    // The symbols will be mapped to the symbol name
+                    // .symbols will be an array of all of the symbols
+                    // .exchangeInfo will have the non-symbol related info in it
+    })
   console.log(exchangeInfo);
 ```
 <details>
@@ -932,6 +1168,136 @@ Or using the options parameters:
     quoteAsset: 'USDT'
   },
   ...
+}
+
+// OR
+
+{ // for mapped exchangeInfo
+  symbols: [
+    'BTCUSDT',  'ETHUSDT',   'BCHUSDT',   'XRPUSDT',   'EOSUSDT',
+    'LTCUSDT',  'TRXUSDT',   'ETCUSDT',   'LINKUSDT',  'XLMUSDT',
+    'ADAUSDT',  'XMRUSDT',   'DASHUSDT',  'ZECUSDT',   'XTZUSDT',
+    'BNBUSDT',  'ATOMUSDT',  'ONTUSDT',   'IOTAUSDT',  'BATUSDT',
+    'VETUSDT',  'NEOUSDT',   'QTUMUSDT',  'IOSTUSDT',  'THETAUSDT',
+    'ALGOUSDT', 'ZILUSDT',   'KNCUSDT',   'ZRXUSDT',   'COMPUSDT',
+    'OMGUSDT',  'DOGEUSDT',  'SXPUSDT',   'KAVAUSDT',  'BANDUSDT',
+    'RLCUSDT',  'WAVESUSDT', 'MKRUSDT',   'SNXUSDT',   'DOTUSDT',
+    'DEFIUSDT', 'YFIUSDT',   'BALUSDT',   'CRVUSDT',   'TRBUSDT',
+    'RUNEUSDT', 'SUSHIUSDT', 'SRMUSDT',   'EGLDUSDT',  'SOLUSDT',
+    'ICXUSDT',  'STORJUSDT', 'BLZUSDT',   'UNIUSDT',   'AVAXUSDT',
+    'FTMUSDT',  'HNTUSDT',   'ENJUSDT',   'FLMUSDT',   'TOMOUSDT',
+    'RENUSDT',  'KSMUSDT',   'NEARUSDT',  'AAVEUSDT',  'FILUSDT',
+    'RSRUSDT',  'LRCUSDT',   'MATICUSDT', 'OCEANUSDT', 'CVCUSDT',
+    'BELUSDT',  'CTKUSDT',   'AXSUSDT',   'ALPHAUSDT', 'ZENUSDT',
+    'SKLUSDT',  'GRTUSDT',   '1INCHUSDT', 'BTCBUSD',   'CHZUSDT',
+    'SANDUSDT', 'ANKRUSDT',  'BTSUSDT',   'LITUSDT',   'UNFIUSDT',
+    'REEFUSDT', 'RVNUSDT',   'SFPUSDT',   'XEMUSDT',   'BTCSTUSDT',
+    'COTIUSDT', 'CHRUSDT',   'MANAUSDT',  'ALICEUSDT', 'HBARUSDT',
+    'ONEUSDT',  'LINAUSDT',  'STMXUSDT',  'DENTUSDT',  'CELRUSDT',
+    ...
+  ],
+  exchangeInfo: {
+    timezone: 'UTC',
+    serverTime: 1667217635142,
+    futuresType: 'U_MARGINED',
+    rateLimits: [
+      {
+        rateLimitType: 'REQUEST_WEIGHT',
+        interval: 'MINUTE',
+        intervalNum: 1,
+        limit: 2400
+      },
+      {
+        rateLimitType: 'ORDERS',
+        interval: 'MINUTE',
+        intervalNum: 1,
+        limit: 1200
+      },
+      {
+        rateLimitType: 'ORDERS',
+        interval: 'SECOND',
+        intervalNum: 10,
+        limit: 300
+      }
+    ],
+    exchangeFilters: [],
+    assets: [
+      { asset: 'USDT', marginAvailable: true, autoAssetExchange: -10000 },
+      { asset: 'BTC', marginAvailable: true, autoAssetExchange: -0.001 },
+      { asset: 'BNB', marginAvailable: true, autoAssetExchange: -10 },
+      { asset: 'ETH', marginAvailable: true, autoAssetExchange: -5 },
+      { asset: 'XRP', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'ADA', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'DOT', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'SOL', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'BUSD', marginAvailable: true, autoAssetExchange: -10000 }
+    ],
+    // here the symbols start
+    APTBUSD: {
+    symbol: 'APTBUSD',
+    pair: 'APTBUSD',
+    contractType: 'PERPETUAL',
+    deliveryDate: 4133404800000,
+    onboardDate: 1666594800000,
+    status: 'TRADING',
+    maintMarginPercent: 2.5,
+    requiredMarginPercent: 5,
+    baseAsset: 'APT',
+    quoteAsset: 'BUSD',
+    marginAsset: 'BUSD',
+    pricePrecision: 5,
+    quantityPrecision: 1,
+    baseAssetPrecision: 8,
+    quotePrecision: 8,
+    underlyingType: 'COIN',
+    settlePlan: 0,
+    triggerProtect: 0.1,
+    liquidationFee: 0.015,
+    marketTakeBound: 0.1,
+    priceFilters: {
+      minPrice: 0.001,
+      maxPrice: 100000,
+      filterType: 'PRICE_FILTER',
+      tickSize: 0.001
+    },
+    lotFilters: {
+      stepSize: 0.1,
+      filterType: 'LOT_SIZE',
+      maxQty: 1000000,
+      minQty: 0.1
+    },
+    marketLotFilters: {
+      stepSize: 0.1,
+      filterType: 'MARKET_LOT_SIZE',
+      maxQty: 5000,
+      minQty: 0.1
+    },
+    maxNumOrders: 200,
+    maxNumAlgoOrders: 10,
+    minNotional: 5,
+    percentPriceFilters: {
+      multiplierDown: 0.9,
+      multiplierUp: 1.1,
+      multiplierDecimal: 4,
+      filterType: 'PERCENT_PRICE'
+    },
+    orderTypes: [
+      'LIMIT',
+      'MARKET',
+      'STOP',
+      'STOP_MARKET',
+      'TAKE_PROFIT',
+      'TAKE_PROFIT_MARKET',
+      'TRAILING_STOP_MARKET'
+    ],
+    timeInForce: [ 'GTC', 'IOC', 'FOK', 'GTX' ]
+  },
+  BTCUSDT: {
+    ...
+  },
+  ...,
+  ...
+}
 }
  ```
 </details>

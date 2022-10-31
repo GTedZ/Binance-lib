@@ -92,14 +92,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp.serverTime;
     }
 
-    this.exchangeInfo = async (symbols = false, permissions = false) => {
+    this.exchangeInfo = async (symbols = false, permissions = false, opts = {}) => {
         const params = {
             baseURL: api,
             path: '/api/v3/exchangeInfo',
             method: 'get'
         }
-
-        const options = {}
+        
+        let options = {}
         if (symbols) {
             if (typeof symbols == 'string') options.symbol = symbols;
             else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
@@ -108,9 +108,65 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (typeof permissions == 'string') if (!equal(permissions, SPOT_EXCHANGEINFO_PERMISSIONS)) return ERR('permissions', 'value', false, SPOT_EXCHANGEINFO_PERMISSIONS); else options.permissions = permissions;
             else options.permissions = `[${permissions.map(permissions => `"${permissions}"`).toString()}]`;
         }
+        
+        let resp = await request(params, options);
+        
+        if (resp.error) {
+            tries--;
+            if (reconnect == false || tries == 0) return resp;
+            else {
+                await delay(binance.timeout);
+                return this.exchangeInfo(reconnect, tries, options);
+            }
+        }
+        
+        options = opts;
+        let altResponse = false;
+        if (typeof options == 'object' && Object.keys(options).length != 0) {
+            altResponse = {};
 
-        let resp = await request(params, options);  // TODO add the extra options parameters
+            if (options.symbols || options.mapped) altResponse.symbols = resp.symbols.map(symbol => symbol.symbol);
 
+            if (options.mapped) {
+                altResponse.exchangeInfo = {};
+                altResponse.exchangeInfo.timezone = resp.timezone;
+                altResponse.exchangeInfo.serverTime = resp.serverTime;
+                altResponse.exchangeInfo.rateLimits = resp.rateLimits;
+                altResponse.exchangeInfo.exchangeFilters = resp.exchangeFilters;
+
+
+                resp.symbols.forEach(item => {
+                    let symbol = item.symbol;
+                    altResponse[symbol] = {};
+                    for (let key of Object.keys(item)) {
+                        let value = item[key];
+                        if (!Array.isArray(value)) {
+                            altResponse[symbol][key] = value;
+                        }
+                    }
+                    altResponse[symbol].minNotional = item.filters[3].minNotional;
+                    altResponse[symbol].icebergLimit = item.filters[4].limit;
+                    altResponse[symbol].orderTypes = item.orderTypes;
+
+                    for (let x = 6; x <= 8; x++) {
+                        if (item.filters[x] && item.filters[x].filterType == 'TRAILING_DELTA') altResponse[symbol].trailingFilters = item.filters[x];
+                        if (item.filters[x] && item.filters[x].filterType == 'MAX_NUM_ORDERS') altResponse[symbol].maxNumOrders = item.filters[x].maxNumOrders;
+                        if (item.filters[x] && item.filters[x].filterType == 'MAX_NUM_ALGO_ORDERS') altResponse[symbol].maxNumAlgoOrders = item.filters[x].maxNumAlgoOrders;
+                    }
+
+
+
+                    altResponse[symbol].priceFilters = item.filters[0];
+                    altResponse[symbol].percentPriceFilters = item.filters[1];
+                    altResponse[symbol].lotFilters = item.filters[2];
+                    altResponse[symbol].notionalFilters = item.filters[3];
+                    altResponse[symbol].marketLotFilters = item.filters[5];
+
+                });
+            }
+        }
+
+        if (altResponse != false && Object.keys(altResponse).length != 0) return altResponse;
         return resp;
     }
 
@@ -474,9 +530,39 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (typeof options == 'object' && Object.keys(options).length != 0) {
             altResponse = {};
 
-            if (options.symbols) altResponse.symbols = resp.symbols.map(symbol => symbol.symbol);
+            if (options.symbols || options.mapped) altResponse.symbols = resp.symbols.map(symbol => symbol.symbol);
 
-            resp.symbols.forEach(item => {
+            if (options.mapped) {
+                altResponse.exchangeInfo = {};
+                altResponse.exchangeInfo.timezone = resp.timezone;
+                altResponse.exchangeInfo.serverTime = resp.serverTime;
+                altResponse.exchangeInfo.futuresType = resp.futuresType;
+                altResponse.exchangeInfo.rateLimits = resp.rateLimits;
+                altResponse.exchangeInfo.exchangeFilters = resp.exchangeFilters;
+                altResponse.exchangeInfo.assets = resp.assets;
+
+
+                resp.symbols.forEach(item => {
+                    let symbol = item.symbol;
+                    altResponse[symbol] = {};
+                    for (let key of Object.keys(item)) {
+                        let value = item[key];
+                        if (!Array.isArray(value)) {
+                            altResponse[symbol][key] = value;
+                        }
+                    }
+                    altResponse[symbol].priceFilters = item.filters[0];
+                    altResponse[symbol].lotFilters = item.filters[1];
+                    altResponse[symbol].marketLotFilters = item.filters[2];
+                    altResponse[symbol].maxNumOrders = item.filters[3].limit;
+                    altResponse[symbol].maxNumAlgoOrders = item.filters[4].limit;
+                    altResponse[symbol].minNotional = item.filters[5].notional;
+                    altResponse[symbol].percentPriceFilters = item.filters[6];
+
+                    altResponse[symbol].orderTypes = item.orderTypes;
+                    altResponse[symbol].timeInForce = item.timeInForce;
+                });
+            } else resp.symbols.forEach(item => {
                 let symbol = item.symbol;
                 altResponse[symbol] = {};
                 if (options.quantityPrecision == true) altResponse[symbol].quantityPrecision = item.quantityPrecision;
