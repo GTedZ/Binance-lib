@@ -1973,8 +1973,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 else params.path = `${symbol.toLowerCase()}@miniTicker`;
 
                 this.formPath = (symbol = false, isFast = false) => {
-                    if (symbol || symbol.includes('miniTicker') || symbol.includes('trade')) return symbol;
-
+                    if ((symbol && symbol.includes('miniTicker')) || (symbol && symbol.includes('trade'))) return symbol;
                     if (!symbol) return '!miniTicker@arr';
                     if (isFast) return `${symbol.toLowerCase()}@trade`;
                     return `${symbol.toLowerCase()}@miniTicker`;
