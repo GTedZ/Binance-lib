@@ -98,7 +98,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             path: '/api/v3/exchangeInfo',
             method: 'get'
         }
-        
+
         let options = {}
         if (symbols) {
             if (typeof symbols == 'string') options.symbol = symbols;
@@ -108,9 +108,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (typeof permissions == 'string') if (!equal(permissions, SPOT_EXCHANGEINFO_PERMISSIONS)) return ERR('permissions', 'value', false, SPOT_EXCHANGEINFO_PERMISSIONS); else options.permissions = permissions;
             else options.permissions = `[${permissions.map(permissions => `"${permissions}"`).toString()}]`;
         }
-        
+
         let resp = await request(params, options);
-        
+
         if (resp.error) {
             tries--;
             if (reconnect == false || tries == 0) return resp;
@@ -119,7 +119,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return this.exchangeInfo(reconnect, tries, options);
             }
         }
-        
+
         options = opts;
         let altResponse = false;
         if (typeof options == 'object' && Object.keys(options).length != 0) {
@@ -370,7 +370,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options)
     }
 
-    this.price = (symbols = false) => {
+    this.prices = async (symbols = false) => {
         const params = {
             baseURL: api,
             path: '/api/v3/ticker/price',
@@ -384,7 +384,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             else if (Array.isArray(symbols)) options.symbols = `[${symbols.map(symbol => `"${symbol}"`).toString()}]`;
         }
 
-        return request(params, options)
+        let data = await request(params, options);
+        if (data.error) return data;
+
+        return Array.isArray(data) ? data.reduce((out, i) => ((out[i.symbol] = parseFloat(i.price)), out), {}) : { symbol: data.symbol, price: parseFloat(data.price) };
+
     }
 
     this.bookTicker = (symbols = false) => {
