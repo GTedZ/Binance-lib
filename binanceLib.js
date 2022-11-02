@@ -2980,8 +2980,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     serializedSubscribe = async (arr, object) => {
         for await (const path of arr) {
-            let resp = await object.subscribe(path);
-            let streamName = `subTo${path}`;
+            let resp = object.subscribe(path);
+            await delay(150);
+            let streamName = `subTo: ${path}`;
             let obj = {}; obj[streamName] = resp;
             if (binance.ws) console.log(obj)
         }
