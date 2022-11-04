@@ -807,6 +807,13 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 </details>
 
 
+## **SPOT ACCOUNT/TRADE DATA**
+|FUNCTIONS                                                            |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
+// TODO
+
+
+
 # ***FUTURES DOCUMENTATION:***
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
 ### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>

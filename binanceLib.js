@@ -44,7 +44,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // public functions ////
 
+
+
     // spot \\\\
+
+    // spot Market DATA \\\\
 
     this.ping = async (reconnect = false, tries = -1) => {
         let resp;
@@ -434,6 +438,146 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         return request(params, options);
     }
+
+    // spot Market DATA ////
+
+    // spot Account/Trade \\\\
+
+    this.cancelOrder = (symbol, orderId = 0, origClientOrderId = 0, newClientOrderId = 0, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        const params = {
+            baseURL: api,
+            path: '/api/v3/order',
+            method: 'delete'
+        }
+
+        const options = {
+            symbol: symbol
+        }
+        Object.assign(options, opts);
+        if (orderId) options.orderId = orderId;
+        if (origClientOrderId) options.origClientOrderId = origClientOrderId;
+        if (newClientOrderId) options.newClientOrderId = newClientOrderId;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.cancelOpenOrders = (symbol, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        const params = {
+            baseURL: api,
+            path: '/api/v3/openOrders',
+            method: 'delete'
+        }
+
+        const options = {}
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.order = (symbol, orderId = 0, origClientOrderId = 0, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        const params = {
+            baseURL: api,
+            path: '/api/v3/order',
+            method: 'delete'
+        }
+
+        const options = {
+            symbol: symbol
+        }
+        Object.assign(options, opts);
+        if (orderId) options.orderId = orderId;
+        if (origClientOrderId) options.origClientOrderId = origClientOrderId;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.openOrders = (symbol = false, opts = {}) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/openOrders',
+            method: 'get'
+        }
+
+        const options = {}
+        Object.assign(options, opts);
+        if (symbol) options.symbol = symbol;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.cancelReplace = () => {    // TODO
+
+    }
+
+    this.allOrders = (symbol = false, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/allOrders',
+            method: 'get'
+        }
+
+        const options = {
+            limit: limit
+        }
+        Object.assign(options, opts);
+        if (symbol) options.symbol = symbol;
+        if (orderId) options.orderId = orderId;
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.newOCO = () => {
+        // TODO
+    }
+
+    this.cancelOCO = () => {
+        // TODO
+    }
+
+    this.OCOStatus = () => {
+        // TODO
+    }
+
+    this.allOCO = () => {
+        // TODO
+    }
+
+    this.allOpenOCO = () => {
+        // TODO
+    }
+
+    this.account = async (mapped = false, activeAssetsOnly = false, opts = {}) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/account',
+            method: 'get'
+        }
+
+        const options = {};
+        Object.assign(options, opts);
+
+        let resp = await request(params, options, 'SIGNED');
+        if (!mapped || resp.error) return resp;
+
+        let newObj = { ...resp };
+        newObj.balances = {};
+        for (let item of resp.balances) {
+            if (item.locked != 0 || item.free != 0) newObj.balances[item.asset] = item;
+        }
+
+        return newObj
+    }
+
+    this.userTrades = (symbol, limit = 500, orderId = 0, fromId = 0, startTime = 0, endTime = 0, opts = {}) => {
+        // TODO
+    }
+
+    // spot Account/Trade ////
 
     // spot ////
 
