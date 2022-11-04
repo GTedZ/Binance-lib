@@ -509,7 +509,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.cancelReplace = () => {    // TODO
-
+        
     }
 
     this.allOrders = (symbol = false, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
