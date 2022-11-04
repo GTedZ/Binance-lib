@@ -574,7 +574,35 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.userTrades = (symbol, limit = 500, orderId = 0, fromId = 0, startTime = 0, endTime = 0, opts = {}) => {
-        // TODO
+        if (!symbol) return ERR('symbol', 'required');
+
+        const params = {
+            baseURL: api,
+            path: '/api/v3/myTrades',
+            method: 'get'
+        }
+
+        const options = {
+            symbol: symbol,
+            limit: limit
+        }
+        Object.assign(options, opts);
+
+        if (orderId) options.orderId = orderId;
+        if (fromId) options.fromId = fromId;
+        if (startTime) options.startTime = startTime;
+        if (endTime) options.endTime = endTime;
+
+        return request(params, options, 'SIGNED');
+    }
+
+    this.userOrderCountUsage = (options = {}) => {
+        const params = {
+            baseURL: api,
+            path: '/api/v3/rateLimit/order',
+            method: 'get'
+        }
+        return request(params, options, 'SIGNED')
     }
 
     // spot Account/Trade ////
