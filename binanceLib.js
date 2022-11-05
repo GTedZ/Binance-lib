@@ -509,7 +509,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     }
 
     this.cancelReplace = () => {    // TODO
-        
+
     }
 
     this.allOrders = (symbol = false, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
@@ -2359,7 +2359,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
                 const reqParams = {
-                    baseURL: sapi,
+                    baseURL: api,
                     path: '/api/v3/userDataStream'
                 }
                 const postParams = {
@@ -2384,7 +2384,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
 
                 const params = {
-                    baseURL: fWSS,
+                    baseURL: sWSS,
                     path: resp.listenKey
                 }
 
