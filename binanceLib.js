@@ -1457,11 +1457,41 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     /**
      * @param orders - array of objects that contain the parameters of the order
      */
-    this.futuresMultipleOrders = async (orders, serialize = false) => {
-        // TODO
+    this.futuresMultipleOrders = async (orders, serialize = false, opts = { recvWindow: 10000 }) => {
         if (orders.length > 5) {
-            if (serialize == false) return ERR(`A maximum of 5 orders per batch is allowed. To avoid this, send a second parameter as 'true' to serialize the batches`);
+            console.log('more than 5!')
+            if (serialize == false) return ERR(`A maximum of 5 orders per batch is allowed. To avoid this, send the second parameter 'serialize' as 'true' to serialize the batches`);
+            let Batches = [];
+            for (let x = 0; x < orders.length; x++) {
+                let batchNumber = Math.floor(x / 5);
+                if (!Batches[batchNumber]) Batches[batchNumber] = [];
+                Batches[batchNumber].push(orders[x]);
+            }
+
+            let responses = [];
+            for await (let batch of Batches) {
+                let resp = await binance.futuresMultipleOrders(batch);
+                console.log(resp);
+                resp.forEach(responses.push);
+            }
+            return responses;
         }
+
+        console.log(orders);
+
+        const params = {
+            baseURL: fapi,
+            path: '/fapi/v1/batchOrders',
+            method: 'post'
+        }
+
+        const options = {
+            batchOrders: orders
+        }
+
+        Object.assign(options, opts);
+
+        return request(params, options, 'SIGNED', true);
     }
 
     this.futuresOrder = (symbol, orderId, origClientOrderId, opts = {}) => {

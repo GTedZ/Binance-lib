@@ -1,0 +1,1 @@
+fix request or create a new request function to handle arrays in the options
