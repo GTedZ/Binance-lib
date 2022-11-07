@@ -1491,7 +1491,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         Object.assign(options, opts);
 
-        return request(params, options, 'SIGNED', true);
+        // return request(params, options, 'SIGNED', true);
     }
 
     this.futuresOrder = (symbol, orderId, origClientOrderId, opts = {}) => {
