@@ -2983,7 +2983,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 object.resolves[id] = res;
                 setTimeout(() => {
                     if (object.resolves[id] && object.resolves[id] != undefined && typeof object.resolves[id] == 'function')
-                        object.resolves[id](ERROR('No response was received from websocket endpoint within 5 seconds'))
+                        object.resolves[id](ERROR('No response was received from websocket endpoint within 10 seconds'))
                 }, 10000)
             });
         }
@@ -2991,7 +2991,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         const object = {
             alive: true,
             socket: {},
-            cachedSubscriptions: new Set().add(params.path),
+            cachedSubscriptions: Array.isArray(params.path) ? new Set(params.path) : new Set().add(params.path),
             close: async () => {
                 object.alive = false;
                 object.socket.close();
