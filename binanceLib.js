@@ -3021,7 +3021,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     object.socket.send(msg);
                     return newPromise(object, id);
                 } catch (err) {
-                    if (binance.ws) console.log(`error in: socket.subscribe()`)
+                    if (binance.ws) console.log(`error in: socket.subscribe():\n${err}`);
                     await delay(binance.timeout);
                     return object.subscribe(...params);
                 }
