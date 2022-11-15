@@ -2999,8 +2999,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     clearInterval(object.interval);
                     object.deleteKey();
                 }
-                await delay(500);
-                Object.keys(object).forEach(key => delete object[key]);
             },
             // extras
             subscribe: async (...params) => {
@@ -3156,10 +3154,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         socket.on('close', () => {
             if (binance.ws) console.log(params.path + ' Closed!');
-
+            if (!object.alive) return;
             setTimeout(() => {
                 params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
-                if (object.alive) newSocket(params, callback, object);
+                newSocket(params, callback, object);
             }, binance.timeout)
         })
 
