@@ -18,6 +18,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const fWSS = 'wss://fstream.binance.com';
 
 
+    const SPOT_ORDERTYPES = ['LIMIT', 'MARKET', 'STOP_LOSS', 'STOP_LOSS_LIMIT', 'TAKE_PROFIT', 'TAKE_PROFIT_LIMIT', 'LIMIT_MAKER'];
+
+
     const intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"];
     const incomeTypes = ['TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE']
     const contractTypes = ["PERPETUAL", "CURRENT_MONTH", "NEXT_MONTH", "CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL_DELIVERING"]
@@ -41,6 +44,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.query) this.query = true; else this.query = false;
     if (options.extraResponseInfo) this.extraResponseInfo = true; else this.extraResponseInfo = false;  // will cause errors, do not use it except for dev-testing
     if (options.ws) this.ws = options.ws; else this.ws = false;
+    if (options.test) this.test = true; else this.test = false;
 
     // public functions ////
 
@@ -442,6 +446,85 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // spot Market DATA ////
 
     // spot Account/Trade \\\\
+
+    this.marketBuy = (symbol, quantity = false, quoteOrderQty = false, opts = {}) => {    // quantity quoteOrderQty
+        return market(symbol, quantity, quoteOrderQty, 'BUY', opts);
+    }
+
+    this.marketSell = (symbol, quantity = false, quoteOrderQty = false, opts = {}) => {
+        return market(symbol, quantity, quoteOrderQty, 'SELL', opts);
+    }
+
+    const market = (symbol, quantity, quoteOrderQty, side, opts) => {
+        if (!quantity && !quoteOrderQty) return ERR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
+        if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+        if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just leave it blank.`);
+
+        const options = {}
+        if (quantity) options.quantity = quantity;
+        else options.quoteOrderQty = quoteOrderQty;
+        Object.assign(options, opts);
+
+        return this.createOrder(symbol, side, 'MARKET', options);
+    }
+
+    this.buy = (symbol, quantity, price, opts = {}) => {
+        return limit(symbol, quantity, price, 'BUY', opts);
+    }
+
+    this.sell = (symbol, quantity, price, opts = {}) => {
+        return limit(symbol, quantity, price, 'SELL', opts);
+    }
+
+    const limit = (symbol, quantity, price, side, opts) => {
+        if (!quantity) return ERR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
+        if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+        if (!price) return ERR('price', 'required');
+        if (!number(price)) return ERR('price', 'type', 'Number');
+        if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just leave it blank.`);
+
+        const options = {
+            price: price,
+            quantity: quantity
+        }
+        Object.assign(options, opts);
+
+        return this.createOrder(symbol, side, 'LIMIT', options);
+    }
+
+    this.createOrder = async (symbol, side, type, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!equal(side, ['BUY', 'SELL'])) return ERR('side', 'value', false, ['BUY', 'SELL']);
+        if (!equal(type, SPOT_ORDERTYPES)) return ERR('type', 'value', false, SPOT_ORDERTYPES);
+
+        const params = {
+            baseURL: sapi,
+            path: '/api/v3/order',
+            method: 'post'
+        }
+        if (binance.test) params.path += '/test';
+
+        const options = {
+            symbol: symbol,
+            side: side,
+            type: type
+        }
+        if (type == "LIMIT") options.timeInForce = 'GTC';
+        Object.assign(options, opts);
+
+
+        if (!binance.test) return request(params, options, 'SIGNED');
+        let resp = await request(params, options, 'SIGNED');
+        if (resp.error) return resp;
+        return {
+            success: {
+                status: 200,
+                statusText: 'Success',
+                code: 0,
+                msg: 'Order accepted'
+            }
+        }
+    }
 
     this.cancelOrder = (symbol, orderId = 0, origClientOrderId = 0, newClientOrderId = 0, opts = {}) => {
         if (!symbol) return ERR('symbol', 'required');
@@ -1346,15 +1429,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const futuresMarket = (symbol, quantity, side, opts) => {
         let options = {
-            quantity: quantity,
-            side: side
+            quantity: quantity
         }
         Object.assign(options, opts);
 
         if (!quantity) return ERR('quantity', 'required');
         if (!number(quantity)) return ERR('quantity', 'type', 'Number');
 
-        return this.futuresCreateOrder(symbol, 'SELL', 'MARKET', options);
+        return this.futuresCreateOrder(symbol, side, 'MARKET', options);
     }
 
     this.futuresBuy = async (symbol, quantity, price, opts = {}) => {
@@ -1421,7 +1503,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             newOrderRespType: 'RESULT'
         }
         if (type == "LIMIT") options.timeInForce = 'GTC';
-
         Object.assign(options, opts);
 
         if (!symbol) return ERR('symbol', 'required');
@@ -3415,12 +3496,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return 125;
     }
 
-    const ERR = (msg, errType = false, requiredType = false, possibilities = []) => {
+    const ERR = (msg, errType = false, requiredType = false, possibilities = [], extraMsg = false) => {
         if (errType) {
             if (errType.toLowerCase() == 'required') msg = `Parameter '${msg}' is required for this request.`;
             if (errType.toLowerCase() == 'type') msg = `Parameter '${msg}' should be of type '${requiredType}'.`;
             if (errType.toLowerCase() == 'value') msg = `Parameter '${msg}' is invalid.`
             if (possibilities.length != 0) msg += ` Possible options:${possibilities.map(a => ` '${a}'`)}.`
+            if (extraMsg) msg += ` ${extraMsg}`
         }
 
         return {
