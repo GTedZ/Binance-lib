@@ -507,7 +507,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         const options = {
             symbol: symbol,
             side: side,
-            type: type
+            type: type,
+            newOrderRespType: 'FULL'
         }
         if (type == "LIMIT") options.timeInForce = 'GTC';
         Object.assign(options, opts);
