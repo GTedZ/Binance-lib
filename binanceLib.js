@@ -481,7 +481,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (!number(quantity)) return ERR('quantity', 'type', 'Number');
         if (!price) return ERR('price', 'required');
         if (!number(price)) return ERR('price', 'type', 'Number');
-        if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just leave it blank.`);
+        if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just don't pass it.`);
 
         const options = {
             price: price,
@@ -3323,7 +3323,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             if (this.fetchFloats) return parseAllPropertiesToFloat(response.data); else return response.data;
 
-        } catch (err) { // TODO
+        } catch (err) {
             let error;
             if (err.response && err.response.data) {
                 error = {
