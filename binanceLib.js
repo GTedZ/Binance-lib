@@ -3126,6 +3126,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             close: () => {
                 object.alive = false;
                 object.socket.close();
+                clearInterval(object.reconnectInterval);
                 if (object.interval) {
                     clearInterval(object.interval);
                     object.deleteKey();
@@ -3222,11 +3223,20 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 // For non .subscriptions() requests ////
             },
+            resolves: {},
+            originalResolve: -1,
+
             silentClose: () => {
                 object.socket.close();
             },
-            resolves: {},
-            originalResolve: -1
+            reconnect: () => {
+                if (!object.alive) {
+                    clearInterval(object.reconnectInterval)
+                    return;
+                }
+                object.silentClose();
+            },
+            reconnectInterval: setInterval(() => object.reconnect(), 6 * HOUR)
         }
 
 
