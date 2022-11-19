@@ -3123,7 +3123,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             alive: true,
             socket: {},
             cachedSubscriptions: Array.isArray(params.path) ? new Set(params.path) : new Set().add(params.path),
-            close: async () => {
+            close: () => {
                 object.alive = false;
                 object.socket.close();
                 if (object.interval) {
@@ -3221,6 +3221,9 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     delete object.resolves[msg.id];
                 }
                 // For non .subscriptions() requests ////
+            },
+            silentClose: () => {
+                object.socket.close();
             },
             resolves: {},
             originalResolve: -1
