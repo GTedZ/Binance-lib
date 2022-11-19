@@ -1,1 +1,3 @@
 fix request or create a new request function to handle arrays in the options
+
+make object reconnect after 24 hours no matter what, and preserve the object

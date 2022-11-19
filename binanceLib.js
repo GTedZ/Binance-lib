@@ -46,6 +46,12 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     if (options.ws) this.ws = options.ws; else this.ws = false;
     if (options.test) this.test = true; else this.test = false;
 
+    const SECOND = 1000,
+        MINUTE = 60 * SECOND,
+        HOUR = 60 * MINUTE,
+        DAY = 24 * HOUR;
+    ;
+
     // public functions ////
 
 
@@ -441,6 +447,34 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         return request(params, options);
+    }
+
+    this.convertToQuantity = (symbol, quoteSize, customPrice = false) => {
+        return this.convertToQty(symbol, quoteSize, customPrice);
+    }
+
+    this.convertToQty = async (symbol, quoteSize, customPrice = false) => {
+        if (typeof spot_exchangeInfo != 'object' || !spot_exchangeInfo[symbol]) {
+            spot_exchangeInfo = await this.exchangeInfo('', '', { mapped: true });
+
+            if (spot_exchangeInfo.error) return ERR('Unexpected error, please try again');
+            if (!spot_exchangeInfo.symbols.includes(symbol)) return ERR('It looks like the symbol is invalid, please check the symbol and try again');
+        };
+
+        if (customPrice) {
+            if (!number(customPrice)) return ERR('customPrice', 'type', 'Number');
+            return bigInt.parse((quoteSize / customPrice).toFixedNoRounding(spot_exchangeInfo[symbol].quantityPrecision))
+        }
+
+        const symbolPriceObj = await this.prices(symbol);
+        if (symbolPriceObj.error) {
+            if (symbolPriceObj.error.code == -1121) return ERR(`'${symbol}' is an invalid symbol.`);
+            else return symbolPriceObj;
+        }
+        if (!symbolPriceObj.price) return ERR('Error fetching price of symbol, please check the symbol and try again.');
+
+        return bigInt.parse((quoteSize / symbolPriceObj.price).toFixedNoRounding(spot_exchangeInfo[symbol].quantityPrecision))
+
     }
 
     // spot Market DATA ////
@@ -1327,11 +1361,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options);
     }
 
-    this.futuresConvertToQuantity = async (symbol, USDT_or_BUSD_margin, leverage = 1) => {
-        return this.futuresConvertToQty(symbol, USDT_or_BUSD_margin, leverage);
+    this.futuresConvertToQuantity = async (symbol, USDT_or_BUSD_margin, leverage = 1, customPrice = false) => {
+        return this.futuresConvertToQty(symbol, USDT_or_BUSD_margin, leverage, customPrice);
     }
 
-    this.futuresConvertToQty = async (symbol, USDT_or_BUSD_margin, leverage = 1) => {
+    this.futuresConvertToQty = async (symbol, USDT_or_BUSD_margin, leverage = 1, customPrice = false) => {
+        if (!symbol) return ERR('symbol', 'required');
+        if (!USDT_or_BUSD_margin) return ERR('USDT_or_BUSD_margin', 'required');
+        if (!number(USDT_or_BUSD_margin)) return ERR('USDT_or_BUSD_margin', 'type', 'Number');
+        if (!number(leverage)) return ERR('leverage', 'type', 'Number');
+
         if (typeof futures_exchangeInfo != 'object' || !futures_exchangeInfo[symbol]) {
             futures_exchangeInfo = await this.futuresExchangeInfo(true, 3,
                 {
@@ -1344,11 +1383,21 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             if (futures_exchangeInfo.error) return ERR('Unexpected error, please try again');
             if (!futures_exchangeInfo.symbols.includes(symbol)) return ERR('It looks like the symbol is invalid, please check the symbol and try again');
-        }
+        };
 
         const totalQuoteSize = USDT_or_BUSD_margin * leverage;
         if (totalQuoteSize < 5) return ERR('The total position size cannot be lower than 5USDT');
+
+        if (customPrice) {
+            if (!number(customPrice)) return ERR('customPrice', 'type', 'Number');
+            return bigInt.parse((totalQuoteSize / customPrice).toFixedNoRounding(futures_exchangeInfo[symbol].quantityPrecision))
+        }
+
         const symbolPriceObj = await this.futuresPrices(symbol);
+        if (symbolPriceObj.error) {
+            if (symbolPriceObj.error.code == -1121) return ERR(`'${symbol}' is an invalid symbol.`);
+            else return symbolPriceObj;
+        }
         if (!symbolPriceObj.price) return ERR('Error fetching price of symbol, please check the symbol and try again.');
 
         return bigInt.parse((totalQuoteSize / symbolPriceObj.price).toFixedNoRounding(futures_exchangeInfo[symbol].quantityPrecision))
