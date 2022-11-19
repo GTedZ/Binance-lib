@@ -1,5 +1,12 @@
 # Binance-lib
- A JS library for binance, only the basic features, but will solve some of the problems that 'node-binance-api' hasn't yet fixed, like receiving futures position info such as entryPrice as a response order request, and for you to add any other additional stuff easily in the files.
+A FULL JS library for the binance API, currently includes the FULL Spot, Margin (including Wallet, Savings, Mining API, etc...) and Futures API support, it is much more detailed in documentation, easiest error-handling, NO try-catch blocks whatsoever.
+
+## Currently includes:
+- SPOT API (Market Data, Account/Trade)
+- Margin API
+- Wallet API
+- Sub-Account API
+- 
 
  ***WILL include all SPOT, MARGIN, FUTURES<a href='#futures-documentation'><sup>ref</sup></a> and EUROPEAN market/account/trade/websocket<a href='#Websockets'><sup>ref</sup></a> options***
 
@@ -93,11 +100,725 @@ let response = await binance.futuresExchangeInfo(reconnect, tries, options); // 
 let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quantityPrecision: true})
 ```
 
+# ***SPOT DOCUMENTATION:***
+### Market Data<a href='#Spot-Market-Data'><sup>ref</sup></a>
+### Account/Trade<a href='#Spot-AccountTrade-Data'><sup>ref</sup></a>
+### Websockets<a href='#Websocket-Spot'><sup>ref</sup></a>
+
+## PARAMETERS EXPLANATION:
+- ***reconnect***: *'true'* or *'false'* for if the library should keep sending requests until it receives a successful response
+- ***tries***: Number of fails before the library should stop sending requests (Used only with reconnect as 'true'): *'0'* for unlimited tries
+- ***interval***: *"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w" or "1M"*
+- ***limit***: How many samples do you want to receive from binance, ex: for binance.orderBook(), limit of '100' means you will receive 100 orders from binance
+- ***permissions***: *"SPOT", "MARGIN", "LEVERAGED", "TRD_GRP_002", "TRD_GRP_003", "TRD_GRP_004", "TRD_GRP_005"*
+- ***windowSize***: *'1m', '2m', '...', '59m', '1h', '2h', '...', '23h', '1d', '2d', '...' or '7d'*
+- ***startTime***: A UNIX Time of when you want to start receiving samples from:
+- ***endTime***: A UNIX Time of when the latest sample can be from:
+  - You can get the current UNIX Time via 'Date.now()', or if you want to convert ANY time format to UNIX Time, you an use 'new Date('10/30/2022, 3:32:13 PM').getTime()'
+- ***fromId***: The orderId or tradeId that you want to start receiving orders/trades from
+
+## **SPOT MARKET DATA:**
+|FUNCTIONS                                                            |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
+|ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
+|serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
+|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |mapped |
+|orderBook()                   <a href='#orderBook'><sup>ref</sup></a>|symbol                   |limit                            |       |
+|trades()                         <a href='#trades'><sup>ref</sup></a>|symbol                   |limit                            |       |
+|oldTrades()                   <a href='#oldTrades'><sup>ref</sup></a>|symbol                   |limit, fromId                    |       |
+|aggTrades()                   <a href='#aggTrades'><sup>ref</sup></a>|symbol                   |limit, fromId, startTime, endTime|       |
+|candlesticks()             <a href='#candlesticks'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |       |
+|UIKlines()                     <a href='#UIKlines'><sup>ref</sup></a>|symbol, interval         |limit, startTime, endTime        |       |
+|avgPrice()                     <a href='#avgPrice'><sup>ref</sup></a>|symbol                   |                                 |       |
+|ticker24h()                   <a href='#ticker24h'><sup>ref</sup></a>|symbols_or_count         |                                 |       |
+|price()                           <a href='#price'><sup>ref</sup></a>|                         |symbols                          |       |
+|bookTicker()                 <a href='#bookTicker'><sup>ref</sup></a>|                         |symbols                          |       |
+|rollingWindowStats() <a href='#rollingWindowStats'><sup>ref</sup></a>|symbols                  |windowSize, type                 |       |
+
+### .ping():
+```js
+  let ping = await binance.ping();
+  if(ping.error) {
+    // handle error here
+    console.log(ping.error);
+  }
+```
+<details>
+ <summary>View Response</summary>
+
+ ```js
+ { 
+  roundtrip_time_millis: 410 // <= in millis
+ }
+ ```
+</details>
+
+### .serverTime():
+```js
+  let serverTime = await binance.serverTime(true); // function parameters: (reconnect, tries, options {})
+  console.log(serverTime); // <= 1665491953938
+```
+
+### .exchangeInfo():
+```js
+  let exchangeInfo = await binance.exchangeInfo();
+  // OR
+  let exchangeInfo = await binance.exchangeInfo('BTCUSDT');
+  // OR
+  let exchangeInfo = await binance.exchangeInfo(['BTCUSDT', 'ETHUSDT']);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  timezone: 'UTC',
+  serverTime: 1667219840834,
+  rateLimits: [
+    {
+      rateLimitType: 'REQUEST_WEIGHT',
+      interval: 'MINUTE',
+      intervalNum: 1,
+      limit: 1200
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'SECOND',
+      intervalNum: 10,
+      limit: 50
+    },
+    {
+      rateLimitType: 'ORDERS',
+      interval: 'DAY',
+      intervalNum: 1,
+      limit: 160000
+    },
+    {
+      rateLimitType: 'RAW_REQUESTS',
+      interval: 'MINUTE',
+      intervalNum: 5,
+      limit: 6100
+    }
+  ],
+  exchangeFilters: [],
+  symbols: [
+    {
+    symbol: 'BTCUSDT',
+    status: 'TRADING',
+    baseAsset: 'BTC',
+    baseAssetPrecision: 8,
+    quoteAsset: 'USDT',
+    quotePrecision: 8,
+    quoteAssetPrecision: 8,
+    baseCommissionPrecision: 8,
+    quoteCommissionPrecision: 8,
+    orderTypes: [
+      'LIMIT',
+      'LIMIT_MAKER',
+      'MARKET',
+      'STOP_LOSS_LIMIT',
+      'TAKE_PROFIT_LIMIT'
+    ],
+    icebergAllowed: true,
+    ocoAllowed: true,
+    quoteOrderQtyMarketAllowed: true,
+    allowTrailingStop: true,
+    cancelReplaceAllowed: true,
+    isSpotTradingAllowed: true,
+    isMarginTradingAllowed: true,
+    filters: [
+      {
+      filterType: 'PRICE_FILTER',
+      minPrice: 0.01,
+      maxPrice: '1000000.00000000',
+      tickSize: 0.01
+    },
+    {
+      filterType: 'PERCENT_PRICE',
+      multiplierUp: 5,
+      multiplierDown: 0.2,
+      avgPriceMins: 5
+    },
+    {
+      filterType: 'LOT_SIZE',
+      minQty: 0.00001,
+      maxQty: 9000,
+      stepSize: 0.00001
+    },
+    {
+      filterType: 'MIN_NOTIONAL',
+      minNotional: 10,
+      applyToMarket: true,
+      avgPriceMins: 5
+    },
+    { filterType: 'ICEBERG_PARTS', limit: 10 },
+    {
+      filterType: 'MARKET_LOT_SIZE',
+      minQty: 0,
+      maxQty: 223.31464019,
+      stepSize: 0
+    },
+    {
+      filterType: 'TRAILING_DELTA',
+      minTrailingAboveDelta: 10,
+      maxTrailingAboveDelta: 2000,
+      minTrailingBelowDelta: 10,
+      maxTrailingBelowDelta: 2000
+    },
+    { filterType: 'MAX_NUM_ORDERS', maxNumOrders: 200 },
+    { filterType: 'MAX_NUM_ALGO_ORDERS', maxNumAlgoOrders: 5 }
+    ],
+    permissions: [ 'SPOT', 'MARGIN', 'TRD_GRP_004', 'TRD_GRP_005' ]
+  },
+    ...
+  ]
+}
+```
+</details>
+
+**OR USING OPTIONS PARAMETERS:**
+```js
+  let symbols = '';
+  let permissions = '';
+  let exchangeInfo = await binance.exchangeInfo(symbols, permissions, {
+    mapped: true
+  });
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbols: [
+    'ETHBTC',   'LTCBTC',   'BNBBTC',   'NEOBTC',  'QTUMETH', 'EOSETH',
+    'SNTETH',   'BNTETH',   'BCCBTC',   'GASBTC',  'BNBETH',  'BTCUSDT',
+    'ETHUSDT',  'HSRBTC',   'OAXETH',   'DNTETH',  'MCOETH',  'ICNETH',
+    'MCOBTC',   'WTCBTC',   'WTCETH',   'LRCBTC',  'LRCETH',  'QTUMBTC',
+    'YOYOBTC',  'OMGBTC',   'OMGETH',   'ZRXBTC',  'ZRXETH',  'STRATBTC',
+    'STRATETH', 'SNGLSBTC', 'SNGLSETH', 'BQXBTC',  'BQXETH',  'KNCBTC',
+    'KNCETH',   'FUNBTC',   'FUNETH',   'SNMBTC',  'SNMETH',  'NEOETH',
+    'IOTABTC',  'IOTAETH',  'LINKBTC',  'LINKETH', 'XVGBTC',  'XVGETH',
+    'SALTBTC',  'SALTETH',  'MDABTC',   'MDAETH',  'MTLBTC',  'MTLETH',
+    'SUBBTC',   'SUBETH',   'EOSBTC',   'SNTBTC',  'ETCETH',  'ETCBTC',
+    'MTHBTC',   'MTHETH',   'ENGBTC',   'ENGETH',  'DNTBTC',  'ZECBTC',
+    'ZECETH',   'BNTBTC',   'ASTBTC',   'ASTETH',  'DASHBTC', 'DASHETH',
+    'OAXBTC',   'ICNBTC',   'BTGBTC',   'BTGETH',  'EVXBTC',  'EVXETH',
+    'REQBTC',   'REQETH',   'VIBBTC',   'VIBETH',  'HSRETH',  'TRXBTC',
+    'TRXETH',   'POWRBTC',  'POWRETH',  'ARKBTC',  'ARKETH',  'YOYOETH',
+    'XRPBTC',   'XRPETH',   'MODBTC',   'MODETH',  'ENJBTC',  'ENJETH',
+    'STORJBTC', 'STORJETH', 'BNBUSDT',  'VENBNB',
+    ... 2020 more items
+  ],
+  exchangeInfo: {
+    timezone: 'UTC',
+    serverTime: 1667225071843,
+    rateLimits: [ [Object], [Object], [Object], [Object] ],
+    exchangeFilters: []
+  },
+  ETHBTC: {
+    symbol: 'ETHBTC',
+    status: 'TRADING',
+    baseAsset: 'ETH',
+    baseAssetPrecision: 8,
+    quoteAsset: 'BTC',
+    quotePrecision: 8,
+    quoteAssetPrecision: 8,
+    baseCommissionPrecision: 8,
+    quoteCommissionPrecision: 8,
+    icebergAllowed: true,
+    ocoAllowed: true,
+    quoteOrderQtyMarketAllowed: true,
+    allowTrailingStop: true,
+    cancelReplaceAllowed: true,
+    isSpotTradingAllowed: true,
+    isMarginTradingAllowed: true,
+    minNotional: 0.0001,
+    icebergLimit: 10,
+    orderTypes: [
+      'LIMIT',
+      'LIMIT_MAKER',
+      'MARKET',
+      'STOP_LOSS_LIMIT',
+      'TAKE_PROFIT_LIMIT'
+    ],
+    trailingFilters: {
+      filterType: 'TRAILING_DELTA',
+      minTrailingAboveDelta: 10,
+      maxTrailingAboveDelta: 2000,
+      minTrailingBelowDelta: 10,
+      maxTrailingBelowDelta: 2000
+    },
+    maxNumOrders: 200,
+    maxNumAlgoOrders: 5,
+    priceFilters: {
+      filterType: 'PRICE_FILTER',
+      minPrice: 0.000001,
+      maxPrice: 922327,
+      tickSize: 0.000001
+    },
+    percentPriceFilters: {
+      filterType: 'PERCENT_PRICE',
+      multiplierUp: 5,
+      multiplierDown: 0.2,
+      avgPriceMins: 5
+    },
+    lotFilters: {
+      filterType: 'LOT_SIZE',
+      minQty: 0.0001,
+      maxQty: 100000,
+      stepSize: 0.0001
+    },
+    notionalFilters: {
+      filterType: 'MIN_NOTIONAL',
+      minNotional: 0.0001,
+      applyToMarket: true,
+      avgPriceMins: 5
+    },
+    marketLotFilters: {
+      filterType: 'MARKET_LOT_SIZE',
+      minQty: 0,
+      maxQty: 1369.19160537,
+      stepSize: 0
+    }
+  },
+  LTCUSDT: {
+    ...
+  },
+  ...,
+}
+```
+</details>
+
+### .orderBook():
+```js
+  let BTC_orderBook = await binance.orderBook("BTCUSDT");
+  // OR
+  let BTC_orderBook = await binance.orderBook("BTCUSDT", 3);
+  console.log(BTC_orderBook);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  lastUpdateId: 26552654486,
+  bids: [
+    [ 20676.27, 0.23493 ], [ 20675.74, 0.73224 ], [ 20675.62, 0.00241 ],
+    [ 20675.49, 0.01437 ], [ 20675.46, 0.00775 ], [ 20675.45, 0.02419 ],
+    [ 20675.44, 0.003 ],   [ 20675.41, 0.02419 ], [ 20675.36, 0.02358 ],
+    ...                  , ...                  , ... ,
+    ...,
+    ...
+  ],
+  asks: [
+    [ 20677.54, 0.04484 ], [ 20677.76, 0.04484 ], [ 20677.89, 0.1215 ],
+    [ 20678, 0.00061 ],    [ 20678.19, 0.03153 ], [ 20678.32, 0.01424 ],
+    [ 20678.38, 0.00519 ], [ 20678.4, 0.02 ],     [ 20678.64, 0.01876 ],
+    ...                  , ...                  , ... ,
+    ...,
+    ...
+  ]
+}
+```
+</details>
+
+
+### .trades():
+```js
+  let BTC_trades = await binance.trades("BTCUSDT");
+  // OR
+  let BTC_trades = await binance.trades("BTCUSDT", 3);
+  console.log(BTC_trades);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    id: 2057664850,
+    price: 20652.95,
+    qty: 0.93534,
+    quoteQty: 19317.530253,
+    time: 1667137211248,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057664851,
+    price: 20652.95,
+    qty: 0.83161,
+    quoteQty: 17175.1997495,
+    time: 1667137211249,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057664852,
+    price: 20652.94,
+    qty: 0.0005,
+    quoteQty: 10.32647,
+    time: 1667137211249,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .oldTrades():
+```js
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT');
+  // OR
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT', 5);
+  // OR
+  fromId = 12313912;
+  let BTC_oldTrades = await binance.oldTrades('BTCUSDT', 5, fromId);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    id: 2057673976,
+    price: 20683,
+    qty: 0.00061,
+    quoteQty: 12.61663,
+    time: 1667137320150,
+    isBuyerMaker: true,
+    isBestMatch: true
+  },
+  {
+    id: 2057673977,
+    price: 20682.23,
+    qty: 0.00872,
+    quoteQty: 180.3490456,
+    time: 1667137320171,
+    isBuyerMaker: false,
+    isBestMatch: true
+  },
+  {
+    id: 2057673978,
+    price: 20682.38,
+    qty: 0.0073,
+    quoteQty: 150.981374,
+    time: 1667137320410,
+    isBuyerMaker: false,
+    isBestMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .aggTrades():
+- Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+- If startTime and endTime are sent, time between startTime and endTime must be less than 1 hour.
+- If fromId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
+- Note that if a trade has the following values, this was a duplicate aggregate trade and marked as invalid:
+  - p = '0' // price
+  - q = '0' // qty
+  - f = -1 // ﬁrst_trade_id
+  - l = -1 // last_trade_id
+```js
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT');
+  // OR
+  let fromId = 1293813
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT', 5, fromId);
+  // OR
+  let startTime = new Date('10/30/2022, 3:45:13 PM').getTime()
+  let endTime = new Date('10/30/2022, 2:30:00 PM').getTime()
+  let BTC_aggTrades = await binance.aggTrades('BTCUSDT', 5, false, startTime, endTime);
+
+  console.log(BTC_aggTrades);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    aggTradeId: 1765373713,
+    price: 20658.89,
+    qty: 0.04245,
+    firstTradeId: 2057687959,
+    lastTradeId: 2057687959,
+    timestamp: 1667137561340,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  {
+    aggTradeId: 1765373714,
+    price: 20658.89,
+    qty: 0.105,
+    firstTradeId: 2057687960,
+    lastTradeId: 2057687960,
+    timestamp: 1667137561344,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  {
+    aggTradeId: 1765373715,
+    price: 20658.89,
+    qty: 0.00096,
+    firstTradeId: 2057687961,
+    lastTradeId: 2057687961,
+    timestamp: 1667137561345,
+    maker: false,
+    isBestPriceMatch: true
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .candlesticks():
+```js
+  let BTC_candles = await binance.candlesticks('BTCUSDT', '1m');
+  console.log(BTC_candles);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    openTime: 1667107920000,
+    open: 20768.89,
+    high: 20783.94,
+    low: 20767.9,
+    close: 20778.5,
+    volume: 157.02531,
+    closeTime: 1667107979999,
+    quoteAssetVolume: '3262697.34942430',
+    tradesCount: 3386,
+    takerBuy_baseAssetVolume: 94.70767,
+    takerBuy_quoteAssetVolume: '1967798.43659910'
+  },
+  {
+    openTime: 1667107980000,
+    open: 20779.09,
+    high: 20788.87,
+    low: 20775.98,
+    close: 20786.21,
+    volume: 120.47402,
+    closeTime: 1667108039999,
+    quoteAssetVolume: '2503620.37108910',
+    tradesCount: 3407,
+    takerBuy_baseAssetVolume: 80.2267,
+    takerBuy_quoteAssetVolume: '1667236.82104980'
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .UIKlines():
+```js
+  let BTC_UIKlines = await binance.UIKlines('BTCUSDT', '1m');
+  console.log(BTC_UIKlines);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+[
+  {
+    openTime: 1667107980000,
+    open: 20779.09,
+    high: 20788.87,
+    low: 20775.98,
+    close: 20786.21,
+    volume: 120.47402,
+    closeTime: 1667108039999,
+    quoteAssetVolume: '2503620.37108910',
+    tradesCount: 3407,
+    takerBuy_baseAssetVolume: 80.2267,
+    takerBuy_quoteAssetVolume: '1667236.82104980'
+  },
+  {
+    openTime: 1667108040000,
+    open: 20786.77,
+    high: 20793.84,
+    low: 20783.51,
+    close: 20788.87,
+    volume: 181.78061,
+    closeTime: 1667108099999,
+    quoteAssetVolume: '3779000.16373600',
+    tradesCount: 4871,
+    takerBuy_baseAssetVolume: 87.91026,
+    takerBuy_quoteAssetVolume: '1827607.39244490'
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .avgPrice():
+```js
+  let BTC_avgPrice = await binance.avgPrice("BTCUSDT");
+  console.log(BTC_avgPrice);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  mins: 5,
+  price: 20682.01742593 
+}
+```
+</details>
+
+### .ticker24h():
+```js
+  let BTC_ticker = await binance.ticker24h('BTCUSDT');
+  console.log(BTC_ticker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'BTCUSDT',
+  priceChange: -90.4,
+  priceChangePercent: -0.436,
+  weightedAvgPrice: 20804.04211614,
+  prevClosePrice: 20728.59,
+  lastPrice: 20638.19,
+  lastQty: 0.03213,
+  bidPrice: 20636.84,
+  bidQty: 0.00495,
+  askPrice: 20637.97,
+  askQty: 0.00062,
+  openPrice: 20728.59,
+  highPrice: 20982.86,
+  lowPrice: 20589.18,
+  volume: 221764.74157,
+  quoteVolume: '4613603023.49792550',
+  openTime: 1667051808417,
+  closeTime: 1667138208417,
+  firstId: 2052049606,
+  lastId: 2057742265,
+  count: 5692660
+}
+```
+</details>
+
+### .price():
+```js
+  let BTC_price = await binance.price('BTCUSDT');
+  console.log(BTC_price);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ 
+  symbol: 'BTCUSDT', 
+  price: 20651.42 
+}
+```
+</details>
+
+### .bookTicker():
+```js
+  let bookTicker = await binance.bookTicker('BTCUSDT');
+  // OR
+  let bookTicker = await binance.bookTicker();
+
+  console.log(BTC_bookTicker);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{ // for single symbol
+  symbol: 'BTCUSDT',
+  bidPrice: 20653.65,
+  bidQty: 0.0378,
+  askPrice: 20653.66,
+  askQty: 0.00739
+}
+
+[ // for ALL symbols
+  {
+    symbol: 'ETHBTC',
+    bidPrice: 0.076765,
+    bidQty: 33.0455,
+    askPrice: 0.076766,
+    askQty: 0.0453
+  },
+  {
+    symbol: 'LTCBTC',
+    bidPrice: 0.002677,
+    bidQty: 64.216,
+    askPrice: 0.002678,
+    askQty: 6.734
+  },
+  {
+    symbol: 'BNBBTC',
+    bidPrice: 0.014934,
+    bidQty: 19.961,
+    askPrice: 0.014935,
+    askQty: 9.705
+  },
+  ...,
+  ...
+]
+```
+</details>
+
+### .rollingWindowStats():
+```js
+  let BTC_rollingWindowStats = await binance.rollingWindowStats('BTCUSDT', '5m');
+
+  console.log(BTC_rollingWindowStats);
+```
+<details>
+<summary>View Response</summary>
+
+```js
+{
+  symbol: 'BTCUSDT',
+  priceChange: -1.76,
+  priceChangePercent: -0.009,
+  weightedAvgPrice: 20639.75759793,
+  openPrice: 20650.61,
+  highPrice: 20661,
+  lowPrice: 20589.18,
+  lastPrice: 20648.85,
+  volume: 1130.18702,
+  quoteVolume: '23326786.13312460',
+  openTime: 1667138100000,
+  closeTime: 1667138413844,
+  firstId: 2057730288,
+  lastId: 2057756431,
+  count: 26144
+}
+```
+</details>
+
+
+## **SPOT ACCOUNT/TRADE DATA**
+|FUNCTIONS                                                            |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
+|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
+// TODO
+
+
+
 # ***FUTURES DOCUMENTATION:***
 ### All functions<a href='#All-Futures-Functions'><sup>ref</sup></a>
 ### Market Data<a href='#Futures-Market-Data'><sup>ref</sup></a>
 ### Account/Trade<a href='#Futures-AccountTrade-Data'><sup>ref</sup></a>
-### Websockets<a href='#Websockets'><sup>ref</sup></a>
+### Websockets<a href='#WebSocket-Futures'><sup>ref</sup></a>
 
 ## FUTURES PARAMETER EXPLANATION:
 - ***side***: *"BUY"* OR *"SELL"*.
@@ -129,7 +850,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 - ***multiAssetMargin***: *"true"* or *"false"* for Multi-Asset-Mode if turned on or not.
 - ***incomeType***: *'TRANSFER', 'WELCOME_BONUS', 'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR', 'REFERRAL_KICKBACK', 'COMMISSION_REBATE', 'MARKET_MAKER_REBATE', 'API_REBATE', 'CONTEST_REWARD', 'CROSS_COLLATERAL_TRANSFER', 'OPTIONS_PREMIUM_FEE', 'OPTIONS_SETTLE_PROFIT', 'INTERNAL_TRANSFER', 'AUTO_EXCHANGE', 'DELIVERED_SETTELMENT', 'COIN_SWAP_DEPOSIT', 'COIN_SWAP_WITHDRAW', 'POSITION_LIMIT_INCREASE_FEE'*.
 
-## ALL FUTURES FUNCTIONS:
+## **ALL FUTURES FUNCTIONS**:
 |FUNCTIONS                                                                                                    |REQUIRED PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a> |OPTIONAL PARAMETERS<a href='#futures-parameter-explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
 |:------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------:|:-------------------------------------------------------:|:--------------:|
 |futuresPing()                                                       <a href='#futuresPing'><sup>ref</sup></a>|                                                                         |reconnect, tries                                         |                |
@@ -146,7 +867,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresMarkPrice()                                             <a href='#futuresMarkPrice'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
 |futuresFundingRate()                                         <a href='#futuresFundingRate'><sup>ref</sup></a>|                                                                         |symbol, limit, startTime, endTime                        |                |
 |futures24hrTicker()                                           <a href='#futures24hrTicker'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
-|futuresPrices()                                                   <a href='#futuresPrices'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
+|futuresPrices()                                                   <a href='#futuresPrices'><sup>ref</sup></a>|                                                                         |symbol, withTime                                         |                |
 |futuresOpenInterestStatistics()                   <a href='#futuresOpenInterestStatistics'><sup>ref</sup></a>|                                                                         |symbol                                                   |                |
 |futuresOpenInterest()                                       <a href='#futuresOpenInterest'><sup>ref</sup></a>|symbol                                                                   |                                                         |                |
 |futuresBookTicker()                                           <a href='#futuresBookTicker'><sup>ref</sup></a>|symbol, period                                                           |limit, startTime, endTime                                |                |
@@ -161,7 +882,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |futuresGetPositionSide()                                 <a href='#futuresGetPositionSide'><sup>ref</sup></a>|multiAssetsMargin                                                        |                                                         |recvWindow      |
 |futuresChangeMultiAssetMargin()                   <a href='#futuresChangeMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
 |futuresGetMultiAssetMargin()                         <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|                                                                         |                                                         |recvWindow      |
-|futuresConvertToQuantity()                           <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|symbol, USDT_or_BUSD_margin                                              |leverage                                                 |
+|futuresConvertToQuantity()                           <a href='#futuresGetMultiAssetMargin'><sup>ref</sup></a>|symbol, USDT_or_BUSD_margin                                              |leverage, customPrice                                    |
 |futuresMarketBuy()                                             <a href='#futuresMarketBuy'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
 |futuresMarketSell()                                           <a href='#futuresMarketSell'><sup>ref</sup></a>|symbol, quantity                                                         |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, recvWindow|
 |futuresBuy()                                                         <a href='#futuresBuy'><sup>ref</sup></a>|symbol, quantity, price                                                  |                                                         |positionSide, reduceOnly, newClientOrderId, priceProtect, newOrderRespType, workingType, timeInForce|
@@ -389,6 +1110,16 @@ Or using the options parameters:
     baseAsset: true,
     quoteAsset: true          // you can check the rest of the options parameters in the futures functions table above
   });
+
+  // OR
+
+  let exchangeInfo = await binance.futuresExchangeInfo(true, 0, {
+      mapped: true  // this will return the normal info
+                    // BUT 
+                    // The symbols will be mapped to the symbol name
+                    // .symbols will be an array of all of the symbols
+                    // .exchangeInfo will have the non-symbol related info in it
+    })
   console.log(exchangeInfo);
 ```
 <details>
@@ -444,6 +1175,136 @@ Or using the options parameters:
     quoteAsset: 'USDT'
   },
   ...
+}
+
+// OR
+
+{ // for mapped exchangeInfo
+  symbols: [
+    'BTCUSDT',  'ETHUSDT',   'BCHUSDT',   'XRPUSDT',   'EOSUSDT',
+    'LTCUSDT',  'TRXUSDT',   'ETCUSDT',   'LINKUSDT',  'XLMUSDT',
+    'ADAUSDT',  'XMRUSDT',   'DASHUSDT',  'ZECUSDT',   'XTZUSDT',
+    'BNBUSDT',  'ATOMUSDT',  'ONTUSDT',   'IOTAUSDT',  'BATUSDT',
+    'VETUSDT',  'NEOUSDT',   'QTUMUSDT',  'IOSTUSDT',  'THETAUSDT',
+    'ALGOUSDT', 'ZILUSDT',   'KNCUSDT',   'ZRXUSDT',   'COMPUSDT',
+    'OMGUSDT',  'DOGEUSDT',  'SXPUSDT',   'KAVAUSDT',  'BANDUSDT',
+    'RLCUSDT',  'WAVESUSDT', 'MKRUSDT',   'SNXUSDT',   'DOTUSDT',
+    'DEFIUSDT', 'YFIUSDT',   'BALUSDT',   'CRVUSDT',   'TRBUSDT',
+    'RUNEUSDT', 'SUSHIUSDT', 'SRMUSDT',   'EGLDUSDT',  'SOLUSDT',
+    'ICXUSDT',  'STORJUSDT', 'BLZUSDT',   'UNIUSDT',   'AVAXUSDT',
+    'FTMUSDT',  'HNTUSDT',   'ENJUSDT',   'FLMUSDT',   'TOMOUSDT',
+    'RENUSDT',  'KSMUSDT',   'NEARUSDT',  'AAVEUSDT',  'FILUSDT',
+    'RSRUSDT',  'LRCUSDT',   'MATICUSDT', 'OCEANUSDT', 'CVCUSDT',
+    'BELUSDT',  'CTKUSDT',   'AXSUSDT',   'ALPHAUSDT', 'ZENUSDT',
+    'SKLUSDT',  'GRTUSDT',   '1INCHUSDT', 'BTCBUSD',   'CHZUSDT',
+    'SANDUSDT', 'ANKRUSDT',  'BTSUSDT',   'LITUSDT',   'UNFIUSDT',
+    'REEFUSDT', 'RVNUSDT',   'SFPUSDT',   'XEMUSDT',   'BTCSTUSDT',
+    'COTIUSDT', 'CHRUSDT',   'MANAUSDT',  'ALICEUSDT', 'HBARUSDT',
+    'ONEUSDT',  'LINAUSDT',  'STMXUSDT',  'DENTUSDT',  'CELRUSDT',
+    ...
+  ],
+  exchangeInfo: {
+    timezone: 'UTC',
+    serverTime: 1667217635142,
+    futuresType: 'U_MARGINED',
+    rateLimits: [
+      {
+        rateLimitType: 'REQUEST_WEIGHT',
+        interval: 'MINUTE',
+        intervalNum: 1,
+        limit: 2400
+      },
+      {
+        rateLimitType: 'ORDERS',
+        interval: 'MINUTE',
+        intervalNum: 1,
+        limit: 1200
+      },
+      {
+        rateLimitType: 'ORDERS',
+        interval: 'SECOND',
+        intervalNum: 10,
+        limit: 300
+      }
+    ],
+    exchangeFilters: [],
+    assets: [
+      { asset: 'USDT', marginAvailable: true, autoAssetExchange: -10000 },
+      { asset: 'BTC', marginAvailable: true, autoAssetExchange: -0.001 },
+      { asset: 'BNB', marginAvailable: true, autoAssetExchange: -10 },
+      { asset: 'ETH', marginAvailable: true, autoAssetExchange: -5 },
+      { asset: 'XRP', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'ADA', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'DOT', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'SOL', marginAvailable: true, autoAssetExchange: 0 },
+      { asset: 'BUSD', marginAvailable: true, autoAssetExchange: -10000 }
+    ],
+    // here the symbols start
+    APTBUSD: {
+    symbol: 'APTBUSD',
+    pair: 'APTBUSD',
+    contractType: 'PERPETUAL',
+    deliveryDate: 4133404800000,
+    onboardDate: 1666594800000,
+    status: 'TRADING',
+    maintMarginPercent: 2.5,
+    requiredMarginPercent: 5,
+    baseAsset: 'APT',
+    quoteAsset: 'BUSD',
+    marginAsset: 'BUSD',
+    pricePrecision: 5,
+    quantityPrecision: 1,
+    baseAssetPrecision: 8,
+    quotePrecision: 8,
+    underlyingType: 'COIN',
+    settlePlan: 0,
+    triggerProtect: 0.1,
+    liquidationFee: 0.015,
+    marketTakeBound: 0.1,
+    priceFilters: {
+      minPrice: 0.001,
+      maxPrice: 100000,
+      filterType: 'PRICE_FILTER',
+      tickSize: 0.001
+    },
+    lotFilters: {
+      stepSize: 0.1,
+      filterType: 'LOT_SIZE',
+      maxQty: 1000000,
+      minQty: 0.1
+    },
+    marketLotFilters: {
+      stepSize: 0.1,
+      filterType: 'MARKET_LOT_SIZE',
+      maxQty: 5000,
+      minQty: 0.1
+    },
+    maxNumOrders: 200,
+    maxNumAlgoOrders: 10,
+    minNotional: 5,
+    percentPriceFilters: {
+      multiplierDown: 0.9,
+      multiplierUp: 1.1,
+      multiplierDecimal: 4,
+      filterType: 'PERCENT_PRICE'
+    },
+    orderTypes: [
+      'LIMIT',
+      'MARKET',
+      'STOP',
+      'STOP_MARKET',
+      'TAKE_PROFIT',
+      'TAKE_PROFIT_MARKET',
+      'TRAILING_STOP_MARKET'
+    ],
+    timeInForce: [ 'GTC', 'IOC', 'FOK', 'GTX' ]
+  },
+  BTCUSDT: {
+    ...
+  },
+  ...,
+  ...
+}
 }
  ```
 </details>
@@ -1232,12 +2093,17 @@ OR
 ```js
   let allPrices = await binance.futuresPrices();  // All symbol's currentPrice (or lastPrice)
   console.log(allPrices);
+
+  // OR
+
+  let allPrices_withTime = await binance.futuresPrices('', true);
+  console.log(allPrices_withTime)
 ```
 <details>
 <summary>View Response</summary>
 
 ```js
-{
+{ // normal
   XRPBUSD: 0.4681,
   MKRUSDT: 917.5,
   SRMUSDT: 0.703,
@@ -1252,182 +2118,18 @@ OR
   MTLUSDT: 0.9363,
   BATUSDT: 0.2741,
   '1000SHIBBUSD': 0.009661,
-  LDOUSDT: 1.205,
-  TLMBUSD: 0.02032,
-  CVXBUSD: 5.181,
-  ENJUSDT: 0.4047,
-  RSRUSDT: 0.006398,
-  OMGUSDT: 1.495,
-  ATAUSDT: 0.1339,
-  ETHBUSD: 1220.49,
-  IOSTUSDT: 0.01109,
-  STGUSDT: 0.424,
-  DOGEUSDT: 0.05717,
-  AUCTIONBUSD: 5.308,
-  ALGOUSDT: 0.3021,
-  ANKRUSDT: 0.02616,
-  FTTBUSD: 22.364,
-  CHZUSDT: 0.17436,
-  ZRXUSDT: 0.2376,
-  AVAXUSDT: 14.93,
-  SCUSDT: 0.003653,
-  TOMOUSDT: 0.3854,
-  ARUSDT: 9.101,
-  CELOUSDT: 0.702,
-  SXPUSDT: 0.3023,
-  BNBBUSD: 261.84,
-  OCEANUSDT: 0.14455,
-  DOTUSDT: 5.881,
-  UNFIUSDT: 5.189,
-  ALPHAUSDT: 0.1062,
-  MATICBUSD: 0.744,
-  SPELLUSDT: 0.000852,
-  ONEUSDT: 0.01709,
-  ETHUSDT_221230: 1216.13,
-  FTMBUSD: 0.1964,
-  BTSUSDT: 0.01251,
-  EGLDUSDT: 52.62,
-  INJUSDT: 1.702,
-  DUSKUSDT: 0.11336,
-  RENUSDT: 0.1088,
-  KAVAUSDT: 1.351,
-  NEOUSDT: 7.588,
-  BCHUSDT: 104.66,
-  PHBBUSD: 0.5606,
-  CVCUSDT: 0.11271,
-  SUSHIUSDT: 1.165,
-  LPTUSDT: 8.231,
-  SOLUSDT: 28.97,
-  WOOUSDT: 0.1362,
-  NKNUSDT: 0.07931,
-  FILUSDT: 4.88,
-  AAVEUSDT: 68.63,
-  HOTUSDT: 0.001939,
-  FOOTBALLUSDT: 804.49,
-  GTCUSDT: 1.532,
-  APEUSDT: 4.351,
-  GALAUSDT: 0.03648,
-  VETUSDT: 0.02197,
-  LUNA2BUSD: 2.5967,
-  ANTUSDT: 1.507,
-  BELUSDT: 0.511,
-  LTCBUSD: 49.24,
-  SNXUSDT: 2.001,
-  BTCUSDT_221230: 18485.5,
-  BAKEUSDT: 0.2121,
-  STMXUSDT: 0.00635,
-  LUNA2USDT: 2.5956,
-  GMTBUSD: 0.5581,
-  REEFUSDT: 0.005657,
-  OGNUSDT: 0.1319,
-  AMBBUSD: 0.01309,
-  SANDBUSD: 0.726,
-  GALUSDT: 2.249,
-  UNIBUSD: 5.823,
-  AVAXBUSD: 14.935,
-  RLCUSDT: 1.0525,
-  XTZUSDT: 1.35,
-  EOSUSDT: 0.976,
-  CVXUSDT: 5.182,
-  COTIUSDT: 0.09764,
-  STORJUSDT: 0.3915,
-  NEARBUSD: 2.951,
-  HNTUSDT: 4.671,
-  IMXUSDT: 0.6365,
-  TRXBUSD: 0.059811,
-  OPUSDT: 0.6953,
-  ARPAUSDT: 0.03082,
-  DASHUSDT: 39.25,
-  MANAUSDT: 0.61,
-  CELRUSDT: 0.01341,
-  GRTUSDT: 0.08511,
-  '1INCHUSDT': 0.5552,
-  ROSEUSDT: 0.053,
-  DEFIUSDT: 621.2,
-  KSMUSDT: 38.4,
-  BTCBUSD: 18404.1,
-  LINAUSDT: 0.00688,
-  ATOMUSDT: 11,
-  APEBUSD: 4.351,
-  CHRUSDT: 0.1376,
-  IOTXUSDT: 0.02577,
-  XMRUSDT: 137.38,
-  FTMUSDT: 0.1963,
-  IOTAUSDT: 0.2455,
-  BTCDOMUSDT: 1320.8,
-  CTKUSDT: 0.809,
-  UNIUSDT: 5.821,
-  TRXUSDT: 0.0598,
-  ONTUSDT: 0.2001,
-  CRVUSDT: 0.76,
-  KNCUSDT: 0.919,
-  RVNUSDT: 0.02991,
-  THETAUSDT: 0.958,
-  ICXUSDT: 0.2106,
-  SKLUSDT: 0.03329,
-  API3USDT: 1.491,
-  KLAYUSDT: 0.1475,
-  WAVESUSDT: 3.238,
-  TLMUSDT: 0.0347,
-  ADAUSDT: 0.3662,
-  ALICEUSDT: 1.471,
-  '1000LUNCUSDT': 0.2725,
-  FLOWUSDT: 1.45,
-  MASKUSDT: 1.012,
-  LRCUSDT: 0.2486,
-  NEARUSDT: 2.951,
-  '1000LUNCBUSD': 0.2724,
-  DARUSDT: 0.1861,
-  GALBUSD: 2.248,
-  AUDIOUSDT: 0.1737,
-  PEOPLEUSDT: 0.01933,
-  CTSIUSDT: 0.1286,
-  MATICUSDT: 0.744,
-  LEVERBUSD: 0.001404,
-  LDOBUSD: 1.205,
-  BALUSDT: 4.692,
-  WAVESBUSD: 3.238,
-  ZILUSDT: 0.02904,
-  ENSUSDT: 17.223,
-  ETCBUSD: 21.922,
-  DGBUSDT: 0.00838,
-  XLMUSDT: 0.10949,
-  DOTBUSD: 5.88,
-  JASMYUSDT: 0.005074,
-  DENTUSDT: 0.000836,
-  QTUMUSDT: 2.54,
-  FTTUSDT: 22.368,
-  LTCUSDT: 49.24,
-  FLMUSDT: 0.0998,
-  RUNEUSDT: 1.418,
-  ZECUSDT: 48.65,
-  '1000SHIBUSDT': 0.009662,
-  AXSUSDT: 10.66,
-  BANDUSDT: 1.0276,
-  GMTUSDT: 0.5582,
-  ETCUSDT: 21.932,
-  TRBUSDT: 13.36,
-  DOGEBUSD: 0.05718,
-  ICPUSDT: 4.855,
-  COMPUSDT: 52.7,
-  ANCBUSD: 0.0869,
-  LINKUSDT: 6.675,
-  HBARUSDT: 0.06216,
-  XRPUSDT: 0.468,
-  ICPBUSD: 4.856,
-  BNXUSDT: 154.58,
-  RAYUSDT: 0.474,
-  LINKBUSD: 6.676,
-  DYDXUSDT: 1.409,
-  GALABUSD: 0.036483,
-  YFIUSDT: 7403,
-  BTCUSDT: 18401.3,
-  LITUSDT: 0.673,
-  SANDUSDT: 0.7249,
-  BLZUSDT: 0.07313,
-  BNBUSDT: 261.83,
-  ADABUSD: 0.3661,
-  SOLBUSD: 28.98
+  ...
+}
+
+{ // with time
+  IOTXUSDT: { price: 0.02503, time: 1668885756143 },
+  AUCTIONBUSD: { price: 4.584, time: 1668885717208 },
+  LUNA2BUSD: { price: 1.6656, time: 1668885755976 },
+  '1000SHIBBUSD': { price: 0.00913, time: 1668885738463 },
+  XLMUSDT: { price: 0.08997, time: 1668885767035 },
+  OMGUSDT: { price: 1.157, time: 1668885756213 },
+  BALUSDT: { price: 5.496, time: 1668885757987 },
+  ...
 }
 ```
 </details>
