@@ -402,7 +402,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         if (data.error) return data;
 
         return Array.isArray(data) ? data.reduce((out, i) => ((out[i.symbol] = parseFloat(i.price)), out), {}) : { symbol: data.symbol, price: parseFloat(data.price) };
-
     }
 
     this.bookTicker = (symbols = false) => {
@@ -1114,7 +1113,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * returns the Last price of all symbols/symbol (Last price is the last executed trade's price on Binance)
      * @param {string} symbol - optional
      */
-    this.futuresPrices = async (symbol = undefined) => {
+    this.futuresPrices = async (symbol = undefined, withTime = false) => {
         let params = {
             baseURL: fapi,
             path: '/fapi/v1/ticker/price',
@@ -1126,7 +1125,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let data = await request(params, options);
         if (data.error) return data;
-        return Array.isArray(data) ? data.reduce((out, i) => ((out[i.symbol] = parseFloat(i.price)), out), {}) : { symbol: data.symbol, price: parseFloat(data.price), time: data.time };
+        return Array.isArray(data) ? withTime ? data.reduce((out, i) => ((out[i.symbol] = { price: parseFloat(i.price), time: i.time }), out), {}) : data.reduce((out, i) => ((out[i.symbol] = parseFloat(i.price)), out), {}) : { symbol: data.symbol, price: parseFloat(data.price), time: data.time };
     }
 
     /**
@@ -2275,7 +2274,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            lastPrice: function (callback, symbol = false, isFast = false) {
+            lastPrice: function (callback, symbol = false, isFast = false, withTime = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2287,16 +2286,34 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     if (Array.isArray(msg)) {
                         for (const item of msg) {
                             const obj = {};
-                            obj[item.s] = item.c;
+                            if (withTime) {
+                                obj.symbol = item.s;
+                                obj.price = item.c;
+                                obj.time = item.E;
+                            } else {
+                                obj[item.s] = item.c;
+                            }
                             callback(obj);
                         }
                     } else if (msg.p) {
                         const obj = {};
-                        obj[msg.s] = msg.p;
+                        if (withTime) {
+                            obj.symbol = msg.s;
+                            obj.price = msg.p;
+                            obj.time = msg.E;
+                        } else {
+                            obj[msg.s] = msg.p;
+                        }
                         callback(obj);
                     } else {
                         const obj = {};
-                        obj[msg.s] = msg.c;
+                        if (withTime) {
+                            obj.symbol = msg.s;
+                            obj.price = msg.c;
+                            obj.time = msg.E;
+                        } else {
+                            obj[msg.s] = msg.c;
+                        }
                         callback(obj);
                     }
                 };
@@ -2657,7 +2674,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            lastPrice: function (callback, symbol = false, isFast = false) {
+            lastPrice: function (callback, symbol = false, isFast = false, withTime) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2669,16 +2686,34 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     if (Array.isArray(msg)) {
                         for (const item of msg) {
                             const obj = {};
-                            obj[item.s] = item.c;
+                            if (withTime) {
+                                obj.symbol = item.s;
+                                obj.price = item.c;
+                                obj.time = item.E;
+                            } else {
+                                obj[item.s] = item.c;
+                            }
                             callback(obj);
                         }
                     } else if (msg.k) {
                         const obj = {};
-                        obj[msg.s] = msg.k.c;
+                        if (withTime) {
+                            obj.symbol = msg.s;
+                            obj.price = msg.k.c;
+                            obj.time = msg.E
+                        } else {
+                            obj[msg.s] = msg.k.c;
+                        }
                         callback(obj);
                     } else {
                         const obj = {};
-                        obj[msg.s] = msg.p;
+                        if (withTime) {
+                            obj.symbol = msg.s;
+                            obj.price = msg.p;
+                            obj.time = msg.E;
+                        } else {
+                            obj[msg.s] = msg.p;
+                        }
                         callback(obj);
                     }
                 };
