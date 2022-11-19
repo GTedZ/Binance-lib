@@ -3236,7 +3236,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
                 object.silentClose();
             },
-            reconnectInterval: setInterval(() => object.reconnect(), 6 * HOUR)
+            reconnectInterval: setInterval(() => object.reconnect(), 12 * HOUR)
         }
 
 
