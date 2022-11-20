@@ -3281,12 +3281,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
             }, 15 * MINUTE),
 
-            ping: async () => {
+            ping: async (tries = 1) => {
                 try {
                     object.socket.ping();
                 } catch (err) {
+                    if (tries < 0) return;
                     await delay(binance.timeout);
-                    object.ping();
+                    object.ping(--tries);
                 }
             }
         }
