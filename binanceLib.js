@@ -2674,7 +2674,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            lastPrice: function (callback, symbol = false, isFast = false, withTime) {
+            lastPrice: function (callback, symbol = false, isFast = false, withTime = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
