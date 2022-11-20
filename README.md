@@ -122,7 +122,7 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 |:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
 |ping()                             <a href='#ping'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
 |serverTime()                 <a href='#serverTime'><sup>ref</sup></a>|                         |reconnect, tries                 |       |
-|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |mapped |
+|exchangeInfo()             <a href='#exchangeInfo'><sup>ref</sup></a>|                         |symbols, permissions             |mapped (bool)|
 |orderBook()                   <a href='#orderBook'><sup>ref</sup></a>|symbol                   |limit                            |       |
 |trades()                         <a href='#trades'><sup>ref</sup></a>|symbol                   |limit                            |       |
 |oldTrades()                   <a href='#oldTrades'><sup>ref</sup></a>|symbol                   |limit, fromId                    |       |
