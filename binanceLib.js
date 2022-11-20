@@ -3161,7 +3161,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             close: () => {
                 object.alive = false;
                 object.socket.close();
-                clearInterval(object.reconnectInterval);
+                clearInterval(object.sendPingInterval);
+                clearInterval(object.checkHeartBeatInterval);
                 if (object.interval) {
                     clearInterval(object.interval);
                     object.deleteKey();
@@ -3261,17 +3262,33 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             resolves: {},
             originalResolve: -1,
 
-            silentClose: () => {
-                object.socket.close();
-            },
-            reconnect: () => {
-                if (!object.alive) {
-                    clearInterval(object.reconnectInterval)
+            lastHeartBeat: Date.now(),
+            sendPingInterval: setInterval(() => {
+                if (object.alive) object.ping();
+                else if (!object.alive) {
+                    clearInterval(object.sendPingInterval);
                     return;
                 }
-                object.silentClose();
-            },
-            reconnectInterval: setInterval(() => object.reconnect(), 12 * HOUR)
+            }, 2 * MINUTE),
+            checkHeartBeatInterval: setInterval(() => {
+                if (!object.alive) {
+                    clearInterval(object.checkHeartBeatInterval);
+                    return;
+                }
+                if (Date.now() - object.lastHeartBeat > 10 * MINUTE) {
+                    params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
+                    newSocket(params, callback, object);
+                }
+            }, 15 * MINUTE),
+
+            ping: async () => {
+                try {
+                    object.socket.ping();
+                } catch (err) {
+                    await delay(binance.timeout);
+                    object.ping();
+                }
+            }
         }
 
 
@@ -3337,7 +3354,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             setTimeout(() => {
                 params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
                 newSocket(params, callback, object);
-            }, binance.timeout)
+            }, binance.timeout);
+            object.lastHeartBeat = Date.now();
         })
 
         socket.on('ping', () => {
@@ -3346,7 +3364,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
 
         socket.on('pong', () => {
-            if (binance.ws) console.log(params.path + ' ponged.')
+            if (binance.ws) console.log(params.path + ' ponged.');
+            object.lastHeartBeat = Date.now();
         })
     }
 
