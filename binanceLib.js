@@ -534,6 +534,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             path: '/api/v3/order',
             method: 'post'
         }
+
         if (binance.test) params.path += '/test';
 
         const options = {
@@ -546,7 +547,35 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         Object.assign(options, opts);
 
 
-        if (!binance.test) return request(params, options, 'SIGNED');
+        if (!binance.test) {
+            const resp = await request(params, options, 'SIGNED');
+            if (resp.error) return resp;
+
+            if (resp.fills) {
+                resp.avgPrice = 0;
+                let totalQty = 0;
+                let total_forAvg = 0;
+
+                resp.commissions = {};
+                resp.commissions.assets = new Set();
+
+                resp.fills.forEach(fill => {
+                    totalQty += fill.qty;
+                    total_forAvg += fill.qty * fill.price;
+
+                    resp.commissions.assets.add(fill.commissionAsset);
+
+                    if (!resp.commissions[fill.commissionAsset]) resp.commissions[fill.commissionAsset] = 0;
+                    resp.commissions[fill.commissionAsset] += fill.commission
+                });
+
+                resp.commissions.assets = Array.from(resp.commissions.assets);
+                resp.avgPrice = parseFloat((total_forAvg / totalQty).toFixed(14));
+            }
+
+            return resp;
+        }
+
         let resp = await request(params, options, 'SIGNED');
         if (resp.error) return resp;
         return {
@@ -4222,7 +4251,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // prototypes ////
 
 
-    this.test = () => {
+    this.testing = () => {
 
     }
     if (options.useServerTime && options.useServerTime == true) { setInterval(fetchOffset, 1 * 60 * 60 * 1000); fetchOffset() }
