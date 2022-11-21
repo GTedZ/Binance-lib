@@ -490,7 +490,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const market = (symbol, quantity, quoteOrderQty, side, opts) => {
         if (!quantity && !quoteOrderQty) return ERR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
-        if (!number(quantity)) return ERR('quantity', 'type', 'Number');
         if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just leave it blank.`);
 
         const options = {}
@@ -501,25 +500,25 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return this.createOrder(symbol, side, 'MARKET', options);
     }
 
-    this.buy = (symbol, quantity, price, opts = {}) => {
-        return limit(symbol, quantity, price, 'BUY', opts);
+    this.buy = (symbol, quantity = false, quoteOrderQty = false, price, opts = {}) => {
+        return limit(symbol, quantity, quoteOrderQty, price, 'BUY', opts);
     }
 
-    this.sell = (symbol, quantity, price, opts = {}) => {
-        return limit(symbol, quantity, price, 'SELL', opts);
+    this.sell = (symbol, quantity = false, quoteOrderQty = false, price, opts = {}) => {
+        return limit(symbol, quantity, quoteOrderQty, price, 'SELL', opts);
     }
 
-    const limit = (symbol, quantity, price, side, opts) => {
-        if (!quantity) return ERR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
-        if (!number(quantity)) return ERR('quantity', 'type', 'Number');
+    const limit = (symbol, quantity, quoteOrderQty, price, side, opts) => {
+        if (!quantity && !quoteOrderQty) return ERR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
         if (!price) return ERR('price', 'required');
         if (!number(price)) return ERR('price', 'type', 'Number');
         if (typeof opts != 'object') return ERR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just don't pass it.`);
 
         const options = {
-            price: price,
-            quantity: quantity
+            price: price
         }
+        if (quantity) options.quantity;
+        else options.quoteOrderQty = quoteOrderQty;
         Object.assign(options, opts);
 
         return this.createOrder(symbol, side, 'LIMIT', options);
@@ -593,12 +592,16 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return request(params, options, 'SIGNED');
     }
 
+    this.orderStatus = (symbol, orderId = 0, origClientOrderId = 0, opts = {}) => {
+        return this.order(symbol, orderId, origClientOrderId, opts);
+    }
+
     this.order = (symbol, orderId = 0, origClientOrderId = 0, opts = {}) => {
         if (!symbol) return ERR('symbol', 'required');
         const params = {
             baseURL: api,
             path: '/api/v3/order',
-            method: 'delete'
+            method: 'get'
         }
 
         const options = {
@@ -629,7 +632,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     }
 
-    this.allOrders = (symbol = false, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
+    this.allOrders = (symbol, limit = 500, orderId = 0, startTime = 0, endTime = 0, opts = {}) => {
+        if (!symbol) return ERR('symbol', 'required');
         const params = {
             baseURL: api,
             path: '/api/v3/allOrders',
@@ -668,7 +672,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         // TODO
     }
 
-    this.account = async (mapped = false, activeAssetsOnly = false, opts = {}) => {
+    this.account = async (mappedBalance = false, activeAssetsOnly = false, opts = {}) => {
         const params = {
             baseURL: api,
             path: '/api/v3/account',
@@ -679,15 +683,14 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         Object.assign(options, opts);
 
         let resp = await request(params, options, 'SIGNED');
-        if (!mapped || resp.error) return resp;
+        if (resp.error) return resp;
 
-        let newObj = { ...resp };
+        if (activeAssetsOnly) resp.balances = resp.balances.filter(balance => balance.locked != 0 || balance.free != 0);
+        if (!mappedBalance) return resp;
+        const newObj = { ...resp }
         newObj.balances = {};
-        for (let item of resp.balances) {
-            if (item.locked != 0 || item.free != 0) newObj.balances[item.asset] = item;
-        }
-
-        return newObj
+        for (let item of resp.balances) newObj.balances[item.asset] = item;
+        return newObj;
     }
 
     this.userTrades = (symbol, limit = 500, orderId = 0, fromId = 0, startTime = 0, endTime = 0, opts = {}) => {

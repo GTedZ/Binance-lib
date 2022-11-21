@@ -808,10 +808,35 @@ let response = await binance.futuresExchangeInfo(true, 10, {symbols: true, quant
 
 
 ## **SPOT ACCOUNT/TRADE DATA**
-|FUNCTIONS                                                            |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
-|:--------------------------------------------------------------------|:-----------------------:|:-------------------------------:|:-----:|
-// TODO
+|FUNCTIONS                                                                 |REQUIRED PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONAL PARAMETERS<a href='#Parameters-Explanation'><sup>ref</sup></a>|OPTIONS = {} <a href='#options--'><sup>ref</sup></a>|
+|:-------------------------------------------------------------------------|:--------------------------------------------------------------:|:-------------------------------------------:|:---------------:|
+|marketBuy()                      <a href='#marketBuy()'><sup>ref</sup></a>|symbol, (one of: quantity, quoteOrderQty)                       |                                             |newClientOrderId, recvWindow       |
+|marketSell()                    <a href='#marketSell()'><sup>ref</sup></a>|symbol, (one of: quantity, quoteOrderQty)                       |                                             |newClientOrderId, recvWindow       |
+|buy()                                  <a href='#buy()'><sup>ref</sup></a>|symbol, quantity, price                                         |                                             |newClientOrderId, recvWindow       |
+|sell()                                <a href='#sell()'><sup>ref</sup></a>|symbol, quantity, price                                         |                                             |newClientOrderId, recvWindow       |
+|createOrder()                  <a href='#createOrder()'><sup>ref</sup></a>|symbol, side, type, opts = {}                                   |                                             |timeInForce, quantity, quoteOrderQty, price, newClientOrderId, strategyId, strategyType, stopPrice, trailingDelta, icebergQty, newOrderRespType, recvWindow |
+|cancelOrder()                  <a href='#cancelOrder()'><sup>ref</sup></a>|symbol, (one of: orderId, origClientOrderId, newClientOrderId)  |                                             |recvWindow       |
+|cancelOpenOrders()        <a href='#cancelOpenOrders()'><sup>ref</sup></a>|symbol                                                          |                                             |recvWindow       |
+|orderStatus()                  <a href='#orderStatus()'><sup>ref</sup></a>|symbol, (one of): orderId, origClientOrderId                    |                                             |recvWindow       |
+|openOrders()                    <a href='#openOrders()'><sup>ref</sup></a>|                                                                |symbol                                       |recvWindow       |
+|cancelReplace()              <a href='#cancelReplace()'><sup>ref</sup></a>|                                                                |                                             |recvWindow       |
+|allOrders()                      <a href='#allOrders()'><sup>ref</sup></a>|symbol                                                          |limit, orderId, startTime, endTime           |recvWindow       |
+|account()                          <a href='#account()'><sup>ref</sup></a>|                                                                |(bool only): mappedBalance, activeAssetsOnly |recvWindow       |
+|userTrades()                    <a href='#userTrades()'><sup>ref</sup></a>|symbol                                                          |limit, orderId, fromId, startTime, endTime   |recvWindow       |
+|userOrderCountUsage()  <a href='#userOrderCountUsage()'><sup>ref</sup></a>|                                                                |                                             |recvWindow       |
+|newOCO()                            <a href='#newOCO()'><sup>ref</sup></a>|N/A                                                             |                                             |recvWindow       |
+|cancelOCO()                      <a href='#cancelOCO()'><sup>ref</sup></a>|N/A                                                             |                                             |recvWindow       |
+|OCOStatus()                      <a href='#OCOStatus()'><sup>ref</sup></a>|N/A                                                             |                                             |recvWindow       |
+|allOCO()                            <a href='#allOCO()'><sup>ref</sup></a>|N/A                                                             |                                             |recvWindow       |
+|allOpenOCO()                    <a href='#allOpenOCO()'><sup>ref</sup></a>|N/A                                                             |                                             |recvWindow       |
 
+### .marketBuy():
+```js
+  const order_response = await binance.marketBuy("BTCUSDT", 0.001);
+  // OR
+  const order_response = await binance.marketBuy('BTCUSDT', false, 12); // using quote Size (here it's USDT, thus 12 USDT in size)
+```
+// TODO
 
 
 # ***FUTURES DOCUMENTATION:***
