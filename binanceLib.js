@@ -3172,7 +3172,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // functions necessary for websocket    \\\\
 
-    connect = (params, callback, formMessageFunc) => {
+    const connect = (params, callback, formMessageFunc) => {
         if (!params.path) { return ERROR('streamName', 'required'); }
         if (!callback) { return ERROR('callback', 'required'); }
 
@@ -3424,7 +3424,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // private functions \\\\
 
-    request = async (params, options = {}, type = 'default') => {
+    const request = async (params, options = {}, type = 'default') => {
         if (type == "DATA" || type == 'SIGNED') {
             if (!this.APIKEY) return ERR('APIKEY is required for this request');
             params.headers = axios.defaults.headers[params.method];
