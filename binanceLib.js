@@ -3308,6 +3308,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     return;
                 }
                 if (Date.now() - object.lastHeartBeat > 10 * MINUTE) {
+                    if (binance.ws) console.log(`Didn't receive ANY updates for over 15 minutes, so restarting the websocket for ${params.path}`);
                     params.path = object.cachedSubscriptions.size == 1 ? Array.from(object.cachedSubscriptions)[0] : Array.from(object.cachedSubscriptions);
                     newSocket(params, callback, object);
                 }
@@ -3441,7 +3442,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         }
 
         if (this.query) {
-            console.log(params.baseURL + params.path, options);
             if (query) console.log(query)
         }
         let startTime = Date.now(), latency;
