@@ -3576,15 +3576,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             for (let key of keys) {
                 if (Array.isArray(key)) {
                     let newArr = [...key];  // this is because 'key' is a reference to an array that will be used by any other subsequent message from the websocket, so if it is changed here (via .shift()), it will lose its value, and only the first websocket message will have its full info, any other will not
-                    let mainKey = newArr.shift().split('=');
-                    let oldKey = mainKey[0];
-                    let newKey = mainKey[1];
+                    const [oldKey, newKey] = newArr.shift().split('=');
                     obj[newKey] = advancedRenameObjectProperties(obj[oldKey], newArr);
                     delete obj[oldKey];
                 } else {
-                    key = key.split('=');
-                    let oldKey = key[0];
-                    let newKey = key[1];
+                    const [oldKey, newKey] = key.split('=');
                     if (newKey != 'ignore') obj[newKey] = obj[oldKey];
                     delete obj[oldKey];
                 }
