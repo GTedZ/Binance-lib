@@ -1,6 +1,6 @@
 // timeInForce is GTX for post, and GTC for limit orders apparently
 
-let api = function everything(APIKEY = false, APISecret = false, options = { hedgeMode: false, recvWindow: 5000 }) {
+let api = function everything(APIKEY = false, APISecret = false, options = { hedgeMode: false, fetchFloats: false, useServerTime: false, recvWindow: 5000 }) {
     if (!new.target) return new api(options); // Legacy support for calling the constructor without 'new';
     const axios = require('axios')
     const crypto = require('crypto');
@@ -106,7 +106,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         return resp.serverTime;
     }
 
-    this.exchangeInfo = async (symbols = false, permissions = false, opts = {}) => {
+    this.exchangeInfo = async (symbols = false, permissions = false, opts = { mapped: false }) => {
         const params = {
             baseURL: api,
             path: '/api/v3/exchangeInfo',
@@ -834,7 +834,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
      * @param {Boolean} orderTypes - 'LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', etc...
      * @param {Boolean} timeInForce - 'GTC', 'IOC', 'FOK', 'GTX'
      */
-    this.futuresExchangeInfo = async (reconnect = false, tries = 0, options = {}) => {
+    this.futuresExchangeInfo = async (reconnect = false, tries = 0, options = { mapped: false }) => {
         let altResponse = false;
         let resp = await request(
             {
@@ -3333,7 +3333,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         })
     }
 
-    newSocket = function (params, callback, object) {
+    const newSocket = function (params, callback, object) {
         if (binance.ws) console.log({ path: params.path })
         let streamPath = params.path, allSubsDone = true;
         if (Array.isArray(streamPath)) {
@@ -3425,9 +3425,10 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // private functions \\\\
 
     const request = async (params, options = {}, type = 'default') => {
+        params.headers = axios.defaults.headers[params.method];
+        params.headers['Accept-Encoding'] = 'application/json';
         if (type == "DATA" || type == 'SIGNED') {
             if (!this.APIKEY) return ERR('APIKEY is required for this request');
-            params.headers = axios.defaults.headers[params.method];
             params.headers['X-MBX-APIKEY'] = this.APIKEY;
         }
 
