@@ -1,7 +1,7 @@
 // timeInForce is GTX for post, and GTC for limit orders apparently
 
 let api = function everything(APIKEY = false, APISecret = false, options = { hedgeMode: false, fetchFloats: false, useServerTime: false, recvWindow: 5000 }) {
-    if (!new.target) return new api(options); // Legacy support for calling the constructor without 'new';
+    if (!new.target) return new api(APIKEY, APISecret, options); // Legacy support for calling the constructor without 'new';
     const axios = require('axios')
     const crypto = require('crypto');
     const ws = require('ws')
