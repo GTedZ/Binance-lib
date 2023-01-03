@@ -134,14 +134,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
         let resp = await request(params, options);
 
-        if (resp.error) {
-            tries--;
-            if (reconnect == false || tries == 0) return resp;
-            else {
-                await delay(binance.timeout);
-                return this.exchangeInfo(reconnect, tries, options);
-            }
-        }
+        if (resp.error) return resp;
 
         options = opts;
         let altResponse = false;
@@ -151,6 +144,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             if (options.symbols || options.mapped) altResponse.symbols = resp.symbols.map(symbol => symbol.symbol);
 
             if (options.mapped) {
+                let altResponse = {};
                 altResponse.exchangeInfo = {};
                 altResponse.exchangeInfo.timezone = resp.timezone;
                 altResponse.exchangeInfo.serverTime = resp.serverTime;
@@ -163,33 +157,31 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     altResponse[symbol] = {};
                     for (let key of Object.keys(item)) {
                         let value = item[key];
-                        if (!Array.isArray(value)) {
+                        if (key == 'filters') {
+                            altResponse[symbol].filters = {};
+                            item.filters.forEach(filter => {
+                                const name = filter.filterType;
+                                delete filter.filterType;
+                                altResponse[symbol].filters[name] = filter;
+                                if (name == 'LOT_SIZE' || name == 'PRICE_FILTER') {
+                                    let keyName = 'pricePrecision';
+                                    if (name == 'LOT_SIZE') keyName = 'quantityPrecision';
+                                    console.log(keyName)
+                                    const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
+                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
+                                    altResponse[symbol][keyName] = precision;
+                                }
+                            });
+                        } else {
                             altResponse[symbol][key] = value;
                         }
                     }
-                    altResponse[symbol].minNotional = item.filters[3].minNotional;
-                    altResponse[symbol].icebergLimit = item.filters[4].limit;
                     altResponse[symbol].orderTypes = item.orderTypes;
 
-                    for (let x = 6; x <= 8; x++) {
-                        if (item.filters[x] && item.filters[x].filterType == 'TRAILING_DELTA') altResponse[symbol].trailingFilters = item.filters[x];
-                        if (item.filters[x] && item.filters[x].filterType == 'MAX_NUM_ORDERS') altResponse[symbol].maxNumOrders = item.filters[x].maxNumOrders;
-                        if (item.filters[x] && item.filters[x].filterType == 'MAX_NUM_ALGO_ORDERS') altResponse[symbol].maxNumAlgoOrders = item.filters[x].maxNumAlgoOrders;
-                    }
-
-
-
-                    altResponse[symbol].priceFilters = item.filters[0];
-                    altResponse[symbol].percentPriceFilters = item.filters[1];
-                    altResponse[symbol].lotFilters = item.filters[2];
-                    altResponse[symbol].notionalFilters = item.filters[3];
-                    altResponse[symbol].marketLotFilters = item.filters[5];
-
                 });
+                resp = altResponse;
             }
         }
-
-        if (altResponse != false && Object.keys(altResponse).length != 0) return altResponse;
         return resp;
     }
 
