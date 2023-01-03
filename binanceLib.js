@@ -3178,7 +3178,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
          * @returns { Promise < { 
          * sendPing: Promise < { result: {}, rateLimits: Array } | { error: { status: Integer, error: String, rateLimits: Array } } >, 
          * serverTime: Promise < { result: { serverTime: UNIX_timestamp }, rateLimits: Array } | { error: {status: Integer, error: String, rateLimits: Array} } > 
-         * exchangeInfo(symbol_or_symbols:undefined|String|Array<String>, permissions:undefined|String|Array<String>): Promise < { result, rateLimits: Array } | { error: {status: Integer, error: String, rateLimits: Array} } >
+         * exchangeInfo(symbol_or_symbols:undefined|String|Array<String>, permissions:undefined|String|Array<String>, options: {mapped: boolean|undefined}): Promise < { result, rateLimits: Array } | { error: {status: Integer, error: String, rateLimits: Array} } >
          * account(mappedBalance: Boolean|undefined, activeAssetsOnly: boolean|undefined, opts: {recvWindow: Integer} |undefined): Promise < { result, rateLimits: Array } | { error: {status:Integer, error: String, rateLimits: Array} } > 
          * > } object }
          */
@@ -3233,6 +3233,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             }
 
             WS_Object.privateMessage = (msg) => {
+                if (binance.fetchFloats) msg = parseAllPropertiesToFloat(msg);
                 const requestWeight_1min = msg.rateLimits?.filter(element => element.rateLimitType == 'REQUEST_WEIGHT' && element.interval == 'MINUTE' && element.intervalNum == 1);
                 if (Array.isArray(requestWeight_1min)) {
                     binance.usedWeight = requestWeight_1min[0].count;
@@ -3824,7 +3825,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             return WS_Object.sendPrivateMessage(obj)
         }
 
-        WS_Object.exchangeInfo = (symbol_or_symbols = false, permissions = false) => {
+        WS_Object.exchangeInfo = async (symbol_or_symbols = false, permissions = false, options = { mapped: false }) => {
             const obj = {
                 method: 'exchangeInfo'
             }
@@ -3840,7 +3841,48 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 if (typeof permissions == 'string') obj.params.permissions.push(permissions);
                 else obj.params.permissions.push(...permissions);
             }
-            return WS_Object.sendPrivateMessage(obj);
+            const resp = await WS_Object.sendPrivateMessage(obj);
+            if (resp.error) return resp;
+
+            if (options.mapped) {
+                let altResponse = {};
+                altResponse.exchangeInfo = {};
+                altResponse.exchangeInfo.timezone = resp.result.timezone;
+                altResponse.exchangeInfo.serverTime = resp.result.serverTime;
+                altResponse.exchangeInfo.rateLimits = resp.result.rateLimits;
+                altResponse.exchangeInfo.exchangeFilters = resp.result.exchangeFilters;
+
+
+                resp.result.symbols.forEach(item => {
+                    let symbol = item.symbol;
+                    altResponse[symbol] = {};
+                    for (let key of Object.keys(item)) {
+                        let value = item[key];
+                        if (key == 'filters') {
+                            altResponse[symbol].filters = {};
+                            item.filters.forEach(filter => {
+                                const name = filter.filterType;
+                                delete filter.filterType;
+                                altResponse[symbol].filters[name] = filter;
+                                if (name == 'LOT_SIZE' || name == 'PRICE_FILTER') {
+                                    let keyName = 'pricePrecision';
+                                    if (keyName == 'MARKET_LOT_FILTER') keyName = 'quantityPrecision';
+                                    const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
+                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
+                                    altResponse[symbol][keyName] = precision;
+                                }
+                            });
+                        } else {
+                            altResponse[symbol][key] = value;
+                        }
+                    }
+                    altResponse[symbol].orderTypes = item.orderTypes;
+
+                });
+                resp.result = altResponse;
+            }
+
+            return resp;
         }
 
         WS_Object.account = async (mappedBalance = false, activeAssetsOnly = false, opts = {}) => {
@@ -3848,8 +3890,8 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 method: 'account.status',
                 params: {
                     apiKey: binance.APIKEY,
-                    recvWindow: 5000,
-                    timestamp: Date.now(),
+                    recvWindow: 10000,
+                    timestamp: Date.now() + binance.timestamp_offset,
                     ...opts
                 }
             }
