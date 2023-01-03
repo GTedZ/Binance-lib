@@ -166,7 +166,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                 if (name == 'LOT_SIZE' || name == 'PRICE_FILTER') {
                                     let keyName = 'pricePrecision';
                                     if (name == 'LOT_SIZE') keyName = 'quantityPrecision';
-                                    console.log(keyName)
                                     const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
                                     const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
                                     altResponse[symbol][keyName] = precision;
@@ -3217,8 +3216,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     await WS_Object.socket.send(msg);
                     return newPromise(WS_Object, id);
                 } catch (err) {
-                    if (binance.ws) console.log(`error in: WS_Object.sendPrivateMessage()`)
-                    console.log(err);
+                    if (binance.ws) console.log(`error in: WS_Object.sendPrivateMessage()`);
                     await delay(binance.timeout);
                     return WS_Object.sendPrivateMessage(OBJ, signed);
                 }
