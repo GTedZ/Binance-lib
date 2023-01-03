@@ -3856,7 +3856,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                 altResponse[symbol].filters[name] = filter;
                                 if (name == 'LOT_SIZE' || name == 'PRICE_FILTER') {
                                     let keyName = 'pricePrecision';
-                                    if (keyName == 'MARKET_LOT_FILTER') keyName = 'quantityPrecision';
+                                    if (name == 'LOT_SIZE') keyName = 'quantityPrecision';
                                     const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
                                     const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
                                     altResponse[symbol][keyName] = precision;
