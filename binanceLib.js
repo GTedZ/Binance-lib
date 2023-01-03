@@ -3880,7 +3880,6 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 method: 'account.status',
                 params: {
                     apiKey: binance.APIKEY,
-                    recvWindow: 10000,
                     timestamp: Date.now() + binance.timestamp_offset,
                     ...opts
                 }
