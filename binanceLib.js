@@ -8,14 +8,19 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     const bigInt = require('json-bigint')({ storeAsString: true });
     const binance = this;
 
-    const api = 'https://api.binance.com'
-    const sapi = 'https://api.binance.com';
-    const fapi = 'https://fapi.binance.com';
-    const dapi = 'https://dapi.binance.com';
-    const wapi = 'https://api.binance.com';
+    const
+        api = 'https://api.binance.com',
+        sapi = 'https://api.binance.com',
+        fapi = 'https://fapi.binance.com',
+        dapi = 'https://dapi.binance.com',
+        wapi = 'https://api.binance.com';
+    ;
 
-    const sWSS = 'wss://stream.binance.com:9443'
-    const fWSS = 'wss://fstream.binance.com';
+    const
+        WS = 'wss://ws-api.binance.com:443/ws-api/v3',
+        sWSS = 'wss://stream.binance.com:9443',
+        fWSS = 'wss://fstream.binance.com';
+    ;
 
 
     const SPOT_ORDERTYPES = ['LIMIT', 'MARKET', 'STOP_LOSS', 'STOP_LOSS_LIMIT', 'TAKE_PROFIT', 'TAKE_PROFIT_LIMIT', 'LIMIT_MAKER'];
@@ -32,9 +37,13 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     this.APIKEY = APIKEY; contractTypes
     this.APISECRET = APISecret;
-    this.APIKEYSInfo = {}
+    this.APIKEYSInfo = {};
     this.timestamp_offset = 0;
     this.ping = 0;
+
+    this.orderCount_10s = 0;
+    this.orderCount_1m = 0;
+    this.usedWeight = 0;
 
     if (options.callback) this.callback = options.callback; else this.callback = () => { };
     if (options.timeout) this.timeout = options.timeout; else this.timeout = 500;
@@ -2197,7 +2206,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
              * @param {String, Array} subscriptions - string OR array
              * @param {Function} callback - the callback function that will be called on any new websocket message
              */
-            subscribe: function (subscriptions, callback) {
+            subscribe: async function (subscriptions, callback) {
                 const params = {
                     baseURL: fWSS,
                     path: subscriptions
@@ -2206,7 +2215,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, callback, (path) => { return path });
             },
 
-            aggTrade: function (symbol, callback) {
+            aggTrade: async function (symbol, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2237,7 +2246,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            trade: function (symbol, callback) {
+            trade: async function (symbol, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2268,7 +2277,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            candlesticks: function (symbol, interval, callback) {
+            candlesticks: async function (symbol, interval, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2306,7 +2315,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            lastPrice: function (callback, symbol = false, isFast = false, withTime = false) {
+            lastPrice: async function (callback, symbol = false, isFast = false, withTime = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2364,7 +2373,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, formatFunction, this.formPath);
             },
 
-            miniTicker: function (callback, symbol = false) {
+            miniTicker: async function (callback, symbol = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2392,7 +2401,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            ticker: function (callback, symbol = false) {
+            ticker: async function (callback, symbol = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2420,7 +2429,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath)
             },
 
-            rollingWindowStats: function (symbol = false, windowSize, callback) {
+            rollingWindowStats: async function (symbol = false, windowSize, callback) {
                 if (!windowSize) { return ERROR('windowSize', 'required', false, ['1h', '4h', '1d']); }
                 if (!equal(windowSize, ['1h', '4h', '1d'])) return ERROR('windowSize', 'value', false, ['1h', '4h', '1d'])
 
@@ -2454,7 +2463,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            bookTicker: function (callback, symbol = false) {
+            bookTicker: async function (callback, symbol = false) {
                 if (!callback) { return ERROR('callback', 'required'); }
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2483,7 +2492,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            partialBookTicker: function (symbol, levels, speed, callback) {
+            partialBookTicker: async function (symbol, levels, speed, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2526,7 +2535,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            diffBookTicker: function (symbol, speed, callback) {
+            diffBookTicker: async function (symbol, speed, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2634,7 +2643,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
              * @param {String, Array} subscriptions - string OR array
              * @param {Function} callback - the callback function that will be called on any new websocket message
              */
-            subscribe: function (subscriptions, callback) {
+            subscribe: async function (subscriptions, callback) {
                 const params = {
                     baseURL: fWSS,
                     path: subscriptions
@@ -2643,7 +2652,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, callback, (path) => { return path });
             },
 
-            aggTrade: function (symbol, callback) {
+            aggTrade: async function (symbol, callback) {
                 if (!symbol) { return ERROR('symbol', 'required'); }
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
                 if (!callback) { return ERROR('callback', 'required'); }
@@ -2673,7 +2682,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            markPrice: function (callback, symbol = false, slow = false) {
+            markPrice: async function (callback, symbol = false, slow = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2706,7 +2715,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            lastPrice: function (callback, symbol = false, isFast = false, withTime = false) {
+            lastPrice: async function (callback, symbol = false, isFast = false, withTime = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2770,7 +2779,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
              * @param {String} interval - required: "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M" 
              * @param {Function} callback - required
              */
-            candlesticks: function (symbol, interval, callback) {
+            candlesticks: async function (symbol, interval, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -2804,7 +2813,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            continuousContractKline: function (pair, contractType, interval, callback) {
+            continuousContractKline: async function (pair, contractType, interval, callback) {
                 if (!pair) return ERROR('pair', 'required');
                 if (typeof pair != 'string') return ERROR('pair', 'type', 'String');
 
@@ -2847,7 +2856,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            miniTicker: function (callback, symbol = false) {
+            miniTicker: async function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2881,7 +2890,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            ticker: function (callback, symbol = false) {
+            ticker: async function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2915,7 +2924,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            bookTicker: function (callback, symbol = false) {
+            bookTicker: async function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2949,7 +2958,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            liquidationOrders: function (callback, symbol = false) {
+            liquidationOrders: async function (callback, symbol = false) {
                 if (!callback) return ERROR('callback', 'required');
                 if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
 
@@ -2983,7 +2992,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            partialBookTicker: function (symbol, levels, speed, callback) {
+            partialBookTicker: async function (symbol, levels, speed, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -3030,7 +3039,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            diffBookTicker: function (symbol, speed, callback) {
+            diffBookTicker: async function (symbol, speed, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -3070,7 +3079,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return connect(params, this.format, this.formPath);
             },
 
-            compositeIndexSymbol: function (symbol, callback) {
+            compositeIndexSymbol: async function (symbol, callback) {
                 if (!symbol) return ERROR('symbol', 'required');
                 if (typeof symbol != 'string') return ERROR('symbol', 'type', 'String');
 
@@ -3155,7 +3164,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                     } else callback(msg);
                 }
 
-                let obj = await connect(params, this.format, () => { return resp.listenKey });
+                let obj = connect(params, this.format, () => { return resp.listenKey });
 
                 obj.deleteKey = () => request(deleteParams, {}, 'DATA');
                 obj.interval = setInterval(() => request(putParams, {}, 'DATA'), 15 * 60 * 1000);
@@ -3163,6 +3172,104 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 return obj;
             }
 
+        },
+
+        /**
+         * @returns { Promise < { 
+         * sendPing: Promise < { result: {}, rateLimits: Array } | { error: { status: Integer, error: String, rateLimits: Array } } >, 
+         * serverTime: Promise < { result: { serverTime: UNIX_timestamp }, rateLimits: Array } | { error: {status: Integer, error: String, rateLimits: Array} } > 
+         * exchangeInfo(symbol_or_symbols:undefined|String|Array<String>, permissions:undefined|String|Array<String>): Promise < { result, rateLimits: Array } | { error: {status: Integer, error: String, rateLimits: Array} } >
+         * account(mappedBalance: Boolean|undefined, activeAssetsOnly: boolean|undefined, opts: {recvWindow: Integer} |undefined): Promise < { result, rateLimits: Array } | { error: {status:Integer, error: String, rateLimits: Array} } > 
+         * > } object }
+         */
+        websocketAPI: async function () {
+            // if (!callback) return ERROR('callback', 'required');
+            // if (typeof callback != 'function') return ERROR('callback', 'type', 'Function');
+
+            const newPromise = (object, id) => {
+                return new Promise((res) => {
+                    object.resolves[id] = res;
+                    setTimeout(() => {
+                        if (object.resolves[id] && object.resolves[id] != undefined && typeof object.resolves[id] == 'function')
+                            object.resolves[id](ERROR('No response was received from websocket endpoint within 10 seconds'))
+                    }, 10000)
+                });
+            }
+
+            const params = {
+                baseURL: WS,
+                path: ''
+            }
+
+            const WS_Object = await connect(params, () => { }, () => { }, true);
+            delete WS_Object.subscribe;
+            delete WS_Object.unsubscribe;
+            delete WS_Object.subscriptions;
+            delete WS_Object.privateMessage;
+
+            WS_Object.sendPrivateMessage = async (OBJ, signed = false) => {
+                const id = randomNumber(0, 1000000000000);
+
+                const newOBJ = {
+                    id,
+                    method: OBJ.method
+                }
+                if (OBJ.params) newOBJ.params = OBJ.params;
+                if (signed) {
+                    const signature = createSignature(OBJ.params);
+                    OBJ.params.signature = signature;
+                }
+
+                try {
+                    const msg = JSON.stringify(newOBJ)
+                    await WS_Object.socket.send(msg);
+                    return newPromise(WS_Object, id);
+                } catch (err) {
+                    if (binance.ws) console.log(`error in: WS_Object.sendPrivateMessage()`)
+                    console.log(err);
+                    await delay(binance.timeout);
+                    return WS_Object.sendPrivateMessage(OBJ, signed);
+                }
+            }
+
+            WS_Object.privateMessage = (msg) => {
+                const requestWeight_1min = msg.rateLimits?.filter(element => element.rateLimitType == 'REQUEST_WEIGHT' && element.interval == 'MINUTE' && element.intervalNum == 1);
+                if (Array.isArray(requestWeight_1min)) {
+                    binance.usedWeight = requestWeight_1min[0].count;
+                }
+                const ID = msg.id;
+                delete msg.id;
+                if (msg.status != 200 || msg.error) {
+                    WS_Object.resolves[ID]({ error: msg });
+                }
+                delete msg.status;
+
+                WS_Object.resolves[ID](msg);
+            }
+
+            PREP_WS_OBJECT(WS_Object);
+
+            return WS_Object;
+
+            function createQueryString(q) {
+                return Object.keys(q).sort()
+                    .reduce((a, k) => {
+                        if (Array.isArray(q[k])) {
+                            q[k].forEach(v => {
+                                a.push(k + "=" + encodeURIComponent(v))
+                            })
+                        } else if (q[k] !== undefined) {
+                            a.push(k + "=" + encodeURIComponent(q[k]));
+                        }
+                        return a;
+                    }, [])
+                    .join("&");
+            }
+
+            function createSignature(params) {
+                const query = createQueryString(params);
+                return crypto.createHmac('sha256', binance.APISECRET).update(query).digest('hex');
+            }
         }
 
     }
@@ -3172,8 +3279,11 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     // functions necessary for websocket    \\\\
 
-    const connect = (params, callback, formMessageFunc) => {
-        if (!params.path) { return ERROR('streamName', 'required'); }
+    /**
+     * @return { Promise <{  close: Function ,  subscribe:Function, unsubscribe: Function, subscriptions: Function }> }
+     */
+    const connect = async (params, callback, formMessageFunc, override = false) => {
+        if (!params.path && !override) { return ERROR('streamName', 'required'); }
         if (!callback) { return ERROR('callback', 'required'); }
 
         const newPromise = (object, id) => {
@@ -3207,7 +3317,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 object.cachedSubscriptions.add(formedWSPath)
 
 
-                const id = randomNumber(0, 10000);
+                const id = randomNumber(0, 1000000000);
                 const msg = JSON.stringify
                     ({
                         "method": "SUBSCRIBE",
@@ -3228,7 +3338,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             },
             unsubscribe: async (subscriptions) => {
                 if (!subscriptions) return ERROR('subscription', 'type', `String' or 'Array`);
-                const id = randomNumber(0, 10000);
+                const id = randomNumber(0, 1000000000);
 
                 // deleting keys
                 if (Array.isArray(subscriptions)) {
@@ -3257,7 +3367,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                 }
             },
             subscriptions: async () => {
-                const id = randomNumber(0, 10000);
+                const id = randomNumber(0, 1000000000);
                 const msg = JSON.stringify
                     (
                         {
@@ -3341,7 +3451,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             streamPath = params.path[0];
         }
 
-        object.socket = new ws(params.baseURL + '/ws/' + streamPath);
+        object.socket = new ws(params.baseURL + `${streamPath ? `/ws/${streamPath}` : ''}`);
         let socket = object.socket;
 
         socket.on('open', () => {
@@ -3357,7 +3467,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
         socket.on('message', (msg) => {
             const obj = parseSocketMessage(msg);
 
-            if (Object.keys(obj).includes('id') && Object.keys(obj).includes('result') && Object.keys(obj).length == 2) {
+            if (Object.keys(obj).includes('id') && Object.keys(obj).includes('result') || Object.keys(obj).includes('id') && Object.keys(obj).includes('status')) {
                 if (binance.ws) console.log('Private response to websocket message was received');
                 object.privateMessage(obj);
                 return;
@@ -3458,9 +3568,18 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
             latency = Date.now() - startTime;
 
             let data = {};
-            if (response.headers['x-mbx-used-weight-1m']) data['x-mbx-used-weight-1m'] = response.headers['x-mbx-used-weight-1m'];
-            if (response.headers['x-mbx-order-count-10s']) data['x-mbx-order-count-10s'] = response.headers['x-mbx-order-count-10s'];
-            if (response.headers['x-mbx-order-count-1m']) data['x-mbx-order-count-1m'] = response.headers['x-mbx-order-count-1m'];
+            if (response.headers['x-mbx-order-count-10s']) {
+                data['x-mbx-order-count-10s'] = response.headers['x-mbx-order-count-10s'];
+                binance.orderCount_10s = response.headers['x-mbx-order-count-10s'];
+            }
+            if (response.headers['x-mbx-order-count-1m']) {
+                data['x-mbx-order-count-1m'] = response.headers['x-mbx-order-count-1m'];
+                binance.orderCount_1m = response.headers['x-mbx-order-count-1m'];
+            }
+            if (response.headers['x-mbx-used-weight-1m']) {
+                data['x-mbx-used-weight-1m'] = response.headers['x-mbx-used-weight-1m'];
+                binance.usedWeight = parseInt(response.headers['x-mbx-used-weight-1m']);
+            }
             if (response.headers['x-response-time']) data['server-process-time'] = response.headers['x-response-time'];
             data.latency_millis = latency;
 
@@ -3688,6 +3807,149 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
     // constants \\\\
 
     // SPOT WEBSOCKET KEYS \\\\
+
+    function PREP_WS_OBJECT(WS_Object) {
+
+        WS_Object.sendPing = () => {
+            const obj = {
+                method: 'ping'
+            }
+            return WS_Object.sendPrivateMessage(obj)
+        }
+
+        WS_Object.serverTime = () => {
+            const obj = {
+                method: 'time'
+            }
+            return WS_Object.sendPrivateMessage(obj)
+        }
+
+        WS_Object.exchangeInfo = (symbol_or_symbols = false, permissions = false) => {
+            const obj = {
+                method: 'exchangeInfo'
+            }
+            if (symbol_or_symbols && typeof symbol_or_symbols != 'string' && !Array.isArray(symbol_or_symbols)) return ERROR('symbol_or_symbols', 'type', `String' or 'Array`);
+            if (permissions && typeof permissions != 'string' && !Array.isArray(permissions)) return ERROR('permissions', 'type', `String' or 'Array`);
+            if (symbol_or_symbols || permissions) obj.params = {};
+            if (symbol_or_symbols) {
+                obj.params.symbols = [];
+                if (typeof symbol_or_symbols == 'string') obj.params.symbols.push(symbol_or_symbols);
+                else obj.params.symbols.push(...symbol_or_symbols);
+            } else if (permissions) {
+                obj.params.permissions = [];
+                if (typeof permissions == 'string') obj.params.permissions.push(permissions);
+                else obj.params.permissions.push(...permissions);
+            }
+            return WS_Object.sendPrivateMessage(obj);
+        }
+
+        WS_Object.account = async (mappedBalance = false, activeAssetsOnly = false, opts = {}) => {
+            let obj = {
+                method: 'account.status',
+                params: {
+                    apiKey: binance.APIKEY,
+                    recvWindow: 5000,
+                    timestamp: Date.now(),
+                    ...opts
+                }
+            }
+
+            const resp = await WS_Object.sendPrivateMessage(obj, 'SIGNED');
+            if (resp.error) return resp;
+
+            if (activeAssetsOnly) resp.result.balances = resp.result.balances.filter(balance => balance.locked != 0 || balance.free != 0);
+            if (!mappedBalance) return resp;
+            const balances = [...resp.result.balances];
+            const newObj = { ...resp }
+            newObj.result.balances = {};
+            for (let item of balances) newObj.result.balances[item.asset] = item;
+            return newObj;
+        }
+
+        WS_Object.marketBuy = (symbol, quantity, quoteOrderQty, opts = {}) => {
+            return market(symbol, quantity, quoteOrderQty, 'BUY', opts);
+        }
+
+        WS_Object.marketSell = (symbol, quantity, quoteOrderQty, opts = {}) => {
+            return market(symbol, quantity, quoteOrderQty, 'SELL', opts);
+        }
+
+        // function market(symbol, quantity, quoteOrderQty, side, opts) {
+        //     if (!quantity && !quoteOrderQty) return ERROR(`Either 'quantity' or 'quoteOrderQty' need to be sent for this request.`);
+        //     if (typeof opts != 'object') return ERROR('opts', 'type', 'Object', ['{}', `{positionSide: 'LONG'}`], `Or just leave it blank.`);
+
+        //     const options = {}
+        //     if (quantity) options.quantity = quantity;
+        //     else options.quoteOrderQty = quoteOrderQty;
+        //     Object.assign(options, opts);
+
+        //     return createOrder(symbol, side, 'MARKET', options);
+        // }
+
+        // async function createOrder(symbol, side, type, opts = {}) {
+        //     if (!symbol) return ERROR('symbol', 'required');
+        //     if (!equal(side, ['BUY', 'SELL'])) return ERROR('side', 'value', false, ['BUY', 'SELL']);
+        //     if (!equal(type, SPOT_ORDERTYPES)) return ERROR('type', 'value', false, SPOT_ORDERTYPES);
+
+        //     const params = {
+        //         baseURL: sapi,
+        //         path: '/api/v3/order',
+        //         method: 'post'
+        //     }
+
+        //     if (binance.test) params.path += '/test';
+
+        //     const options = {
+        //         symbol: symbol,
+        //         side: side,
+        //         type: type,
+        //         newOrderRespType: 'FULL'
+        //     }
+        //     if (type == "LIMIT") options.timeInForce = 'GTC';
+        //     Object.assign(options, opts);
+
+
+        //     if (!binance.test) {
+        //         const resp = await request(params, options, 'SIGNED');
+        //         if (resp.error) return resp;
+
+        //         if (resp.fills) {
+        //             resp.avgPrice = 0;
+        //             let totalQty = 0;
+        //             let total_forAvg = 0;
+
+        //             resp.commissions = {};
+        //             resp.commissions.assets = new Set();
+
+        //             resp.fills.forEach(fill => {
+        //                 totalQty += fill.qty;
+        //                 total_forAvg += fill.qty * fill.price;
+
+        //                 resp.commissions.assets.add(fill.commissionAsset);
+
+        //                 if (!resp.commissions[fill.commissionAsset]) resp.commissions[fill.commissionAsset] = 0;
+        //                 resp.commissions[fill.commissionAsset] += fill.commission
+        //             });
+
+        //             resp.commissions.assets = Array.from(resp.commissions.assets);
+        //             resp.avgPrice = parseFloat((total_forAvg / totalQty).toFixed(14));
+        //         }
+
+        //         return resp;
+        //     }
+
+        //     let resp = await request(params, options, 'SIGNED');
+        //     if (resp.error) return resp;
+        //     return {
+        //         success: {
+        //             status: 200,
+        //             statusText: 'Success',
+        //             code: 0,
+        //             msg: 'Order accepted'
+        //         }
+        //     }
+        // }
+    }
 
     const SPOT_AGGTRADE_KEYS = [
         'e=event',
