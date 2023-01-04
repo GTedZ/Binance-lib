@@ -145,6 +145,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             if (options.mapped) {
                 let altResponse = {};
+                altResponse.symbols = [];
                 altResponse.exchangeInfo = {};
                 altResponse.exchangeInfo.timezone = resp.timezone;
                 altResponse.exchangeInfo.serverTime = resp.serverTime;
@@ -154,6 +155,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 resp.symbols.forEach(item => {
                     let symbol = item.symbol;
+                    altResponse.symbols.push(symbol);
                     altResponse[symbol] = {};
                     for (let key of Object.keys(item)) {
                         let value = item[key];
@@ -167,7 +169,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                     let keyName = 'pricePrecision';
                                     if (name == 'LOT_SIZE') keyName = 'quantityPrecision';
                                     const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
-                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
+                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : -parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
                                     altResponse[symbol][keyName] = precision;
                                 }
                             });
@@ -3836,6 +3838,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
             if (options.mapped) {
                 let altResponse = {};
+                altResponse.symbols = [];
                 altResponse.exchangeInfo = {};
                 altResponse.exchangeInfo.timezone = resp.result.timezone;
                 altResponse.exchangeInfo.serverTime = resp.result.serverTime;
@@ -3845,6 +3848,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
                 resp.result.symbols.forEach(item => {
                     let symbol = item.symbol;
+                    altResponse.symbols.push(symbol);
                     altResponse[symbol] = {};
                     for (let key of Object.keys(item)) {
                         let value = item[key];
@@ -3858,7 +3862,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
                                     let keyName = 'pricePrecision';
                                     if (name == 'LOT_SIZE') keyName = 'quantityPrecision';
                                     const splitResult = filter.tickSize ? filter.tickSize.toString().split('.') : filter.stepSize.toString().split('.');
-                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
+                                    const precision = splitResult.length == 1 ? splitResult[0].split('e').length == 1 ? parseInt(-(splitResult[0].length - 1)) : -parseInt(splitResult[0].split('e')[1]) : splitResult[1].length;
                                     altResponse[symbol][keyName] = precision;
                                 }
                             });
