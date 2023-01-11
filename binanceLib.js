@@ -18,7 +18,7 @@ let api = function everything(APIKEY = false, APISecret = false, options = { hed
 
     const
         WS = 'wss://ws-api.binance.com:443/ws-api/v3',
-        sWSS = 'wss://stream.binance.com:9443',
+        sWSS = 'wss://stream.binance.com:443',
         fWSS = 'wss://fstream.binance.com';
     ;
 
