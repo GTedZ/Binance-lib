@@ -674,6 +674,12 @@ class Order {
     avgPrice;
 
     /**
+     * Contains all assets used as commission for the order
+     * @type {string[]}
+     */
+    commissionAssets = [];
+
+    /**
      * - An object containing every commissionAsset used along with it's total commission quantity paid
      * - `BNB` is the default commission asset for everything (along with a `25%` discount)
      * -
@@ -756,6 +762,8 @@ class Order {
         }
 
         this.avgPrice = (mult_total / fills_count).toFixed(8);
+
+        this.commissionAssets = Object.keys(this.commissions);
     }
 
 }
