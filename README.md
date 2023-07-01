@@ -52,36 +52,36 @@ It is much more detailed in documentation and the easiest error-handling: NO try
 
 ## :sparkles: Features ##
 
-:heavy_check_mark: Spot Market API;
-:heavy_check_mark: Spot Account/Trade API;
-:heavy_check_mark: Spot Websocket API;
-:heavy_check_mark: Spot/Margin/Isolated-margin userData API;
-
-:heavy_check_mark: Futures Market API;
-:heavy_check_mark: Futures Account/Trade API;
-:heavy_check_mark: Futures Websocket API;
-:heavy_check_mark: Futures userData API;
+:heavy_check_mark: Spot Market API
+:heavy_check_mark: Spot Account/Trade API
+:heavy_check_mark: Spot Websocket API
+:heavy_check_mark: Spot/Margin/Isolated-margin userData API
+\
+:heavy_check_mark: Futures Market API
+:heavy_check_mark: Futures Account/Trade API
+:heavy_check_mark: Futures Websocket API
+:heavy_check_mark: Futures userData API
 
 ### Auto Generated but not tested:
 
-:heavy_check_mark: Wallet API;
-:heavy_check_mark: Margin API;
-:heavy_check_mark: Staking API;
-:heavy_check_mark: Mining API;
-:heavy_check_mark: Futures API;
-:heavy_check_mark: Spot Algo API;
-:heavy_check_mark: Classic Portfolio API;
-:heavy_check_mark: BLVT API;
-:heavy_check_mark: BSwap API;
-:heavy_check_mark: Fiat API;
-:heavy_check_mark: C2C API;
-:heavy_check_mark: VIP Loans API;
-:heavy_check_mark: Crypto Loans API;
-:heavy_check_mark: Pay API;
-:heavy_check_mark: Convert API;
-:heavy_check_mark: Rebate API;
-:heavy_check_mark: NFT API;
-:heavy_check_mark: Binance Gift Card API;
+:heavy_check_mark: Wallet API\
+:heavy_check_mark: Margin API\
+:heavy_check_mark: Staking API\
+:heavy_check_mark: Mining API\
+:heavy_check_mark: Futures API\
+:heavy_check_mark: Spot Algo API\
+:heavy_check_mark: Classic Portfolio API\
+:heavy_check_mark: BLVT API\
+:heavy_check_mark: BSwap API\
+:heavy_check_mark: Fiat API\
+:heavy_check_mark: C2C API\
+:heavy_check_mark: VIP Loans API\
+:heavy_check_mark: Crypto Loans API\
+:heavy_check_mark: Pay API\
+:heavy_check_mark: Convert API\
+:heavy_check_mark: Rebate API\
+:heavy_check_mark: NFT API\
+:heavy_check_mark: Binance Gift Card API
 
 ## :white_check_mark: Requirements ##
 
