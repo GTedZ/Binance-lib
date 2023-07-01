@@ -33,14 +33,16 @@
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0; 
   <a href="#sparkles-features">Features</a> &#xa0; | &#xa0;
-  <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
   <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
   <a href="#memo-license">License</a> &#xa0; | &#xa0;
+  <a href="#contact-me">Contact me</a>
   <a href="https://github.com/GTedZ" target="_blank">Author</a>
 </p>
 
 <br>
+
+#### If you need help or any of my services or maybe looking for someone to implement your strategies <a href='#contact-me'>contact me via e-mail</a>
 
 ## :dart: About ##
 
@@ -48,15 +50,36 @@ Describe your project
 
 ## :sparkles: Features ##
 
-:heavy_check_mark: Feature 1;\
-:heavy_check_mark: Feature 2;\
-:heavy_check_mark: Feature 3;
+:heavy_check_mark: Spot Market API;\
+:heavy_check_mark: Spot Account/Trade API;\
+:heavy_check_mark: Spot Websocket API;\
+:heavy_check_mark: Spot/Margin/Isolated-margin userData API;\
 
-## :rocket: Technologies ##
+:heavy_check_mark: Futures Market API;\
+:heavy_check_mark: Futures Account/Trade API;\
+:heavy_check_mark: Futures Websocket API;\
+:heavy_check_mark: Futures userData API;\
 
-The following tools were used in this project:
+### Auto Generated but not tested:
 
-- [Node.js](https://nodejs.org/en/)
+:heavy_check_mark: Wallet API;\
+:heavy_check_mark: Margin API;\
+:heavy_check_mark: Staking API;\
+:heavy_check_mark: Mining API;\
+:heavy_check_mark: Futures API;\
+:heavy_check_mark: Spot Algo API;\
+:heavy_check_mark: Classic Portfolio API;\
+:heavy_check_mark: BLVT API;\
+:heavy_check_mark: BSwap API;\
+:heavy_check_mark: Fiat API;\
+:heavy_check_mark: C2C API;\
+:heavy_check_mark: VIP Loans API;\
+:heavy_check_mark: Crypto Loans API;\
+:heavy_check_mark: Pay API;\
+:heavy_check_mark: Convert API;\
+:heavy_check_mark: Rebate API;\
+:heavy_check_mark: NFT API;\
+:heavy_check_mark: Binance Gift Card API;\
 
 ## :white_check_mark: Requirements ##
 
@@ -85,7 +108,9 @@ $ yarn start
 This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.
 
 
-Made with :heart: by <a href="https://github.com/GTedZ" target="_blank">GTedZ</a>
+# *CONTACT ME*
+### Email: <a href='gtedz1961@gmail.com'>gtedz1961@gmail.com</a>
+### 
 
 &#xa0;
 
