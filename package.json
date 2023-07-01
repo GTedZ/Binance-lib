@@ -2,7 +2,7 @@
   "name": "binance-lib",
   "version": "3.0.0",
   "description": "A JS library for binance, only the basic features.",
-  "main": "binanceLib.js",
+  "main": "Binance.js",
   "scripts": {
     "test": "@echo off & start cmd /k \"title global & node tests/global & title spot-test & node tests/spot-t & title futures-test & node tests/futures-t\""
   },
