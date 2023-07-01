@@ -1,3 +1,9 @@
+[![Binance Community API](https://cdn.discordapp.com/attachments/569865969120575519/718166995354255370/binance-api-black.png)](https://dev.binance.vision/)
+[![Yearly Downloads](https://badgen.net/npm/dy/binance-lib?labelColor=29B6F6&color=3D5AFE&scale=2&label=Downloads&icon=bitcoin-lightning&cache=2400)](https://npm-stat.com/charts.html?package=binance-lib&from=2017-07-01&to=2023-07-01) ![Last Commit](https://badgen.net/github/last-commit/gtedz/binance-lib?scale=2&label=🟣%20Updated&labelColor=black&color=448AFF&cache=9999)
+https://badgen.net/npm/dm/binance-lib?labelColor=7C4DFF&color=green&scale=2&label=Downloads&icon=bitcoin
+⭐ Stars https://badgen.net/github/stars/gtedz/binance-lib?scale=2&label=%E2%AD%90Stars&labelColor=black&color=purple
+[![NPM](https://nodei.co/npm/binance-lib.png?compact=true)](https://npmjs.org/package/binance-lib)
+
 <div align="center" id="top"> 
   <img src="./.github/app.gif" alt="Binance Lib" />
 
@@ -36,7 +42,7 @@
   <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
   <a href="#memo-license">License</a> &#xa0; | &#xa0;
-  <a href="#contact-me">Contact me</a>
+  <a href="#contact-me">Contact me</a> &#xa0; | &#xa0;
   <a href="https://github.com/GTedZ" target="_blank">Author</a>
 </p>
 
