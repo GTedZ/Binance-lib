@@ -15,8 +15,8 @@
   "bugs": {
     "url": "https://github.com/GTedZ/Binance-lib/issues"
   },
-  "license": "Creative Commons Attribution 4.0 International",
-  "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+  "license": "MIT",
+  "licenseURL": "https://www.mit.edu/~amini/LICENSE.md",
   "homepage": "https://github.com/GTedZ/Binance-lib#readme",
   "dependencies": {
     "axios": "^1.4.0",
