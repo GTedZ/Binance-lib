@@ -3,7 +3,7 @@
 [![npm downloads](https://img.shields.io/npm/dt/binance-lib.svg?maxAge=7200)](https://www.npmjs.com/package/binance-lib)
 ![Monthly downloads](https://badgen.net/npm/dm/binance-lib?labelColor=7C4DFF&color=green&scale=2&label=Downloads&icon=bitcoin)
 ![Github Stars](https://badgen.net/github/stars/gtedz/binance-lib?scale=2&label=%E2%AD%90Stars&labelColor=black&color=purple)
-
+[![NPM](https://nodei.co/npm/binance-lib.png?compact=true)](https://npmjs.org/package/binance-lib)
 
 <div align="center" id="top"> 
   <img src="./.github/app.gif" alt="Binance Lib" />
