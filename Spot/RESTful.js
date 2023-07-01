@@ -8,10 +8,9 @@ const Error = require('../essentials/Error');
 
 const Spot_Websockets = require('./Websockets');
 
-const { exchangeInfo, exchangeInfo_mapped } = require('../types/Spot/exchangeInfo');
-
-const { ticker_24h, miniTicker_24h, bookTicker, kline_interval, orderSide, orderType, timeInForce, newOrderRespType, selfTradePreventionMode, cancelRestrictions, Account,
-  Trade, AggTrade, Candlestick, Order, Account_mapped } = require('../types/Spot/types');
+const { exchangeInfo, exchangeInfo_mapped,
+  ticker_24h, miniTicker_24h, bookTicker, kline_interval, orderSide, orderType, timeInForce, newOrderRespType, selfTradePreventionMode, cancelRestrictions,
+  Account, Trade, AggTrade, Candlestick, Order, Account_mapped } = require('../types/Spot');
 
 class Spot {
 

@@ -10,6 +10,9 @@ const Spot = require('./Spot/RESTful');
 
 const Futures = require('./Futures/RESTful');
 
+require('./types/Spot');        // this is for intellisense
+require('./types/Futures');     // this is for intellisense
+
 class Binance {
 
     options = new Options();

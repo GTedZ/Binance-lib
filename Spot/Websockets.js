@@ -6,7 +6,7 @@ const { Websocket_Connection, Binance_userData_WS_Connection } = require('../Web
 
 const Error = require('../essentials/Error');
 
-const { kline_interval } = require('../types/Spot/types');
+const { kline_interval } = require('../types/Spot');
 
 const Spot = require('./RESTful');
 
