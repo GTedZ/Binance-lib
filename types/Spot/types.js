@@ -761,7 +761,7 @@ class Order {
             this.commissions[fill.commissionAsset] += fill.commission.parseFloat();
         }
 
-        this.avgPrice = (mult_total / fills_count).toFixed(8);
+        this.avgPrice = parseFloat((mult_total / fills_count).toFixed(8));
 
         this.commissionAssets = Object.keys(this.commissions);
     }
