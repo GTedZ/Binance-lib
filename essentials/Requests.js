@@ -127,7 +127,7 @@ class Requests {
 
             if (typeof pre_adapter_cb === 'function') {
                 response.data = pre_adapter_cb(response.data);
-                if (typeof response === 'undefined') throw new Error(`'pre_adapter_cb' must alter the data and return it. Instead it returned '${typeof response}': '${response}'`)
+                if (typeof response.data === 'undefined') throw new Error(`'pre_adapter_cb' must alter the data and return it. Instead it returned '${typeof response}': '${response}'`)
             }
 
             if (this.options.fetchFloats === true) response.data = parseAllPropertiesToFloat(response.data);
