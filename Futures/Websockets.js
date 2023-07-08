@@ -6,7 +6,7 @@ const { Websocket_Connection, Binance_userData_WS_Connection } = require('../Web
 
 const Error = require('../essentials/Error');
 
-const Types = require('../types/Futures/types');
+const Types = require('../types/Futures');
 
 const Futures = require('./RESTful');
 
