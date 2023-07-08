@@ -8,7 +8,7 @@ const Error = require('../essentials/Error');
 
 const Futures_Websockets = require('./Websockets');
 
-const { Futures_exchangeInfo, Futures_exchangeInfo_mapped } = require('../types/Futures/exchangeInfo');
+const { Futures_exchangeInfo, Futures_exchangeInfo_mapped } = require('../types/Futures');
 
 const { Futures_aggTrade, Futures_candlestick, Futures_orderBook,
     Futures_trade, Futures_indexCandlestick, Futures_markCandlestick, Futures_markPrice,
@@ -38,7 +38,7 @@ const { Futures_aggTrade, Futures_candlestick, Futures_orderBook,
     Futures_WorkingType,
     Futures_marginType,
     Futures_incomeType
-} = require('../types/Futures/types')
+} = require('../types/Futures')
 
 /**
  * @type {Futures_exchangeInfo_mapped | null}
