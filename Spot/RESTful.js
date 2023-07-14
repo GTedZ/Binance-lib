@@ -1418,7 +1418,7 @@ class Spot {
      * - Weight(IP): `10`
      * @returns { Promise < [{"coin":"BTC","depositAllEnable":true,"free":"0.08074558","freeze":"0.00000000","ipoable":"0.00000000","ipoing":"0.00000000","isLegalMoney":false,"locked":"0.00000000","name":"Bitcoin","networkList":[{"addressRegex":"^(bnb1)[0-9a-z]{38}$","coin":"BTC","depositDesc":"Wallet Maintenance, Deposit Suspended","depositEnable":false,"isDefault":false,"memoRegex":"^[0-9A-Za-z\\-_]{1,120}$","minConfirm":1,"name":"BEP2","network":"BNB","resetAddressStatus":false,"specialTips":"Both a MEMO and an Address are required to successfully deposit your BEP2-BTCB tokens to Binance.","unLockConfirm":0,"withdrawDesc":"Wallet Maintenance, Withdrawal Suspended","withdrawEnable":false,"withdrawFee":"0.00000220","withdrawIntegerMultiple":"0.00000001","withdrawMax":"9999999999.99999999","withdrawMin":"0.00000440","sameAddress":true,"estimatedArrivalTime":25,"busy":false},{"addressRegex":"^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^(bc1)[0-9A-Za-z]{39,59}$","coin":"BTC","depositEnable":true,"isDefault":true,"memoRegex":"","minConfirm":1,"name":"BTC","network":"BTC","resetAddressStatus":false,"specialTips":"","unLockConfirm":2,"withdrawEnable":true,"withdrawFee":"0.00050000","withdrawIntegerMultiple":"0.00000001","withdrawMax":"750","withdrawMin":"0.00100000","sameAddress":false,"estimatedArrivalTime":25,"busy":false}],"storage":"0.00000000","trading":true,"withdrawAllEnable":true,"withdrawing":"0.00000000"}] > }
     */
-    async all_coins_information() {
+    all_coins_information: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/capital/config/getall', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1440,7 +1440,7 @@ class Spot {
      * @returns { Promise < {"code":200,"msg":"","snapshotVos":[{"data":{"marginLevel":"2748.02909813","totalAssetOfBtc":"0.00274803","totalLiabilityOfBtc":"0.00000100","totalNetAssetOfBtc":"0.00274750","userAssets":[{"asset":"XRP","borrowed":"0.00000000","free":"1.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"1.00000000"}]},"type":"margin","updateTime":1576281599000}]} > }
      * @returns { Promise < {"code":200,"msg":"","snapshotVos":[{"data":{"assets":[{"asset":"USDT","marginBalance":"118.99782335","walletBalance":"120.23811389"}],"position":[{"entryPrice":"7130.41000000","markPrice":"7257.66239673","positionAmt":"0.01000000","symbol":"BTCUSDT","unRealizedProfit":"1.24029054"}]},"type":"futures","updateTime":1576281599000}]} > }
     */
-    async daily_account_snapshot(type, limit, startTime, endTime) {
+    daily_account_snapshot: async (type, limit, startTime, endTime) => {
       // Expects (HMAC SHA256)
       if (typeof type === 'undefined') return new Error('type', 'REQUIRED');
 
@@ -1457,7 +1457,7 @@ class Spot {
      * - Caution: This request will disable fastwithdraw switch under your account. You need to enable "trade" option for the api key which requests this endpoint.
      * @returns { Promise < {} > }
     */
-    async disable_fast_withdraw_switch() {
+    disable_fast_withdraw_switch: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/account/disableFastWithdrawSwitch', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1472,7 +1472,7 @@ class Spot {
      * - When Fast Withdraw Switch is on, transferring funds to a Binance account will be done instantly. There is no on-chain transaction, no transaction ID and no withdrawal fee.
      * @returns { Promise < {} > }
     */
-    async enable_fast_withdraw_switch() {
+    enable_fast_withdraw_switch: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/account/enableFastWithdrawSwitch', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1497,7 +1497,7 @@ class Spot {
      * @param {INTEGER | undefined} walletType  - The wallet type for withdraw,`0`-spot wallet ,`1`-funding wallet. Default walletType is the current "selected wallet" under wallet->Fiat and Spot/Funding->Deposit
      * @returns { Promise < {"id":"7213fea8e94b4a5593d507237e5a555b"} > }
     */
-    async withdraw(coin, address, amount, withdrawOrderId, network, addressTag, transactionFeeFlag, name, walletType) {
+    withdraw: async (coin, address, amount, withdrawOrderId, network, addressTag, transactionFeeFlag, name, walletType) => {
       // Expects (HMAC SHA256)
       if (typeof coin === 'undefined') return new Error('coin', 'REQUIRED');
 
@@ -1526,7 +1526,7 @@ class Spot {
      * @param {string | undefined} txId
      * @returns { Promise < [{"id":"769800519366885376","amount":"0.001","coin":"BNB","network":"BNB","status":0,"address":"bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23","addressTag":"101764890","txId":"98A3EA560C6B3336D348B6C83F0F95ECE4F1F5919E94BD006E5BF3BF264FACFC","insertTime":1661493146000,"transferType":0,"confirmTimes":"1/1","unlockConfirm":0,"walletType":0},{"id":"769754833590042625","amount":"0.50000000","coin":"IOTA","network":"IOTA","status":1,"address":"SIZ9VLMHWATXKV99LH99CIGFJFUMLEHGWVZVNNZXRJJVWBPHYWPPBOSDORZ9EQSHCZAMPVAPGFYQAUUV9DROOXJLNW","addressTag":"","txId":"ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999","insertTime":1599620082000,"transferType":0,"confirmTimes":"1/1","unlockConfirm":0,"walletType":0}] > }
      */
-    async deposit_history_supporting_network(limit, coin, status, startTime, endTime, offset, txId) {
+    deposit_history_supporting_network: async (limit, coin, status, startTime, endTime, offset, txId) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/capital/deposit/hisrec', { limit, coin, status, startTime, endTime, offset, txId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1552,7 +1552,7 @@ class Spot {
      * @param {number | undefined} endTime  - Default: present timestamp
      * @returns { Promise <  > }
      */
-    async withdraw_history_supporting_network(limit, coin, withdrawOrderId, status, offset, startTime, endTime) {
+    withdraw_history_supporting_network: async (limit, coin, withdrawOrderId, status, offset, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/capital/withdraw/history', { limit, coin, withdrawOrderId, status, offset, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1563,14 +1563,14 @@ class Spot {
     /**
      * REQUIRES BOTH `APIKEY` AND `APISECRET`
      * - Fetch deposit address with `network`.
-     * - Weight(IP): `10`
+     * - Weight(IP): `10`.
      * - If network is not send, return with default `network` of the `coin`.
-     * - You can get network and `isDefault` in `networkList` in the response of `Get /sapi/v`1`/capital/config/getall (HMAC SHA`256`)` .
+     * - You can get network and `isDefault` in `networkList` in the response of `Get /sapi/v1/capital/config/getall (HMAC SHA256)`.
      * @param {string} coin
      * @param {string | undefined} network
      * @returns { Promise <  > }
      */
-    async deposit_address_supporting_network(coin, network) {
+    deposit_address_supporting_network: async (coin, network) => {
       // Expects (HMAC SHA256)
       if (typeof coin === 'undefined') return new Error('coin', 'REQUIRED');
 
@@ -1586,7 +1586,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"data":"Normal"} > }
      */
-    async account_status() {
+    account_status: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/account/status', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1600,7 +1600,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"data":{"isLocked":false,"plannedRecoverTime":0,"triggerCondition":{"GCR":150,"IFER":150,"UFR":300},"updateTime":1547630471725}} > }
      */
-    async account_api_trading_status() {
+    account_api_trading_status: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/account/apiTradingStatus', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1630,7 +1630,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"details":[{"asset":"ADA","assetFullName":"ADA","amountFree":"6.21","toBTC":"0.00016848","toBNB":"0.01777302","toBNBOffExchange":"0.01741756","exchange":"0.00035546"}],"totalTransferBtc":"0.00016848","totalTransferBNB":"0.01777302","dribbletPercentage":"0.02"} > }
     */
-    async get_assets_that_can_be_converted_into_bnb() {
+    get_assets_that_can_be_converted_into_bnb: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/asset/dust-btc', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1646,7 +1646,7 @@ class Spot {
      * @param {ARRAY} asset  - The asset being converted. For example: asset=BTC,USDT
      * @returns { Promise < {"totalServiceCharge":"0.02102542","totalTransfered":"1.05127099","transferResult":[{"amount":"0.03000000","fromAsset":"ETH","operateTime":1563368549307,"serviceChargeAmount":"0.00500000","tranId":2970932918,"transferedAmount":"0.25000000"},{"amount":"0.09000000","fromAsset":"LTC","operateTime":1563368549404,"serviceChargeAmount":"0.01548000","tranId":2970932918,"transferedAmount":"0.77400000"},{"amount":"248.61878453","fromAsset":"TRX","operateTime":1563368549489,"serviceChargeAmount":"0.00054542","tranId":2970932918,"transferedAmount":"0.02727099"}]} > }
     */
-    async dust_transfer(asset) {
+    dust_transfer: async (asset) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -1667,7 +1667,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < {"rows":[{"id":1637366104,"amount":"10.00000000","asset":"BHFT","divTime":1563189166000,"enInfo":"BHFT distribution","tranId":2968885920},{"id":1631750237,"amount":"10.00000000","asset":"BHFT","divTime":1563189165000,"enInfo":"BHFT distribution","tranId":2968885920}],"total":2} > }
     */
-    async asset_dividend_record(limit, asset, startTime, endTime) {
+    asset_dividend_record: async (limit, asset, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/asset/assetDividend', { limit, asset, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1683,7 +1683,7 @@ class Spot {
      * @param {string | undefined} asset
      * @returns { Promise < {"CTR":{"minWithdrawAmount":"70.00000000","depositStatus":false,"withdrawFee":35,"withdrawStatus":true,"depositTip":"Delisted, Deposit Suspended"},"SKY":{"minWithdrawAmount":"0.02000000","depositStatus":true,"withdrawFee":0.01,"withdrawStatus":true}} > }
     */
-    async asset_detail(asset) {
+    asset_detail: async (asset) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/asset/assetDetail', { asset }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1698,7 +1698,7 @@ class Spot {
      * @param {string | undefined} symbol
      * @returns { Promise < [{"symbol":"ADABNB","makerCommission":"0.001","takerCommission":"0.001"},{"symbol":"BNBBTC","makerCommission":"0.001","takerCommission":"0.001"}] > }
     */
-    async trade_fee(symbol) {
+    trade_fee: async (symbol) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/asset/tradeFee', { symbol }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1753,7 +1753,7 @@ class Spot {
      * @param {string | undefined} toSymbol
      * @returns { Promise < {"tranId":13526853623} > }
     */
-    async user_universal_transfer(type, asset, amount, fromSymbol, toSymbol) {
+    user_universal_transfer: async (type, asset, amount, fromSymbol, toSymbol) => {
       // Expects (HMAC SHA256)
       if (typeof type === 'undefined') return new Error('type', 'REQUIRED');
 
@@ -1783,7 +1783,7 @@ class Spot {
      * @param {string | undefined} toSymbol
      * @returns { Promise < {"total":2,"rows":[{"asset":"USDT","amount":"1","type":"MAIN_UMFUTURE","status":"CONFIRMED","tranId":11415955596,"timestamp":1544433328000},{"asset":"USDT","amount":"2","type":"MAIN_UMFUTURE","status":"CONFIRMED","tranId":11366865406,"timestamp":1544433328000}]} > }
     */
-    async query_user_universal_transfer_history(type, startTime, endTime, current, size, fromSymbol, toSymbol) {
+    query_user_universal_transfer_history: async (type, startTime, endTime, current, size, fromSymbol, toSymbol) => {
       // Expects (HMAC SHA256)
       if (typeof type === 'undefined') return new Error('type', 'REQUIRED');
 
@@ -1801,7 +1801,7 @@ class Spot {
      * @param {string | undefined} needBtcValuation  - true or false
      * @returns { Promise < [{"asset":"USDT","free":"1","locked":"0","freeze":"0","withdrawing":"0","btcValuation":"0.00000091"}] > }
     */
-    async funding_wallet(asset, needBtcValuation) {
+    funding_wallet: async (asset, needBtcValuation) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/asset/get-funding-asset', { asset, needBtcValuation }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1819,7 +1819,7 @@ class Spot {
      * @param {BOOLEAN | undefined} needBtcValuation  - Whether need btc valuation or not.
      * @returns { Promise < [{"asset":"AVAX","free":"1","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"},{"asset":"BCH","free":"0.9","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"},{"asset":"BNB","free":"887.47061626","locked":"0","freeze":"10.52","withdrawing":"0.1","ipoable":"0","btcValuation":"0"},{"asset":"BUSD","free":"9999.7","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"},{"asset":"SHIB","free":"532.32","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"},{"asset":"USDT","free":"50300000001.44911105","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"},{"asset":"WRZ","free":"1","locked":"0","freeze":"0","withdrawing":"0","ipoable":"0","btcValuation":"0"}] > }
     */
-    async user_asset(asset, needBtcValuation) {
+    user_asset: async (asset, needBtcValuation) => {
 
       const resp = await this.request('POST', 'sapi', '/sapi/v3/asset/getUserAsset', { asset, needBtcValuation }, 'USER_DATA');
       if (resp.error) return resp;
@@ -1839,7 +1839,7 @@ class Spot {
      * @param {String | undefined} accountType  - Only MAIN and CARD , default MAIN
      * @returns { Promise < {"tranId":118263407119,"status":"S"} > }
     */
-    async busd_convert_trade(clientTranId, asset, amount, targetAsset, accountType) {
+    busd_convert_trade: async (clientTranId, asset, amount, targetAsset, accountType) => {
 
       if (typeof clientTranId === 'undefined') return new Error('clientTranId', 'REQUIRED');
 
@@ -1874,7 +1874,7 @@ class Spot {
      * @param {INTEGER | undefined} size  - page size, default `10`, the max value is `100`
      * @returns { Promise < {"total":3,"rows":[{"tranId":118263615991,"type":244,"time":1664442078000,"deductedAsset":"BUSD","deductedAmount":"1","targetAsset":"USDC","targetAmount":"1","status":"S","accountType":"MAIN"},{"tranId":118263598801,"type":244,"time":1664442061000,"deductedAsset":"BUSD","deductedAmount":"1","targetAsset":"USDC","targetAmount":"1","status":"S","accountType":"MAIN"},{"tranId":118263407119,"type":244,"time":1664441820000,"deductedAsset":"BUSD","deductedAmount":"1","targetAsset":"USDC","targetAmount":"1","status":"S","accountType":"MAIN"}]} > }
     */
-    async busd_convert_history(startTime, endTime, tranId, clientTranId, asset, accountType, current, size) {
+    busd_convert_history: async (startTime, endTime, tranId, clientTranId, asset, accountType, current, size) => {
 
       if (typeof startTime === 'undefined') return new Error('startTime', 'REQUIRED');
 
@@ -1901,7 +1901,7 @@ class Spot {
      * @param {INTEGER | undefined} size  - page size, default `10`, the max value is `100`
      * @returns { Promise < {"total":5,"rows":[{"createTime":1667880112000,"tranId":121230610120,"type":248,"asset":"USDT","amount":"25.0068","status":"S"},{"createTime":1666776366000,"tranId":119991507468,"type":249,"asset":"USDT","amount":"0.027","status":"S"},{"createTime":1666764505000,"tranId":119977966327,"type":248,"asset":"USDT","amount":"0.027","status":"S"},{"createTime":1666758189000,"tranId":119973601721,"type":248,"asset":"USDT","amount":"0.018","status":"S"},{"createTime":1666757278000,"tranId":119973028551,"type":248,"asset":"USDT","amount":"0.018","status":"S"}]} > }
     */
-    async get_cloud_mining_payment_and_refund_history(startTime, endTime, tranId, clientTranId, asset, current, size) {
+    get_cloud_mining_payment_and_refund_history: async (startTime, endTime, tranId, clientTranId, asset, current, size) => {
 
       if (typeof startTime === 'undefined') return new Error('startTime', 'REQUIRED');
 
@@ -1918,7 +1918,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"ipRestrict":false,"createTime":1623840271000,"enableWithdrawals":false,"enableInternalTransfer":true,"permitsUniversalTransfer":true,"enableVanillaOptions":false,"enableReading":true,"enableFutures":false,"enableMargin":false,"enableSpotAndMarginTrading":false,"tradingAuthorityExpirationTime":1628985600000} > }
     */
-    async get_api_key_permission() {
+    get_api_key_permission: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/account/apiRestrictions', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1933,7 +1933,7 @@ class Spot {
      * - Parameters: None
      * @returns { Promise < {"convertEnabled":true,"coins":["USDC","USDP","TUSD"],"exchangeRates":{"USDC":"1","TUSD":"1","USDP":"1"}} > }
     */
-    async query_auto_converting_stable_coins() {
+    query_auto_converting_stable_coins: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/capital/contract/convertible-coins', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -1951,7 +1951,7 @@ class Spot {
      * @param {BOOLEAN} enable  - true: turn on the auto-conversion. false: turn off the auto-conversion
      * @returns { Promise <  > }
     */
-    async switch_on_off_busd_and_stable_coins_conversion(coin, enable) {
+    switch_on_off_busd_and_stable_coins_conversion: async (coin, enable) => {
 
       if (typeof coin === 'undefined') return new Error('coin', 'REQUIRED');
 
@@ -1976,7 +1976,7 @@ class Spot {
      * @param {number | undefined} subUserId  - Sub-userId of parent user
      * @returns { Promise < {"code":"000000","message":"success","data":true,"success":true} > }
     */
-    async one_click_arrival_deposit_apply_for_expired_address_deposit(depositId, txId, subAccountId, subUserId) {
+    one_click_arrival_deposit_apply_for_expired_address_deposit: async (depositId, txId, subAccountId, subUserId) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/capital/deposit/credit-apply', { depositId, txId, subAccountId, subUserId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -2863,7 +2863,7 @@ class Spot {
      * @param {number} type  - `1`: transfer from main account to cross margin account `2`: transfer from cross margin account to main account
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async cross_margin_account_transfer_margin(asset, amount, type) {
+    cross_margin_account_transfer_margin: async (asset, amount, type) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -2889,7 +2889,7 @@ class Spot {
      * @param {string | undefined} symbol  - isolated symbol
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async margin_account_borrow_margin(asset, amount, isIsolated, symbol) {
+    margin_account_borrow_margin: async (asset, amount, isIsolated, symbol) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -2913,7 +2913,7 @@ class Spot {
      * @param {string | undefined} symbol  - isolated symbol
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async margin_account_repay_margin(asset, amount, isIsolated, symbol) {
+    margin_account_repay_margin: async (asset, amount, isIsolated, symbol) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -2931,7 +2931,7 @@ class Spot {
      * @param {string} asset
      * @returns { Promise < {"assetFullName":"Binance Coin","assetName":"BNB","isBorrowable":false,"isMortgageable":true,"userMinBorrow":"0.00000000","userMinRepay":"0.00000000"} > }
     */
-    async query_margin_asset_market_data(asset) {
+    query_margin_asset_market_data: async (asset) => {
 
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -2947,7 +2947,7 @@ class Spot {
      * @param {string} symbol
      * @returns { Promise < {"id":323355778339572400,"symbol":"BTCUSDT","base":"BTC","quote":"USDT","isMarginTrade":true,"isBuyAllowed":true,"isSellAllowed":true} > }
     */
-    async query_cross_margin_pair_market_data(symbol) {
+    query_cross_margin_pair_market_data: async (symbol) => {
 
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -2963,7 +2963,7 @@ class Spot {
      * - None
      * @returns { Promise < [{"assetFullName":"USD coin","assetName":"USDC","isBorrowable":true,"isMortgageable":true,"userMinBorrow":"0.00000000","userMinRepay":"0.00000000"},{"assetFullName":"BNB-coin","assetName":"BNB","isBorrowable":true,"isMortgageable":true,"userMinBorrow":"1.00000000","userMinRepay":"0.00000000"},{"assetFullName":"Tether","assetName":"USDT","isBorrowable":true,"isMortgageable":true,"userMinBorrow":"1.00000000","userMinRepay":"0.00000000"},{"assetFullName":"etherum","assetName":"ETH","isBorrowable":true,"isMortgageable":true,"userMinBorrow":"0.00000000","userMinRepay":"0.00000000"},{"assetFullName":"Bitcoin","assetName":"BTC","isBorrowable":true,"isMortgageable":true,"userMinBorrow":"0.00000000","userMinRepay":"0.00000000"}] > }
     */
-    async get_all_margin_assets_market_data() {
+    get_all_margin_assets_market_data: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/allAssets', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -2977,7 +2977,7 @@ class Spot {
      * - None
      * @returns { Promise < [{"base":"BNB","id":351637150141315840,"isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"BNBBTC"},{"base":"TRX","id":351637923235429100,"isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"TRXBTC"},{"base":"XRP","id":351638112213990140,"isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"XRPBTC"},{"base":"ETH","id":351638524530850560,"isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"ETHBTC"},{"base":"BNB","id":376870400832855100,"isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"USDT","symbol":"BNBUSDT"}] > }
     */
-    async get_all_cross_margin_pairs_market_data() {
+    get_all_cross_margin_pairs_market_data: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/allPairs', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -2991,7 +2991,7 @@ class Spot {
      * @param {string} symbol
      * @returns { Promise < {"calcTime":1562046418000,"price":"0.00333930","symbol":"BNBBTC"} > }
     */
-    async query_margin_priceindex_market_data(symbol) {
+    query_margin_priceindex_market_data: async (symbol) => {
 
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3022,7 +3022,7 @@ class Spot {
      * @returns { Promise < {"symbol":"BTCUSDT","orderId":28,"clientOrderId":"6gCrw2kRUAF9CvJDGP16IP","transactTime":1507725176595,"price":"1.00000000","origQty":"10.00000000","executedQty":"10.00000000","cummulativeQuoteQty":"10.00000000","status":"FILLED","timeInForce":"GTC","type":"MARKET","isIsolated":true,"side":"SELL"} > }
      * @returns { Promise < {"symbol":"BTCUSDT","orderId":28,"clientOrderId":"6gCrw2kRUAF9CvJDGP16IP","transactTime":1507725176595,"price":"1.00000000","origQty":"10.00000000","executedQty":"10.00000000","cummulativeQuoteQty":"10.00000000","status":"FILLED","timeInForce":"GTC","type":"MARKET","side":"SELL","marginBuyBorrowAmount":5,"marginBuyBorrowAsset":"BTC","isIsolated":true,"fills":[{"price":"4000.00000000","qty":"1.00000000","commission":"4.00000000","commissionAsset":"USDT"},{"price":"3999.00000000","qty":"5.00000000","commission":"19.99500000","commissionAsset":"USDT"},{"price":"3998.00000000","qty":"2.00000000","commission":"7.99600000","commissionAsset":"USDT"},{"price":"3997.00000000","qty":"1.00000000","commission":"3.99700000","commissionAsset":"USDT"},{"price":"3995.00000000","qty":"1.00000000","commission":"3.99500000","commissionAsset":"USDT"}]} > }
     */
-    async margin_account_new_order_trade(symbol, side, type, isIsolated, quantity, quoteOrderQty, price, stopPrice, newClientOrderId, icebergQty, newOrderRespType, sideEffectType, timeInForce) {
+    margin_account_new_order_trade: async (symbol, side, type, isIsolated, quantity, quoteOrderQty, price, stopPrice, newClientOrderId, icebergQty, newOrderRespType, sideEffectType, timeInForce) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3048,7 +3048,7 @@ class Spot {
      * @param {string | undefined} newClientOrderId  - Used to uniquely identify this cancel. Automatically generated by default.
      * @returns { Promise < {"symbol":"LTCBTC","isIsolated":true,"orderId":"28","origClientOrderId":"myOrder1","clientOrderId":"cancelMyOrder1","price":"1.00000000","origQty":"10.00000000","executedQty":"8.00000000","cummulativeQuoteQty":"8.00000000","status":"CANCELED","timeInForce":"GTC","type":"LIMIT","side":"SELL"} > }
     */
-    async margin_account_cancel_order_trade(symbol, isIsolated, orderId, origClientOrderId, newClientOrderId) {
+    margin_account_cancel_order_trade: async (symbol, isIsolated, orderId, origClientOrderId, newClientOrderId) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3066,7 +3066,7 @@ class Spot {
      * @param {string | undefined} isIsolated  - for isolated margin or not, "TRUE", "FALSE",default "FALSE"
      * @returns { Promise <  > }
     */
-    async margin_account_cancel_all_open_orders_on_a_symbol_trade(symbol, isIsolated) {
+    margin_account_cancel_all_open_orders_on_a_symbol_trade: async (symbol, isIsolated) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3092,7 +3092,7 @@ class Spot {
      * @param {string | undefined} archived  - Default: false . Set to true for archived data from `6` months ago
      * @returns { Promise < {"rows":[{"amount":"0.10000000","asset":"BNB","status":"CONFIRMED","timestamp":1566898617,"txId":5240372201,"type":"ROLL_IN"},{"amount":"5.00000000","asset":"USDT","status":"CONFIRMED","timestamp":1566888436,"txId":5239810406,"type":"ROLL_OUT"},{"amount":"1.00000000","asset":"EOS","status":"CONFIRMED","timestamp":1566888403,"txId":5239808703,"type":"ROLL_IN"}],"total":3} > }
     */
-    async get_cross_margin_transfer_history(asset, type, startTime, endTime, current, size, archived) {
+    get_cross_margin_transfer_history: async (asset, type, startTime, endTime, current, size, archived) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/transfer', { asset, type, startTime, endTime, current, size, archived }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3119,7 +3119,7 @@ class Spot {
      * @param {string | undefined} archived  - Default: false . Set to true for archived data from `6` months ago
      * @returns { Promise < {"rows":[{"isolatedSymbol":"BNBUSDT","txId":12807067523,"asset":"BNB","principal":"0.84624403","timestamp":1555056425000,"status":"CONFIRMED"}],"total":1} > }
     */
-    async query_loan_record(asset, isolatedSymbol, txId, startTime, endTime, current, size, archived) {
+    query_loan_record: async (asset, isolatedSymbol, txId, startTime, endTime, current, size, archived) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3148,7 +3148,7 @@ class Spot {
      * @param {string | undefined} archived  - Default: false . Set to true for archived data from `6` months ago
      * @returns { Promise < {"rows":[{"isolatedSymbol":"BNBUSDT","amount":"14.00000000","asset":"BNB","interest":"0.01866667","principal":"13.98133333","status":"CONFIRMED","timestamp":1563438204000,"txId":2970933056}],"total":1} > }
     */
-    async query_repay_record(asset, isolatedSymbol, txId, startTime, endTime, current, size, archived) {
+    query_repay_record: async (asset, isolatedSymbol, txId, startTime, endTime, current, size, archived) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3181,7 +3181,7 @@ class Spot {
      * @param {string | undefined} archived  - Default: false . Set to true for archived data from `6` months ago
      * @returns { Promise <  > }
     */
-    async get_interest_history(asset, isolatedSymbol, startTime, endTime, current, size, archived) {
+    get_interest_history: async (asset, isolatedSymbol, startTime, endTime, current, size, archived) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/interestHistory', { asset, isolatedSymbol, startTime, endTime, current, size, archived }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3200,7 +3200,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10` Max:`100`
      * @returns { Promise < {"rows":[{"avgPrice":"0.00388359","executedQty":"31.39000000","orderId":180015097,"price":"0.00388110","qty":"31.39000000","side":"SELL","symbol":"BNBBTC","timeInForce":"GTC","isIsolated":true,"updatedTime":1558941374745}],"total":1} > }
     */
-    async get_force_liquidation_record(startTime, endTime, isolatedSymbol, current, size) {
+    get_force_liquidation_record: async (startTime, endTime, isolatedSymbol, current, size) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/forceLiquidationRec', { startTime, endTime, isolatedSymbol, current, size }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3213,7 +3213,7 @@ class Spot {
      * - Weight(IP): `10`
      * @returns { Promise < {"borrowEnabled":true,"marginLevel":"11.64405625","totalAssetOfBtc":"6.82728457","totalLiabilityOfBtc":"0.58633215","totalNetAssetOfBtc":"6.24095242","tradeEnabled":true,"transferEnabled":true,"userAssets":[{"asset":"BTC","borrowed":"0.00000000","free":"0.00499500","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00499500"},{"asset":"BNB","borrowed":"201.66666672","free":"2346.50000000","interest":"0.00000000","locked":"0.00000000","netAsset":"2144.83333328"},{"asset":"ETH","borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000"},{"asset":"USDT","borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000"}]} > }
     */
-    async query_cross_margin_account_details() {
+    query_cross_margin_account_details: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/account', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3232,7 +3232,7 @@ class Spot {
      * @param {string | undefined} origClientOrderId
      * @returns { Promise < {"clientOrderId":"ZwfQzuDIGpceVhKW5DvCmO","cummulativeQuoteQty":"0.00000000","executedQty":"0.00000000","icebergQty":"0.00000000","isWorking":true,"orderId":213205622,"origQty":"0.30000000","price":"0.00493630","side":"SELL","status":"NEW","stopPrice":"0.00000000","symbol":"BNBBTC","isIsolated":true,"time":1562133008725,"timeInForce":"GTC","type":"LIMIT","updateTime":1562133008725} > }
     */
-    async query_margin_accounts_order(symbol, isIsolated, orderId, origClientOrderId) {
+    query_margin_accounts_order: async (symbol, isIsolated, orderId, origClientOrderId) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3252,7 +3252,7 @@ class Spot {
      * @param {string | undefined} isIsolated  - for isolated margin or not, "TRUE", "FALSE",default "FALSE"
      * @returns { Promise < [{"clientOrderId":"qhcZw71gAkCCTv0t0k8LUK","cummulativeQuoteQty":"0.00000000","executedQty":"0.00000000","icebergQty":"0.00000000","isWorking":true,"orderId":211842552,"origQty":"0.30000000","price":"0.00475010","side":"SELL","status":"NEW","stopPrice":"0.00000000","symbol":"BNBBTC","isIsolated":true,"time":1562040170089,"timeInForce":"GTC","type":"LIMIT","updateTime":1562040170089}] > }
     */
-    async query_margin_accounts_open_orders(symbol, isIsolated) {
+    query_margin_accounts_open_orders: async (symbol, isIsolated) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/openOrders', { symbol, isIsolated }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3273,7 +3273,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"clientOrderId":"D2KDy4DIeS56PvkM13f8cP","cummulativeQuoteQty":"0.00000000","executedQty":"0.00000000","icebergQty":"0.00000000","isWorking":false,"orderId":41295,"origQty":"5.31000000","price":"0.22500000","side":"SELL","status":"CANCELED","stopPrice":"0.18000000","symbol":"BNBBTC","isIsolated":false,"time":1565769338806,"timeInForce":"GTC","type":"TAKE_PROFIT_LIMIT","updateTime":1565769342148},{"clientOrderId":"gXYtqhcEAs2Rn9SUD9nRKx","cummulativeQuoteQty":"0.00000000","executedQty":"0.00000000","icebergQty":"1.00000000","isWorking":true,"orderId":41296,"origQty":"6.65000000","price":"0.18000000","side":"SELL","status":"CANCELED","stopPrice":"0.00000000","symbol":"BNBBTC","isIsolated":false,"time":1565769348687,"timeInForce":"GTC","type":"LIMIT","updateTime":1565769352226},{"clientOrderId":"duDq1BqohhcMmdMs9FSuDy","cummulativeQuoteQty":"0.39450000","executedQty":"2.63000000","icebergQty":"0.00000000","isWorking":true,"orderId":41297,"origQty":"2.63000000","price":"0.00000000","side":"SELL","status":"FILLED","stopPrice":"0.00000000","symbol":"BNBBTC","isIsolated":false,"time":1565769358139,"timeInForce":"GTC","type":"MARKET","updateTime":1565769358139}] > }
     */
-    async query_margin_accounts_all_orders(symbol, limit, isIsolated, orderId, startTime, endTime) {
+    query_margin_accounts_all_orders: async (symbol, limit, isIsolated, orderId, startTime, endTime) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3314,7 +3314,7 @@ class Spot {
      * @param {ENUM | undefined} sideEffectType  - NO_SIDE_EFFECT, MARGIN_BUY, AUTO_REPAY; default NO_SIDE_EFFECT.
      * @returns { Promise < {"orderListId":0,"contingencyType":"OCO","listStatusType":"EXEC_STARTED","listOrderStatus":"EXECUTING","listClientOrderId":"JYVpp3F0f5CAG15DhtrqLp","transactionTime":1563417480525,"symbol":"LTCBTC","marginBuyBorrowAmount":"5","marginBuyBorrowAsset":"BTC","isIsolated":false,"orders":[{"symbol":"LTCBTC","orderId":2,"clientOrderId":"Kk7sqHb9J6mJWTMDVW7Vos"},{"symbol":"LTCBTC","orderId":3,"clientOrderId":"xTXKaGYd4bluPVp78IVRvl"}],"orderReports":[{"symbol":"LTCBTC","orderId":2,"orderListId":0,"clientOrderId":"Kk7sqHb9J6mJWTMDVW7Vos","transactTime":1563417480525,"price":"0.000000","origQty":"0.624363","executedQty":"0.000000","cummulativeQuoteQty":"0.000000","status":"NEW","timeInForce":"GTC","type":"STOP_LOSS","side":"BUY","stopPrice":"0.960664"},{"symbol":"LTCBTC","orderId":3,"orderListId":0,"clientOrderId":"xTXKaGYd4bluPVp78IVRvl","transactTime":1563417480525,"price":"0.036435","origQty":"0.624363","executedQty":"0.000000","cummulativeQuoteQty":"0.000000","status":"NEW","timeInForce":"GTC","type":"LIMIT_MAKER","side":"BUY"}]} > }
     */
-    async margin_account_new_oco_trade(symbol, side, quantity, price, stopPrice, isIsolated, listClientOrderId, limitClientOrderId, limitIcebergQty, stopClientOrderId, stopLimitPrice, stopIcebergQty, stopLimitTimeInForce, newOrderRespType, sideEffectType) {
+    margin_account_new_oco_trade: async (symbol, side, quantity, price, stopPrice, isIsolated, listClientOrderId, limitClientOrderId, limitIcebergQty, stopClientOrderId, stopLimitPrice, stopIcebergQty, stopLimitTimeInForce, newOrderRespType, sideEffectType) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3345,7 +3345,7 @@ class Spot {
      * @param {string | undefined} newClientOrderId  - Used to uniquely identify this cancel. Automatically generated by default
      * @returns { Promise < {"orderListId":0,"contingencyType":"OCO","listStatusType":"ALL_DONE","listOrderStatus":"ALL_DONE","listClientOrderId":"C3wyj4WVEktd7u9aVBRXcN","transactionTime":1574040868128,"symbol":"LTCBTC","isIsolated":false,"orders":[{"symbol":"LTCBTC","orderId":2,"clientOrderId":"pO9ufTiFGg3nw2fOdgeOXa"},{"symbol":"LTCBTC","orderId":3,"clientOrderId":"TXOvglzXuaubXAaENpaRCB"}],"orderReports":[{"symbol":"LTCBTC","origClientOrderId":"pO9ufTiFGg3nw2fOdgeOXa","orderId":2,"orderListId":0,"clientOrderId":"unfWT8ig8i0uj6lPuYLez6","price":"1.00000000","origQty":"10.00000000","executedQty":"0.00000000","cummulativeQuoteQty":"0.00000000","status":"CANCELED","timeInForce":"GTC","type":"STOP_LOSS_LIMIT","side":"SELL","stopPrice":"1.00000000"},{"symbol":"LTCBTC","origClientOrderId":"TXOvglzXuaubXAaENpaRCB","orderId":3,"orderListId":0,"clientOrderId":"unfWT8ig8i0uj6lPuYLez6","price":"3.00000000","origQty":"10.00000000","executedQty":"0.00000000","cummulativeQuoteQty":"0.00000000","status":"CANCELED","timeInForce":"GTC","type":"LIMIT_MAKER","side":"SELL"}]} > }
     */
-    async margin_account_cancel_oco_trade(symbol, isIsolated, orderListId, listClientOrderId, newClientOrderId) {
+    margin_account_cancel_oco_trade: async (symbol, isIsolated, orderListId, listClientOrderId, newClientOrderId) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3366,7 +3366,7 @@ class Spot {
      * @param {string | undefined} origClientOrderId  - Either orderListId or origClientOrderId must be provided
      * @returns { Promise < {"orderListId":27,"contingencyType":"OCO","listStatusType":"EXEC_STARTED","listOrderStatus":"EXECUTING","listClientOrderId":"h2USkA5YQpaXHPIrkd96xE","transactionTime":1565245656253,"symbol":"LTCBTC","isIsolated":false,"orders":[{"symbol":"LTCBTC","orderId":4,"clientOrderId":"qD1gy3kc3Gx0rihm9Y3xwS"},{"symbol":"LTCBTC","orderId":5,"clientOrderId":"ARzZ9I00CPM8i3NhmU9Ega"}]} > }
     */
-    async query_margin_accounts_oco(isIsolated, symbol, orderListId, origClientOrderId) {
+    query_margin_accounts_oco: async (isIsolated, symbol, orderListId, origClientOrderId) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/orderList', { isIsolated, symbol, orderListId, origClientOrderId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3386,7 +3386,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"orderListId":29,"contingencyType":"OCO","listStatusType":"EXEC_STARTED","listOrderStatus":"EXECUTING","listClientOrderId":"amEEAXryFzFwYF1FeRpUoZ","transactionTime":1565245913483,"symbol":"LTCBTC","isIsolated":true,"orders":[{"symbol":"LTCBTC","orderId":4,"clientOrderId":"oD7aesZqjEGlZrbtRpy5zB"},{"symbol":"LTCBTC","orderId":5,"clientOrderId":"Jr1h6xirOxgeJOUuYQS7V3"}]},{"orderListId":28,"contingencyType":"OCO","listStatusType":"EXEC_STARTED","listOrderStatus":"EXECUTING","listClientOrderId":"hG7hFNxJV6cZy3Ze4AUT4d","transactionTime":1565245913407,"symbol":"LTCBTC","orders":[{"symbol":"LTCBTC","orderId":2,"clientOrderId":"j6lFOfbmFMRjTYA7rRJ0LP"},{"symbol":"LTCBTC","orderId":3,"clientOrderId":"z0KCjOdditiLS5ekAFtK81"}]}] > }
     */
-    async query_margin_accounts_all_oco(limit, isIsolated, symbol, fromId, startTime, endTime) {
+    query_margin_accounts_all_oco: async (limit, isIsolated, symbol, fromId, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/allOrderList', { limit, isIsolated, symbol, fromId, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3401,7 +3401,7 @@ class Spot {
      * @param {string | undefined} symbol  - mandatory for isolated margin, not supported for cross margin
      * @returns { Promise < [{"orderListId":31,"contingencyType":"OCO","listStatusType":"EXEC_STARTED","listOrderStatus":"EXECUTING","listClientOrderId":"wuB13fmulKj3YjdqWEcsnp","transactionTime":1565246080644,"symbol":"LTCBTC","isIsolated":false,"orders":[{"symbol":"LTCBTC","orderId":4,"clientOrderId":"r3EH2N76dHfLoSZWIUw1bT"},{"symbol":"LTCBTC","orderId":5,"clientOrderId":"Cv1SnyPD3qhqpbjpYEHbd2"}]}] > }
     */
-    async query_margin_accounts_open_oco(isIsolated, symbol) {
+    query_margin_accounts_open_oco: async (isIsolated, symbol) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/openOrderList', { isIsolated, symbol }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3422,7 +3422,7 @@ class Spot {
      * @param {number | undefined} fromId  - TradeId to fetch from. Default gets most recent trades.
      * @returns { Promise < [{"commission":"0.00006000","commissionAsset":"BTC","id":34,"isBestMatch":true,"isBuyer":false,"isMaker":false,"orderId":39324,"price":"0.02000000","qty":"3.00000000","symbol":"BNBBTC","isIsolated":false,"time":1561973357171}] > }
     */
-    async query_margin_accounts_trade_list(symbol, limit, isIsolated, orderId, startTime, endTime, fromId) {
+    query_margin_accounts_trade_list: async (symbol, limit, isIsolated, orderId, startTime, endTime, fromId) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3441,7 +3441,7 @@ class Spot {
      * @param {string | undefined} isolatedSymbol  - isolated symbol
      * @returns { Promise < {"amount":"1.69248805","borrowLimit":"60"} > }
     */
-    async query_max_borrow(asset, isolatedSymbol) {
+    query_max_borrow: async (asset, isolatedSymbol) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3459,7 +3459,7 @@ class Spot {
      * @param {string | undefined} isolatedSymbol  - isolated symbol
      * @returns { Promise < {"amount":"3.59498107"} > }
     */
-    async query_max_transfer_out_amount(asset, isolatedSymbol) {
+    query_max_transfer_out_amount: async (asset, isolatedSymbol) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3475,7 +3475,7 @@ class Spot {
      * - Weight(IP): `10`
      * @returns { Promise < {"normalBar":"1.5","marginCallBar":"1.3","forceLiquidationBar":"1.1"} > }
     */
-    async get_summary_of_margin_account() {
+    get_summary_of_margin_account: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/tradeCoeff', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3493,7 +3493,7 @@ class Spot {
      * @param {number} amount
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async isolated_margin_account_transfer_margin(asset, symbol, transFrom, transTo, amount) {
+    isolated_margin_account_transfer_margin: async (asset, symbol, transFrom, transTo, amount) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3528,7 +3528,7 @@ class Spot {
      * @param {string | undefined} archived  - Default: false . Set to true for archived data from `6` months ago
      * @returns { Promise < {"rows":[{"amount":"0.10000000","asset":"BNB","status":"CONFIRMED","timestamp":1566898617000,"txId":5240372201,"transFrom":"SPOT","transTo":"ISOLATED_MARGIN"},{"amount":"5.00000000","asset":"USDT","status":"CONFIRMED","timestamp":1566888436123,"txId":5239810406,"transFrom":"ISOLATED_MARGIN","transTo":"SPOT"}],"total":2} > }
     */
-    async get_isolated_margin_transfer_history(symbol, asset, transFrom, transTo, startTime, endTime, current, size, archived) {
+    get_isolated_margin_transfer_history: async (symbol, asset, transFrom, transTo, startTime, endTime, current, size, archived) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3549,7 +3549,7 @@ class Spot {
      * @returns { Promise < {"assets":[{"baseAsset":{"asset":"BTC","borrowEnabled":true,"borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000","netAssetOfBtc":"0.00000000","repayEnabled":true,"totalAsset":"0.00000000"},"quoteAsset":{"asset":"USDT","borrowEnabled":true,"borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000","netAssetOfBtc":"0.00000000","repayEnabled":true,"totalAsset":"0.00000000"},"symbol":"BTCUSDT","isolatedCreated":true,"enabled":true,"marginLevel":"0.00000000","marginLevelStatus":"EXCESSIVE","marginRatio":"0.00000000","indexPrice":"10000.00000000","liquidatePrice":"1000.00000000","liquidateRate":"1.00000000","tradeEnabled":true}],"totalAssetOfBtc":"0.00000000","totalLiabilityOfBtc":"0.00000000","totalNetAssetOfBtc":"0.00000000"} > }
      * @returns { Promise < {"assets":[{"baseAsset":{"asset":"BTC","borrowEnabled":true,"borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000","netAssetOfBtc":"0.00000000","repayEnabled":true,"totalAsset":"0.00000000"},"quoteAsset":{"asset":"USDT","borrowEnabled":true,"borrowed":"0.00000000","free":"0.00000000","interest":"0.00000000","locked":"0.00000000","netAsset":"0.00000000","netAssetOfBtc":"0.00000000","repayEnabled":true,"totalAsset":"0.00000000"},"symbol":"BTCUSDT","isolatedCreated":true,"enabled":true,"marginLevel":"0.00000000","marginLevelStatus":"EXCESSIVE","marginRatio":"0.00000000","indexPrice":"10000.00000000","liquidatePrice":"1000.00000000","liquidateRate":"1.00000000","tradeEnabled":true}]} > }
     */
-    async query_isolated_margin_account_info(symbols) {
+    query_isolated_margin_account_info: async (symbols) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/isolated/account', { symbols }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3564,7 +3564,7 @@ class Spot {
      * @param {string} symbol
      * @returns { Promise < {"success":true,"symbol":"BTCUSDT"} > }
     */
-    async disable_isolated_margin_account_trade(symbol) {
+    disable_isolated_margin_account_trade: async (symbol) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3581,7 +3581,7 @@ class Spot {
      * @param {string} symbol
      * @returns { Promise < {"success":true,"symbol":"BTCUSDT"} > }
     */
-    async enable_isolated_margin_account_trade(symbol) {
+    enable_isolated_margin_account_trade: async (symbol) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3597,7 +3597,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"enabledAccount":5,"maxAccount":20} > }
     */
-    async query_enabled_isolated_margin_account_limit() {
+    query_enabled_isolated_margin_account_limit: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/isolated/accountLimit', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3611,7 +3611,7 @@ class Spot {
      * @param {string} symbol
      * @returns { Promise < {"symbol":"BTCUSDT","base":"BTC","quote":"USDT","isMarginTrade":true,"isBuyAllowed":true,"isSellAllowed":true} > }
     */
-    async query_isolated_margin_symbol(symbol) {
+    query_isolated_margin_symbol: async (symbol) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3626,7 +3626,7 @@ class Spot {
      * - Weight(IP): `10`
      * @returns { Promise < [{"base":"BNB","isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"BNBBTC"},{"base":"TRX","isBuyAllowed":true,"isMarginTrade":true,"isSellAllowed":true,"quote":"BTC","symbol":"TRXBTC"}] > }
     */
-    async get_all_isolated_margin_symbol() {
+    get_all_isolated_margin_symbol: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/isolated/allPairs', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3642,7 +3642,7 @@ class Spot {
      * @param {string | undefined} interestBNBBurn  - "true" or "false"; Determines whether to use BNB to pay for margin loan's interest
      * @returns { Promise < {"spotBNBBurn":true,"interestBNBBurn":false} > }
     */
-    async toggle_bnb_burn_on_spot_trade_and_margin_interest(spotBNBBurn, interestBNBBurn) {
+    toggle_bnb_burn_on_spot_trade_and_margin_interest: async (spotBNBBurn, interestBNBBurn) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/bnbBurn', { spotBNBBurn, interestBNBBurn }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3655,7 +3655,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"spotBNBBurn":true,"interestBNBBurn":false} > }
     */
-    async get_bnb_burn_status() {
+    get_bnb_burn_status: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bnbBurn', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3672,7 +3672,7 @@ class Spot {
      * @param {number | undefined} endTime  - Default: present. Maximum range: `1` months.
      * @returns { Promise < [{"asset":"BTC","dailyInterestRate":"0.00025000","timestamp":1611544731000,"vipLevel":1},{"asset":"BTC","dailyInterestRate":"0.00035000","timestamp":1610248118000,"vipLevel":1}] > }
     */
-    async query_margin_interest_rate_history(asset, vipLevel, startTime, endTime) {
+    query_margin_interest_rate_history: async (asset, vipLevel, startTime, endTime) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -3690,7 +3690,7 @@ class Spot {
      * @param {string | undefined} coin
      * @returns { Promise < [{"vipLevel":0,"coin":"BTC","transferIn":true,"borrowable":true,"dailyInterest":"0.00026125","yearlyInterest":"0.0953","borrowLimit":"180","marginablePairs":["BNBBTC","TRXBTC","ETHBTC","BTCUSDT"]}] > }
     */
-    async query_cross_margin_fee_data(vipLevel, coin) {
+    query_cross_margin_fee_data: async (vipLevel, coin) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/crossMarginData', { vipLevel, coin }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3706,7 +3706,7 @@ class Spot {
      * @param {string | undefined} symbol
      * @returns { Promise < [{"vipLevel":0,"symbol":"BTCUSDT","leverage":"10","data":[{"coin":"BTC","dailyInterest":"0.00026125","borrowLimit":"270"},{"coin":"USDT","dailyInterest":"0.000475","borrowLimit":"2100000"}]}] > }
     */
-    async query_isolated_margin_fee_data(vipLevel, symbol) {
+    query_isolated_margin_fee_data: async (vipLevel, symbol) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/isolatedMarginData', { vipLevel, symbol }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3722,7 +3722,7 @@ class Spot {
      * @param {INTEGER | undefined} tier  - All margin tier data will be returned if tier is omitted
      * @returns { Promise < [{"symbol":"BTCUSDT","tier":1,"effectiveMultiple":"10","initialRiskRatio":"1.111","liquidationRiskRatio":"1.05","baseAssetMaxBorrowable":"9","quoteAssetMaxBorrowable":"70000"}] > }
     */
-    async query_isolated_margin_tier_data(symbol, tier) {
+    query_isolated_margin_tier_data: async (symbol, tier) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -3740,7 +3740,7 @@ class Spot {
      * @param {string | undefined} symbol  - isolated symbol, mandatory for isolated margin
      * @returns { Promise < [{"rateLimitType":"ORDERS","interval":"SECOND","intervalNum":10,"limit":10000,"count":0},{"rateLimitType":"ORDERS","interval":"DAY","intervalNum":1,"limit":20000,"count":0}] > }
     */
-    async query_current_margin_order_count_usage_trade(isIsolated, symbol) {
+    query_current_margin_order_count_usage_trade: async (isIsolated, symbol) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/rateLimit/order', { isIsolated, symbol }, 'TRADE');
       if (resp.error) return resp;
@@ -3755,7 +3755,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise <  > }
     */
-    async margin_dustlog(startTime, endTime) {
+    margin_dustlog: async (startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/dribblet', { startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -3769,7 +3769,7 @@ class Spot {
      * - Parameters: None
      * @returns { Promise < [{"collaterals":[{"minUsdValue":"0","maxUsdValue":"13000000","discountRate":"1"},{"minUsdValue":"13000000","maxUsdValue":"20000000","discountRate":"0.975"},{"minUsdValue":"20000000","discountRate":"0"}],"assetNames":["BNX"]},{"collaterals":[{"minUsdValue":"0","discountRate":"1"}],"assetNames":["BTC","BUSD","ETH","USDT"]}] > }
     */
-    async cross_margin_collateral_ratio_market_data() {
+    cross_margin_collateral_ratio_market_data: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/crossMarginCollateralRatio', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -3783,7 +3783,7 @@ class Spot {
      * - Weight(UID): `100`
      * @returns { Promise < [{"asset":"ETH","interest":"0.00083334","principal":"0.001","liabilityAsset":"USDT","liabilityQty":0.3552}] > }
     */
-    async get_small_liability_exchange_coin_list() {
+    get_small_liability_exchange_coin_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/margin/exchange-small-liability', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -3801,7 +3801,7 @@ class Spot {
      * @param {ARRAY} assetNames  - The assets list of small liability exchange, Example: assetNames = BTC,ETH
      * @returns { Promise <  > }
     */
-    async small_liability_exchange_margin(assetNames) {
+    small_liability_exchange_margin: async (assetNames) => {
       // Expects (HMAC SHA256)
       if (typeof assetNames === 'undefined') return new Error('assetNames', 'REQUIRED');
 
@@ -3821,7 +3821,7 @@ class Spot {
      * @param {number | undefined} endTime  - Default: present timestamp
      * @returns { Promise < {"total":1,"rows":[{"asset":"ETH","amount":"0.00083434","targetAsset":"BUSD","targetAmount":"1.37576819","bizType":"EXCHANGE_SMALL_LIABILITY","timestamp":1672801339253}]} > }
     */
-    async get_small_liability_exchange_history(current, size, startTime, endTime) {
+    get_small_liability_exchange_history: async (current, size, startTime, endTime) => {
       // Expects (HMAC SHA256)
       if (typeof current === 'undefined') return new Error('current', 'REQUIRED');
 
@@ -3851,7 +3851,7 @@ class Spot {
      * @param {Boolean} isIsolated  - for isolated margin or not, "TRUE", "FALSE"
      * @returns { Promise < [{"asset":"BTC","nextHourlyInterestRate":"0.00000571"},{"asset":"ETH","nextHourlyInterestRate":"0.00000578"}] > }
     */
-    async get_a_future_hourly_interest_rate(assets, isIsolated) {
+    get_a_future_hourly_interest_rate: async (assets, isIsolated) => {
       // Expects (HMAC SHA256)
       if (typeof assets === 'undefined') return new Error('assets', 'REQUIRED');
 
@@ -4238,7 +4238,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10`, Max:`100`
      * @returns { Promise < [{"projectId":"Axs*90","detail":{"asset":"AXS","rewardAsset":"AXS","duration":90,"renewable":true,"apy":"1.2069"},"quota":{"totalPersonalQuota":"2","minimum":"0.001"}},{"projectId":"Fio*90","detail":{"asset":"FIO","rewardAsset":"FIO","duration":90,"renewable":true,"apy":"1.0769"},"quota":{"totalPersonalQuota":"600","minimum":"0.1"}}] > }
     */
-    async get_staking_product_list(product, asset, current, size) {
+    get_staking_product_list: async (product, asset, current, size) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4259,7 +4259,7 @@ class Spot {
      * @param {string | undefined} renewable  - true or false, default false. Active if product is "STAKING" or "L_DEFI"
      * @returns { Promise < {"positionId":"12345","success":true} > }
     */
-    async purchase_staking_product(product, productId, amount, renewable) {
+    purchase_staking_product: async (product, productId, amount, renewable) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4284,7 +4284,7 @@ class Spot {
      * @param {number | undefined} amount  - Mandatory if product is "F_DEFI"
      * @returns { Promise < {"success":true} > }
     */
-    async redeem_staking_product(product, productId, positionId, amount) {
+    redeem_staking_product: async (product, productId, positionId, amount) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4306,7 +4306,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10`, Max:`100`
      * @returns { Promise < [{"positionId":"123123","projectId":"Axs*90","asset":"AXS","amount":"122.09202928","purchaseTime":"1646182276000","duration":"60","accrualDays":"4","rewardAsset":"AXS","APY":"0.2032","rewardAmt":"5.17181528","extraRewardAsset":"BNB","extraRewardAPY":"0.0203","estExtraRewardAmt":"5.17181528","nextInterestPay":"1.29295383","nextInterestPayDate":"1646697600000","payInterestPeriod":"1","redeemAmountEarly":"2802.24068892","interestEndDate":"1651449600000","deliverDate":"1651536000000","redeemPeriod":"1","redeemingAmt":"232.2323","partialAmtDeliverDate":"1651536000000","canRedeemEarly":true,"renewable":true,"type":"AUTO","status":"HOLDING"}] > }
     */
-    async get_staking_product_position(product, productId, asset, current, size) {
+    get_staking_product_position: async (product, productId, asset, current, size) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4330,7 +4330,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10`, Max:`100`
      * @returns { Promise < [{"positionId":"123123","time":1575018510000,"asset":"BNB","project":"BSC","amount":"21312.23223","lockPeriod":"30","deliverDate":"1575018510000","type":"AUTO","status":"success"}] > }
     */
-    async get_staking_history(product, txnType, asset, startTime, endTime, current, size) {
+    get_staking_history: async (product, txnType, asset, startTime, endTime, current, size) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4351,7 +4351,7 @@ class Spot {
      * @param {string} renewable  - true or false
      * @returns { Promise < {"success":true} > }
     */
-    async set_auto_staking(product, positionId, renewable) {
+    set_auto_staking: async (product, positionId, renewable) => {
       // Expects (HMAC SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4374,7 +4374,7 @@ class Spot {
      * @param {string} productId
      * @returns { Promise < [{"leftPersonalQuota":"1000"}] > }
     */
-    async get_personal_left_quota_of_staking_product(product, productId) {
+    get_personal_left_quota_of_staking_product: async (product, productId) => {
       // Expects SHA256)
       if (typeof product === 'undefined') return new Error('product', 'REQUIRED');
 
@@ -4399,7 +4399,7 @@ class Spot {
      * - None
      * @returns { Promise < {"code":0,"msg":"","data":[{"algoName":"sha256","algoId":1,"poolIndex":0,"unit":"h/s"}]} > }
     */
-    async acquiring_algorithm_market_data() {
+    acquiring_algorithm_market_data: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/pub/algoList', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -4413,7 +4413,7 @@ class Spot {
      * - None
      * @returns { Promise < {"code":0,"msg":"","data":[{"coinName":"BTC","coinId":1,"poolIndex":0,"algoId":1,"algoName":"sha256"}]} > }
     */
-    async acquiring_coinname_market_data() {
+    acquiring_coinname_market_data: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/pub/coinList', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -4426,7 +4426,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":[{"workerName":"bhdc1.16A10404B","type":"H_hashrate","hashrateDatas":[{"time":1587902400000,"hashrate":"0","reject":0},{"time":1587906000000,"hashrate":"0","reject":0}]},{"workerName":"bhdc1.16A10404B","type":"D_hashrate","hashrateDatas":[{"time":1587902400000,"hashrate":"0","reject":0},{"time":1587906000000,"hashrate":"0","reject":0}]}]} > }
     */
-    async request_for_detail_miner_list() {
+    request_for_detail_miner_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/worker/detail', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4439,7 +4439,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"workerDatas":[{"workerId":"1420554439452400131","workerName":"2X73","status":3,"hashRate":0,"dayHashRate":0,"rejectRate":0,"lastShareTime":1587712919000},{"workerId":"7893926126382807951","workerName":"AZDC1.1A10101","status":2,"hashRate":29711247541680,"dayHashRate":12697781298013.66,"rejectRate":0,"lastShareTime":1587969727000}],"totalNum":18530,"pageSize":20}} > }
     */
-    async request_for_miner_list() {
+    request_for_miner_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/worker/list', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4452,7 +4452,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"accountProfits":[{"time":1586188800000,"type":31,"hashTransfer":null,"transferAmount":null,"dayHashRate":129129903378244,"profitAmount":8.6083060304,"coinName":"BTC","status":2},{"time":1607529600000,"coinName":"BTC","type":0,"dayHashRate":9942053925926,"profitAmount":0.85426469,"hashTransfer":200000000000,"transferAmount":0.02180958,"status":2},{"time":1607443200000,"coinName":"BTC","type":31,"dayHashRate":200000000000,"profitAmount":0.02905916,"hashTransfer":null,"transferAmount":null,"status":2}],"totalNum":3,"pageSize":20}} > }
     */
-    async earnings_list() {
+    earnings_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/payment/list', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4465,7 +4465,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"otherProfits":[{"time":1607443200000,"coinName":"BTC","type":4,"profitAmount":0.0011859,"status":2}],"totalNum":3,"pageSize":20}} > }
     */
-    async extra_bonus_list() {
+    extra_bonus_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/payment/other', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4478,7 +4478,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"configDetails":[{"configId":168,"poolUsername":"123","toPoolUsername":"user1","algoName":"Ethash","hashRate":5000000,"startDay":20201210,"endDay":20210405,"status":1},{"configId":166,"poolUsername":"pop","toPoolUsername":"111111","algoName":"Ethash","hashRate":3320000,"startDay":20201226,"endDay":20201227,"status":0}],"totalNum":21,"pageSize":200}} > }
     */
-    async hashrate_resale_list() {
+    hashrate_resale_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/hash-transfer/config/details/list', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4491,7 +4491,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"profitTransferDetails":[{"poolUsername":"test4001","toPoolUsername":"pop","algoName":"sha256","hashRate":200000000000,"day":20201213,"amount":0.2256872,"coinName":"BTC"},{"poolUsername":"test4001","toPoolUsername":"pop","algoName":"sha256","hashRate":200000000000,"day":20201213,"amount":0.2256872,"coinName":"BTC"}],"totalNum":8,"pageSize":200}} > }
     */
-    async hashrate_resale_detail() {
+    hashrate_resale_detail: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/hash-transfer/profit/details', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4504,7 +4504,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":171} > }
     */
-    async hashrate_resale_request() {
+    hashrate_resale_request: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/mining/hash-transfer/config', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4517,7 +4517,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":true} > }
     */
-    async cancel_hashrate_resale_configuration() {
+    cancel_hashrate_resale_configuration: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/mining/hash-transfer/config/cancel', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4530,7 +4530,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"fifteenMinHashRate":"457835490067496409.00000000","dayHashRate":"214289268068874127.65000000","validNum":0,"invalidNum":17562,"profitToday":{"BTC":"0.00314332","BSV":"56.17055953","BCH":"106.61586001"},"profitYesterday":{"BTC":"0.00314332","BSV":"56.17055953","BCH":"106.61586001"},"userName":"test","unit":"h/s","algo":"sha256"}} > }
     */
-    async statistic_list() {
+    statistic_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/statistics/user/status', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4543,7 +4543,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":[{"type":"H_hashrate","userName":"test","list":[{"time":1585267200000,"hashrate":"0.00000000","reject":"0.00000000"},{"time":1585353600000,"hashrate":"0.00000000","reject":"0.00000000"}]},{"type":"D_hashrate","userName":"test","list":[{"time":1587906000000,"hashrate":"0.00000000","reject":"0.00000000"},{"time":1587909600000,"hashrate":"0.00000000","reject":"0.00000000"}]}]} > }
     */
-    async account_list() {
+    account_list: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/statistics/user/list', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4556,7 +4556,7 @@ class Spot {
      * - Weight(IP): `5`
      * @returns { Promise < {"code":0,"msg":"","data":{"accountProfits":[{"time":1607443200000,"coinName":"BTC","type":2,"puid":59985472,"subName":"vdvaghani","amount":0.09186957}],"totalNum":3,"pageSize":20}} > }
     */
-    async mining_account_earning() {
+    mining_account_earning: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/mining/payment/uid', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4581,7 +4581,7 @@ class Spot {
      * @param {number} type  - `1`: transfer from spot account to USDT-Ⓜ futures account. `2`: transfer from USDT-Ⓜ futures account to spot account. `3`: transfer from spot account to COIN-Ⓜ futures account. `4`: transfer from COIN-Ⓜ futures account to spot account.
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async new_future_account_transfer(asset, amount, type) {
+    new_future_account_transfer: async (asset, amount, type) => {
       // Expects (HMAC SHA256)
       if (typeof asset === 'undefined') return new Error('asset', 'REQUIRED');
 
@@ -4606,7 +4606,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10` Max:`100`
      * @returns { Promise < {"rows":[{"asset":"USDT","tranId":100000001,"amount":"40.84624400","type":"1","timestamp":1555056425000,"status":"CONFIRMED"}],"total":1} > }
     */
-    async get_future_account_transaction_history_list(startTime, asset, endTime, current, size) {
+    get_future_account_transaction_history_list: async (startTime, asset, endTime, current, size) => {
       // Expects (HMAC SHA256)
       if (typeof startTime === 'undefined') return new Error('startTime', 'REQUIRED');
 
@@ -4625,7 +4625,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < {"rows":[{"confirmedTime":1582540328433,"coin":"USDT","collateralRate":"0.89991001","leftTotal":"4.5","leftPrincipal":"4.5","deadline":4736102399000,"collateralCoin":"BUSD","collateralAmount":"5.0","orderStatus":"PENDING","borrowId":"438648398970089472"}],"total":1} > }
     */
-    async cross_collateral_borrow_history(limit, coin, startTime, endTime) {
+    cross_collateral_borrow_history: async (limit, coin, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/futures/loan/borrow/history', { limit, coin, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4642,7 +4642,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < {"rows":[{"coin":"USDT","amount":"1.68","collateralCoin":"BUSD","repayType":"NORMAL","releasedCollateral":"1.80288889","price":"1.001","repayCollateral":"10010","confirmedTime":1582781327575,"updateTime":1582794387516,"status":"PENDING","repayId":"439659223998894080"}],"total":1} > }
     */
-    async cross_collateral_repayment_history(limit, coin, startTime, endTime) {
+    cross_collateral_repayment_history: async (limit, coin, startTime, endTime) => {
       // Expects HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/futures/loan/repay/history', { limit, coin, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4674,7 +4674,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < {"rows":[{"amount":".17398184","collateralCoin":"BUSD","coin":"USDT","preCollateralRate":"0.87054861","afterCollateralRate":"0.89736451","direction":"REDUCED","status":"COMPLETED","adjustTime":1583978243588}],"total":1} > }
     */
-    async adjust_cross_collateral_ltv_history(limit, loanCoin, collateralCoin, startTime, endTime) {
+    adjust_cross_collateral_ltv_history: async (limit, loanCoin, collateralCoin, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/futures/loan/adjustCollateral/history', { limit, loanCoin, collateralCoin, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4693,7 +4693,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < {"rows":[{"collateralAmountForLiquidation":"10.12345678","collateralCoin":"BUSD","forceLiquidationStartTime":1583978243588,"coin":"USDT","restCollateralAmountAfterLiquidation":"15.12345678","restLoanAmount":"11.12345678","status":"PENDING"}],"total":1} > }
     */
-    async cross_collateral_liquidation_history(limit, loanCoin, collateralCoin, startTime, endTime) {
+    cross_collateral_liquidation_history: async (limit, loanCoin, collateralCoin, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/futures/loan/liquidationHistory', { limit, loanCoin, collateralCoin, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4714,7 +4714,7 @@ class Spot {
      * @param {number | undefined} current  - Currently querying page. Start from `1`. Default:`1`
      * @returns { Promise < {"rows":[{"collateralCoin":"BUSD","interestCoin":"USDT","interest":"2.354","interestFreeLimitUsed":"0","principalForInterest":"10000","interestRate":"0.002","time":1582794387516}],"total":1} > }
     */
-    async cross_collateral_interest_history(limit, collateralCoin, startTime, endTime, current) {
+    cross_collateral_interest_history: async (limit, collateralCoin, startTime, endTime, current) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/futures/loan/interestHistory', { limit, collateralCoin, startTime, endTime, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4742,7 +4742,7 @@ class Spot {
      * @param {number | undefined} limitPrice  - Limit price of the order; If it is not sent, will place order by market price by default
      * @returns { Promise < {"clientAlgoId":"00358ce6a268403398bd34eaa36dffe7","success":true,"code":0,"msg":"OK"} > }
     */
-    async volume_participation_vp_new_order_trade(symbol, side, quantity, urgency, positionSide, clientAlgoId, reduceOnly, limitPrice) {
+    volume_participation_vp_new_order_trade: async (symbol, side, quantity, urgency, positionSide, clientAlgoId, reduceOnly, limitPrice) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -4781,7 +4781,7 @@ class Spot {
      * @param {number | undefined} limitPrice  - Limit price of the order; If it is not sent, will place order by market price by default
      * @returns { Promise < {"clientAlgoId":"65ce1630101a480b85915d7e11fd5078","success":true,"code":0,"msg":"OK"} > }
     */
-    async time_weighted_average_price_twap_new_order_trade(symbol, side, quantity, duration, positionSide, clientAlgoId, reduceOnly, limitPrice) {
+    time_weighted_average_price_twap_new_order_trade: async (symbol, side, quantity, duration, positionSide, clientAlgoId, reduceOnly, limitPrice) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -4806,7 +4806,7 @@ class Spot {
      * @param {number} algoId  - eg. `14511`
      * @returns { Promise < {"algoId":14511,"success":true,"code":0,"msg":"OK"} > }
     */
-    async cancel_algo_order_trade(algoId) {
+    cancel_algo_order_trade: async (algoId) => {
       // Expects (HMAC SHA256)
       if (typeof algoId === 'undefined') return new Error('algoId', 'REQUIRED');
 
@@ -4823,7 +4823,7 @@ class Spot {
      * - Base URL: https://api.binance.com
      * @returns { Promise < {"total":1,"orders":[{"algoId":14517,"symbol":"ETHUSDT","side":"SELL","positionSide":"SHORT","totalQty":"5.000","executedQty":"0.000","executedAmt":"0.00000000","avgPrice":"0.00","clientAlgoId":"d7096549481642f8a0bb69e9e2e31f2e","bookTime":1649756817004,"endTime":0,"algoStatus":"WORKING","algoType":"VP","urgency":"LOW"}]} > }
     */
-    async query_current_algo_open_orders() {
+    query_current_algo_open_orders: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/algo/futures/openOrders', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4844,7 +4844,7 @@ class Spot {
      * @param {number | undefined} pageSize  - MIN `1`, MAX `100`; Default `100`
      * @returns { Promise < {"total":1,"orders":[{"algoId":14518,"symbol":"BNBUSDT","side":"BUY","positionSide":"BOTH","totalQty":"100.00","executedQty":"0.00","executedAmt":"0.00000000","avgPrice":"0.000","clientAlgoId":"acacab56b3c44bef9f6a8f8ebd2a8408","bookTime":1649757019503,"endTime":1649757088101,"algoStatus":"CANCELLED","algoType":"VP","urgency":"LOW"}]} > }
     */
-    async query_historical_algo_orders(symbol, side, startTime, endTime, page, pageSize) {
+    query_historical_algo_orders: async (symbol, side, startTime, endTime, page, pageSize) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/algo/futures/historicalOrders', { symbol, side, startTime, endTime, page, pageSize }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4864,7 +4864,7 @@ class Spot {
      * @param {number | undefined} pageSize  - MIN `1`, MAX `100`; Default `100`
      * @returns { Promise < {"total":1,"executedQty":"1.000","executedAmt":"3229.44000000","subOrders":[{"algoId":13723,"orderId":8389765519993909000,"orderStatus":"FILLED","executedQty":"1.000","executedAmt":"3229.44000000","feeAmt":"-1.61471999","feeAsset":"USDT","bookTime":1649319001964,"avgPrice":"3229.44","side":"SELL","symbol":"ETHUSDT","subId":1,"timeInForce":"IMMEDIATE_OR_CANCEL","origQty":"1.000"}]} > }
     */
-    async query_sub_orders(algoId, page, pageSize) {
+    query_sub_orders: async (algoId, page, pageSize) => {
       // Expects (HMAC SHA256)
       if (typeof algoId === 'undefined') return new Error('algoId', 'REQUIRED');
 
@@ -4895,7 +4895,7 @@ class Spot {
      * @param {number | undefined} limitPrice  - Limit price of the order; If it is not sent, will place order by market price by default
      * @returns { Promise < {"clientAlgoId":"65ce1630101a480b85915d7e11fd5078","success":true,"code":0,"msg":"OK"} > }
     */
-    async time_weighted_average_price_twap_new_order_trade_2(symbol, side, quantity, duration, clientAlgoId, limitPrice) {
+    time_weighted_average_price_twap_new_order_trade_2: async (symbol, side, quantity, duration, clientAlgoId, limitPrice) => {
       // Expects (HMAC SHA256)
       if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
@@ -4918,7 +4918,7 @@ class Spot {
      * @param {number} algoId  - eg. `14511`
      * @returns { Promise < {"algoId":14511,"success":true,"code":0,"msg":"OK"} > }
     */
-    async cancel_algo_order_trade_2(algoId) {
+    cancel_algo_order_trade_2: async (algoId) => {
       // Expects (HMAC SHA256)
       if (typeof algoId === 'undefined') return new Error('algoId', 'REQUIRED');
 
@@ -4934,7 +4934,7 @@ class Spot {
      * - Get all open SPOT TWAP orders
      * @returns { Promise < {"total":1,"orders":[{"algoId":14517,"symbol":"ETHUSDT","side":"SELL","totalQty":"5.000","executedQty":"0.000","executedAmt":"0.00000000","avgPrice":"0.00","clientAlgoId":"d7096549481642f8a0bb69e9e2e31f2e","bookTime":1649756817004,"endTime":0,"algoStatus":"WORKING","algoType":"TWAP","urgency":"LOW"}]} > }
     */
-    async query_current_algo_open_orders_2() {
+    query_current_algo_open_orders_2: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/algo/spot/openOrders', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -4954,7 +4954,7 @@ class Spot {
      * @param {number | undefined} pageSize  - MIN `1`, MAX `100`; Default `100`
      * @returns { Promise < {"total":1,"orders":[{"algoId":14518,"symbol":"BNBUSDT","side":"BUY","totalQty":"100.00","executedQty":"0.00","executedAmt":"0.00000000","avgPrice":"0.000","clientAlgoId":"acacab56b3c44bef9f6a8f8ebd2a8408","bookTime":1649757019503,"endTime":1649757088101,"algoStatus":"CANCELLED","algoType":"VP","urgency":"LOW"}]} > }
     */
-    async query_historical_algo_orders_2(symbol, side, startTime, endTime, page, pageSize) {
+    query_historical_algo_orders_2: async (symbol, side, startTime, endTime, page, pageSize) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/algo/spot/historicalOrders', { symbol, side, startTime, endTime, page, pageSize }, 'USER_DATA');
       if (resp.error) return resp;
@@ -4974,7 +4974,7 @@ class Spot {
      * @param {number | undefined} pageSize  - MIN `1`, MAX `100`; Default `100`
      * @returns { Promise < {"total":1,"executedQty":"1.000","executedAmt":"3229.44000000","subOrders":[{"algoId":13723,"orderId":8389765519993909000,"orderStatus":"FILLED","executedQty":"1.000","executedAmt":"3229.44000000","feeAmt":"-1.61471999","feeAsset":"USDT","bookTime":1649319001964,"avgPrice":"3229.44","side":"SELL","symbol":"ETHUSDT","subId":1,"timeInForce":"IMMEDIATE_OR_CANCEL","origQty":"1.000"}]} > }
     */
-    async query_sub_orders_2(algoId, page, pageSize) {
+    query_sub_orders_2: async (algoId, page, pageSize) => {
       // Expects (HMAC SHA256)
       if (typeof algoId === 'undefined') return new Error('algoId', 'REQUIRED');
 
@@ -4996,7 +4996,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"uniMMR":"5167.92171923","accountEquity":"122607.35137903","actualEquity":"142607.35137903","accountMaintMargin":"23.72469206","accountStatus":"NORMAL"} > }
     */
-    async get_classic_portfolio_margin_account_info() {
+    get_classic_portfolio_margin_account_info: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/portfolio/account', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -5011,7 +5011,7 @@ class Spot {
      * - Parameters: None
      * @returns { Promise <  > }
     */
-    async classic_portfolio_margin_collateral_rate_market_data() {
+    classic_portfolio_margin_collateral_rate_market_data: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/portfolio/collateralRate', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -5026,7 +5026,7 @@ class Spot {
      * - If there’s no classic portfolio margin bankruptcy loan, the amount would be `0`
      * @returns { Promise <  > }
     */
-    async query_classic_portfolio_margin_bankruptcy_loan_amount() {
+    query_classic_portfolio_margin_bankruptcy_loan_amount: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/portfolio/pmLoan', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -5039,7 +5039,7 @@ class Spot {
      * - Weight(UID): `3000`
      * @returns { Promise < {"tranId":58203331886213500} > }
     */
-    async classic_portfolio_margin_bankruptcy_loan_repay() {
+    classic_portfolio_margin_bankruptcy_loan_repay: async () => {
 
       const resp = await this.request('POST', 'sapi', '/sapi/v1/portfolio/repay', {}, 'NONE');
       if (resp.error) return resp;
@@ -5057,7 +5057,7 @@ class Spot {
      * @param {number | undefined} size  - Default:`10` Max:`100`
      * @returns { Promise < [{"asset":"USDT","interest":"24.4440","interestAccruedTime":1670227200000,"interestRate":"0.0001164","principal":"210000","type":"um_negative_balance"}] > }
     */
-    async query_classic_portfolio_margin_interest_history(asset, startTime, endTime, size) {
+    query_classic_portfolio_margin_interest_history: async (asset, startTime, endTime, size) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/portfolio/interest-history', { asset, startTime, endTime, size }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5072,7 +5072,7 @@ class Spot {
      * @param {string | undefined} asset
      * @returns { Promise < [{"asset":"BTC","assetIndexPrice":"28251.9136906","time":1683518338121}] > }
     */
-    async query_portfolio_margin_asset_index_price_market_data(asset) {
+    query_portfolio_margin_asset_index_price_market_data: async (asset) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/portfolio/asset-index-price', { asset }, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -5087,7 +5087,7 @@ class Spot {
      * - The BNB would not be collected from UM-PM account to the Portfolio Margin account.
      * @returns { Promise < {"msg":"success"} > }
     */
-    async fund_auto_collection_trade() {
+    fund_auto_collection_trade: async () => {
 
       const resp = await this.request('POST', 'sapi', '/sapi/v1/portfolio/auto-collection', {}, 'TRADE');
       if (resp.error) return resp;
@@ -5103,7 +5103,7 @@ class Spot {
      * @param {string} transferSide  - "TO_UM","FROM_UM"
      * @returns { Promise < {"tranId":100000001} > }
     */
-    async bnb_transfer_trade(amount, transferSide) {
+    bnb_transfer_trade: async (amount, transferSide) => {
 
       if (typeof amount === 'undefined') return new Error('amount', 'REQUIRED');
 
@@ -5128,7 +5128,7 @@ class Spot {
      * @param {string | undefined} tokenName  - BTCDOWN, BTCUP
      * @returns { Promise < [{"tokenName":"BTCDOWN","description":"3X Short Bitcoin Token","underlying":"BTC","tokenIssued":"717953.95","basket":"-821.474 BTCUSDT Futures","currentBaskets":[{"symbol":"BTCUSDT","amount":"-1183.984","notionalValue":"-22871089.96704"}],"nav":"4.79","realLeverage":"-2.316","fundingRate":"0.001020","dailyManagementFee":"0.0001","purchaseFeePct":"0.0010","dailyPurchaseLimit":"100000.00","redeemFeePct":"0.0010","dailyRedeemLimit":"1000000.00","timestamp":1583127900000},{"tokenName":"LINKUP","description":"3X LONG ChainLink Token","underlying":"LINK","tokenIssued":"163846.99","basket":"417288.870 LINKUSDT Futures","currentBaskets":[{"symbol":"LINKUSDT","amount":"1640883.83","notionalValue":"22596611.22293"}],"nav":"9.60","realLeverage":"2.597","fundingRate":"-0.000917","dailyManagementFee":"0.0001","purchaseFeePct":"0.0010","dailyPurchaseLimit":"100000.00","redeemFeePct":"0.0010","dailyRedeemLimit":"1000000.00","timestamp":1583127900000}] > }
     */
-    async get_blvt_info_market_data(tokenName) {
+    get_blvt_info_market_data: async (tokenName) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/blvt/tokenInfo', { tokenName }, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -5144,7 +5144,7 @@ class Spot {
      * @param {number} cost  - spot balance
      * @returns { Promise < {"id":123,"status":"S","tokenName":"LINKUP","amount":"0.95590905","cost":"9.99999995","timestamp":1600249972899} > }
     */
-    async subscribe_blvt(tokenName, cost) {
+    subscribe_blvt: async (tokenName, cost) => {
       // Expects (HMAC SHA256)
       if (typeof tokenName === 'undefined') return new Error('tokenName', 'REQUIRED');
 
@@ -5167,7 +5167,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"id":1,"tokenName":"LINKUP","amount":"0.54216292","nav":"18.42621386","fee":"0.00999000","totalCharge":"9.99999991","timestamp":1599127217916}] > }
     */
-    async query_subscription_record(limit, tokenName, id, startTime, endTime) {
+    query_subscription_record: async (limit, tokenName, id, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/blvt/subscribe/record', { limit, tokenName, id, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5183,7 +5183,7 @@ class Spot {
      * @param {number} amount
      * @returns { Promise < {"id":123,"status":"S","tokenName":"LINKUP","redeemAmount":"0.95590905","amount":"10.05022099","timestamp":1600250279614} > }
     */
-    async redeem_blvt(tokenName, amount) {
+    redeem_blvt: async (tokenName, amount) => {
       // Expects (HMAC SHA256)
       if (typeof tokenName === 'undefined') return new Error('tokenName', 'REQUIRED');
 
@@ -5206,7 +5206,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"id":1,"tokenName":"LINKUP","amount":"0.54216292","nav":"18.36345064","fee":"0.00995598","netProceed":"9.94602604","timestamp":1599128003050}] > }
     */
-    async query_redemption_record(limit, tokenName, id, startTime, endTime) {
+    query_redemption_record: async (limit, tokenName, id, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/blvt/redeem/record', { limit, tokenName, id, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5220,7 +5220,7 @@ class Spot {
      * @param {string | undefined} tokenName  - BTCDOWN, BTCUP
      * @returns { Promise < [{"tokenName":"LINKUP","userDailyTotalPurchaseLimit":"1000","userDailyTotalRedeemLimit":"1000"},{"tokenName":"LINKDOWN","userDailyTotalPurchaseLimit":"1000","userDailyTotalRedeemLimit":"50000"}] > }
     */
-    async get_blvt_user_limit_info(tokenName) {
+    get_blvt_user_limit_info: async (tokenName) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/blvt/userLimit', { tokenName }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5242,7 +5242,7 @@ class Spot {
      * - None
      * @returns { Promise < [{"poolId":2,"poolName":"BUSD/USDT","assets":["BUSD","USDT"]},{"poolId":3,"poolName":"BUSD/DAI","assets":["BUSD","DAI"]},{"poolId":4,"poolName":"USDT/DAI","assets":["USDT","DAI"]}] > }
     */
-    async list_all_swap_pools_market_data() {
+    list_all_swap_pools_market_data: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/pools', {}, 'MARKET_DATA');
       if (resp.error) return resp;
@@ -5259,7 +5259,7 @@ class Spot {
      * @param {number | undefined} poolId
      * @returns { Promise < [{"poolId":2,"poolNmae":"BUSD/USDT","updateTime":1565769342148,"liquidity":{"BUSD":100000315.79,"USDT":99999245.54},"share":{"shareAmount":12415,"sharePercentage":0.00006207,"asset":{"BUSD":6207.02,"USDT":6206.95}}}] > }
     */
-    async get_liquidity_information_of_a_pool(poolId) {
+    get_liquidity_information_of_a_pool: async (poolId) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/liquidity', { poolId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5278,7 +5278,7 @@ class Spot {
      * @param {string | undefined} type  - "SINGLE" to add a single token; "COMBINATION" to add dual tokens. Default "SINGLE"
      * @returns { Promise < {"operationId":12341} > }
     */
-    async add_liquidity_trade(poolId, asset, quantity, type) {
+    add_liquidity_trade: async (poolId, asset, quantity, type) => {
       // Expects (HMAC SHA256)
       if (typeof poolId === 'undefined') return new Error('poolId', 'REQUIRED');
 
@@ -5303,7 +5303,7 @@ class Spot {
      * @param {LIST | undefined} asset  - Mandatory for single asset removal
      * @returns { Promise < {"operationId":12341} > }
     */
-    async remove_liquidity_trade(poolId, type, shareAmount, asset) {
+    remove_liquidity_trade: async (poolId, type, shareAmount, asset) => {
       // Expects (HMAC SHA256)
       if (typeof poolId === 'undefined') return new Error('poolId', 'REQUIRED');
 
@@ -5329,7 +5329,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"operationId":12341,"poolId":2,"poolName":"BUSD/USDT","operation":"ADD","status":1,"updateTime":1565769342148,"shareAmount":"10.1"}] > }
     */
-    async get_liquidity_operation_record(limit, operationId, poolId, operation, startTime, endTime) {
+    get_liquidity_operation_record: async (limit, operationId, poolId, operation, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/liquidityOps', { limit, operationId, poolId, operation, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5349,7 +5349,7 @@ class Spot {
      * @param {number} quoteQty
      * @returns { Promise < {"quoteAsset":"USDT","baseAsset":"BUSD","quoteQty":300000,"baseQty":299975,"price":1.00008334,"slippage":0.00007245,"fee":120} > }
     */
-    async request_quote(quoteAsset, baseAsset, quoteQty) {
+    request_quote: async (quoteAsset, baseAsset, quoteQty) => {
       // Expects (HMAC SHA256)
       if (typeof quoteAsset === 'undefined') return new Error('quoteAsset', 'REQUIRED');
 
@@ -5373,7 +5373,7 @@ class Spot {
      * @param {number} quoteQty
      * @returns { Promise < {"swapId":2314} > }
     */
-    async swap_trade(quoteAsset, baseAsset, quoteQty) {
+    swap_trade: async (quoteAsset, baseAsset, quoteQty) => {
       // Expects (HMAC SHA256)
       if (typeof quoteAsset === 'undefined') return new Error('quoteAsset', 'REQUIRED');
 
@@ -5400,7 +5400,7 @@ class Spot {
      * @param {string | undefined} baseAsset
      * @returns { Promise < [{"swapId":2314,"swapTime":1565770342148,"status":0,"quoteAsset":"USDT","baseAsset":"BUSD","quoteQty":300000,"baseQty":299975,"price":1.00008334,"fee":120}] > }
     */
-    async get_swap_history(limit, swapId, startTime, endTime, status, quoteAsset, baseAsset) {
+    get_swap_history: async (limit, swapId, startTime, endTime, status, quoteAsset, baseAsset) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/swap', { limit, swapId, startTime, endTime, status, quoteAsset, baseAsset }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5414,7 +5414,7 @@ class Spot {
      * @param {number | undefined} poolId
      * @returns { Promise < [{"poolId":2,"poolNmae":"BUSD/USDT","updateTime":1565769342148,"liquidity":{"constantA":2000,"minRedeemShare":0.1,"slippageTolerance":0.2},"assetConfigure":{"BUSD":{"minAdd":10,"maxAdd":20,"minSwap":10,"maxSwap":30},"USDT":{"minAdd":10,"maxAdd":20,"minSwap":10,"maxSwap":30}}}] > }
     */
-    async get_pool_configure(poolId) {
+    get_pool_configure: async (poolId) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/poolConfigure', { poolId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5432,7 +5432,7 @@ class Spot {
      * @param {number} quoteQty
      * @returns { Promise <  > }
     */
-    async add_liquidity_preview(poolId, type, quoteAsset, quoteQty) {
+    add_liquidity_preview: async (poolId, type, quoteAsset, quoteQty) => {
       // Expects (HMAC SHA256)
       if (typeof poolId === 'undefined') return new Error('poolId', 'REQUIRED');
 
@@ -5458,7 +5458,7 @@ class Spot {
      * @param {number} shareAmount
      * @returns { Promise < {"quoteAsset":"USDT","baseAsset":"BUSD","quoteAmt":300000,"baseAmt":299975,"price":1.00008334,"slippage":0.00007245,"fee":120} > }
     */
-    async remove_liquidity_preview(poolId, type, quoteAsset, shareAmount) {
+    remove_liquidity_preview: async (poolId, type, quoteAsset, shareAmount) => {
       // Expects (HMAC SHA256)
       if (typeof poolId === 'undefined') return new Error('poolId', 'REQUIRED');
 
@@ -5481,7 +5481,7 @@ class Spot {
      * @param {number | undefined} type  - `0`: Swap rewards,`1`:Liquidity rewards, default to `0`
      * @returns { Promise < {"totalUnclaimedRewards":{"BUSD":100000315.79,"BNB":1e-8,"USDT":2e-8},"details":{"BNB/USDT":{"BUSD":100000315.79,"USDT":2e-8},"BNB/BTC":{"BNB":1e-8}}} > }
     */
-    async get_unclaimed_rewards_record(type) {
+    get_unclaimed_rewards_record: async (type) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/unclaimedRewards', { type }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5497,7 +5497,7 @@ class Spot {
      * @param {number | undefined} type  - `0`: Swap rewards,`1`:Liquidity rewards, default to `0`
      * @returns { Promise < {"success":true} > }
     */
-    async claim_rewards_trade(type) {
+    claim_rewards_trade: async (type) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('POST', 'sapi', '/sapi/v1/bswap/claimRewards', { type }, 'TRADE');
       if (resp.error) return resp;
@@ -5517,7 +5517,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"poolId":52,"poolName":"BNB/USDT","assetRewards":"BNB","claimTime":1565769342148,"claimAmount":2.3e-7,"status":1}] > }
     */
-    async get_claimed_history(limit, poolId, assetRewards, type, startTime, endTime) {
+    get_claimed_history: async (limit, poolId, assetRewards, type, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/bswap/claimedHistory', { limit, poolId, assetRewards, type, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5543,7 +5543,7 @@ class Spot {
      * @param {number | undefined} rows  - default `100`, max `500`
      * @returns { Promise < {"code":"000000","message":"success","data":[{"orderNo":"7d76d611-0568-4f43-afb6-24cac7767365","fiatCurrency":"BRL","indicatedAmount":"10.00","amount":"10.00","totalFee":"0.00","method":"BankAccount","status":"Expired","createTime":1626144956000,"updateTime":1626400907000}],"total":1,"success":true} > }
     */
-    async get_fiat_deposit_withdraw_history(transactionType, beginTime, endTime, page, rows) {
+    get_fiat_deposit_withdraw_history: async (transactionType, beginTime, endTime, page, rows) => {
       // Expects (HMAC SHA256)
       if (typeof transactionType === 'undefined') return new Error('transactionType', 'REQUIRED');
 
@@ -5569,7 +5569,7 @@ class Spot {
      * @param {number | undefined} rows  - default `100`, max `500`
      * @returns { Promise < {"code":"000000","message":"success","data":[{"orderNo":"353fca443f06466db0c4dc89f94f027a","sourceAmount":"20.0","fiatCurrency":"EUR","obtainAmount":"4.462","cryptoCurrency":"LUNA","totalFee":"0.2","price":"4.437472","status":"Failed","paymentMethod":"Credit Card","createTime":1624529919000,"updateTime":1624529919000}],"total":1,"success":true} > }
     */
-    async get_fiat_payments_history(transactionType, beginTime, endTime, page, rows) {
+    get_fiat_payments_history: async (transactionType, beginTime, endTime, page, rows) => {
       // Expects (HMAC SHA256)
       if (typeof transactionType === 'undefined') return new Error('transactionType', 'REQUIRED');
 
@@ -5600,7 +5600,7 @@ class Spot {
      * @param {number | undefined} rows  - default `100`, max `100`
      * @returns { Promise < {"code":"000000","message":"success","data":[{"orderNumber":"20219644646554779648","advNo":"11218246497340923904","tradeType":"SELL","asset":"BUSD","fiat":"CNY","fiatSymbol":"￥","amount":"5000.00000000","totalPrice":"33400.00000000","unitPrice":"6.68","orderStatus":"COMPLETED","createTime":1619361369000,"commission":"0","counterPartNickName":"ab***","advertisementRole":"TAKER"}],"total":1,"success":true} > }
     */
-    async get_c2c_trade_history(tradeType, startTimestamp, endTimestamp, page, rows) {
+    get_c2c_trade_history: async (tradeType, startTimestamp, endTimestamp, page, rows) => {
       // Expects (HMAC SHA256)
       if (typeof tradeType === 'undefined') return new Error('tradeType', 'REQUIRED');
 
@@ -5630,7 +5630,7 @@ class Spot {
      * @param {number | undefined} current  - Currently querying page. Start from `1`, Default:`1`, Max: `1000`.
      * @returns { Promise <  > }
     */
-    async get_vip_loan_ongoing_orders(limit, orderId, collateralAccountId, loanCoin, collateralCoin, current) {
+    get_vip_loan_ongoing_orders: async (limit, orderId, collateralAccountId, loanCoin, collateralCoin, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/vip/ongoing/orders', { limit, orderId, collateralAccountId, loanCoin, collateralCoin, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5646,7 +5646,7 @@ class Spot {
      * @param {number} amount
      * @returns { Promise < {"loanCoin":"BUSD","repayAmount":"200.5","remainingPrincipal":"100.5","remainingInterest":"0","collateralCoin":"BNB,BTC,ETH","currentLTV":"0.25","repayStatus":"Repaid"} > }
     */
-    async vip_loan_repay_trade(orderId, amount) {
+    vip_loan_repay_trade: async (orderId, amount) => {
 
       if (typeof orderId === 'undefined') return new Error('orderId', 'REQUIRED');
 
@@ -5672,7 +5672,7 @@ class Spot {
      * @param {number | undefined} current  - Currently querying page. Start from `1`, Default:`1`, Max: `1000`
      * @returns { Promise < {"rows":[{"loanCoin":"BUSD","repayAmount":"10000","collateralCoin":"BNB,BTC,ETH","repayStatus":"Repaid","repayTime":"1575018510000","orderId":"756783308056935434"}],"total":1} > }
     */
-    async get_vip_loan_repayment_history(limit, orderId, loanCoin, startTime, endTime, current) {
+    get_vip_loan_repayment_history: async (limit, orderId, loanCoin, startTime, endTime, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/vip/repay/history', { limit, orderId, loanCoin, startTime, endTime, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5690,7 +5690,7 @@ class Spot {
      * @param {number | undefined} collateralAccountId
      * @returns { Promise <  > }
     */
-    async check_locked_value_of_vip_collateral_account(orderId, collateralAccountId) {
+    check_locked_value_of_vip_collateral_account: async (orderId, collateralAccountId) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/vip/collateral/account', { orderId, collateralAccountId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5715,7 +5715,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise < [{"asset":"BUSD","type":"borrowIn","amount":"100","timestamp":1633771139847,"tranId":"80423589583"},{"asset":"BUSD","type":"borrowIn","amount":"100","timestamp":1634638371496,"tranId":"81685123491"}] > }
     */
-    async get_crypto_loans_income_history(limit, asset, type, startTime, endTime) {
+    get_crypto_loans_income_history: async (limit, asset, type, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/income', { limit, asset, type, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5733,7 +5733,7 @@ class Spot {
      * @param {number | undefined} collateralAmount  - Mandatory when loanAmount is empty
      * @returns { Promise < {"loanCoin":"BUSD","loanAmount":"100.5","collateralCoin":"BNB","collateralAmount":"50.5","hourlyInterestRate":"0.001234","orderId":"100000001"} > }
     */
-    async borrow_crypto_loan_borrow_trade(loanCoin, collateralCoin, loanTerm, loanAmount, collateralAmount) {
+    borrow_crypto_loan_borrow_trade: async (loanCoin, collateralCoin, loanTerm, loanAmount, collateralAmount) => {
 
       if (typeof loanCoin === 'undefined') return new Error('loanCoin', 'REQUIRED');
 
@@ -5761,7 +5761,7 @@ class Spot {
      * @param {number | undefined} current  - Current querying page. Start from `1`; default: `1`; max: `1000`.
      * @returns { Promise <  > }
     */
-    async borrow_get_loan_borrow_history(limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) {
+    borrow_get_loan_borrow_history: async (limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/borrow/history', { limit, orderId, loanCoin, collateralCoin, startTime, endTime, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5779,7 +5779,7 @@ class Spot {
      * @param {number | undefined} current  - Current querying page. Start from `1`; default: `1`; max: `1000`
      * @returns { Promise <  > }
     */
-    async borrow_get_loan_ongoing_orders(limit, orderId, loanCoin, collateralCoin, current) {
+    borrow_get_loan_ongoing_orders: async (limit, orderId, loanCoin, collateralCoin, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/ongoing/orders', { limit, orderId, loanCoin, collateralCoin, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5796,7 +5796,7 @@ class Spot {
      * @param {BOOLEAN | undefined} collateralReturn  - Default: TRUE. TRUE: Return extra collateral to spot account; FALSE: Keep extra collateral in the order.
      * @returns { Promise <  > }
     */
-    async repay_crypto_loan_repay_trade(orderId, amount, type, collateralReturn) {
+    repay_crypto_loan_repay_trade: async (orderId, amount, type, collateralReturn) => {
 
       if (typeof orderId === 'undefined') return new Error('orderId', 'REQUIRED');
 
@@ -5822,7 +5822,7 @@ class Spot {
      * @param {number | undefined} current  - Current querying page. Start from `1`; default: `1`; max: `1000`
      * @returns { Promise <  > }
     */
-    async repay_get_loan_repayment_history(limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) {
+    repay_get_loan_repayment_history: async (limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/repay/history', { limit, orderId, loanCoin, collateralCoin, startTime, endTime, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5838,7 +5838,7 @@ class Spot {
      * @param {ENUM} direction  - "ADDITIONAL", "REDUCED"
      * @returns { Promise < {"loanCoin":"BUSD","collateralCoin":"BNB","direction":"ADDITIONAL","amount":"5.235","currentLTV":"0.52"} > }
     */
-    async adjust_ltv_crypto_loan_adjust_ltv_trade(orderId, amount, direction) {
+    adjust_ltv_crypto_loan_adjust_ltv_trade: async (orderId, amount, direction) => {
 
       if (typeof orderId === 'undefined') return new Error('orderId', 'REQUIRED');
 
@@ -5866,7 +5866,7 @@ class Spot {
      * @param {number | undefined} current  - Current querying page. Start from `1`; default: `1`; max: `1000`
      * @returns { Promise < {"rows":[{"loanCoin":"BUSD","collateralCoin":"BNB","direction":"ADDITIONAL","amount":"5.235","preLTV":"0.78","afterLTV":"0.56","adjustTime":1575018510000,"orderId":756783308056935400}],"total":1} > }
     */
-    async adjust_ltv_get_loan_ltv_adjustment_history(limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) {
+    adjust_ltv_get_loan_ltv_adjustment_history: async (limit, orderId, loanCoin, collateralCoin, startTime, endTime, current) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/ltv/adjustment/history', { limit, orderId, loanCoin, collateralCoin, startTime, endTime, current }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5882,7 +5882,7 @@ class Spot {
      * @param {number | undefined} vipLevel  - Default: user's vip level. Send "-`1`" to check specified configuration
      * @returns { Promise <  > }
     */
-    async get_loanable_assets_data(loanCoin, vipLevel) {
+    get_loanable_assets_data: async (loanCoin, vipLevel) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/loanable/data', { loanCoin, vipLevel }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5898,7 +5898,7 @@ class Spot {
      * @param {number | undefined} vipLevel  - Default: user's vip level. Send "-`1`" to check specified configuration
      * @returns { Promise <  > }
     */
-    async get_collateral_assets_data(collateralCoin, vipLevel) {
+    get_collateral_assets_data: async (collateralCoin, vipLevel) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/loan/collateral/data', { collateralCoin, vipLevel }, 'USER_DATA');
       if (resp.error) return resp;
@@ -5915,7 +5915,7 @@ class Spot {
      * @param {number} repayAmount  - repay amount of loanCoin
      * @returns { Promise < {"loanlCoin":"BUSD","collateralCoin":"BNB","repayAmount":"1000","rate":"300.36781234"} > }
     */
-    async check_collateral_repay_rate(loanCoin, collateralCoin, repayAmount) {
+    check_collateral_repay_rate: async (loanCoin, collateralCoin, repayAmount) => {
 
       if (typeof loanCoin === 'undefined') return new Error('loanCoin', 'REQUIRED');
 
@@ -5938,7 +5938,7 @@ class Spot {
      * @param {string | undefined} collateralCoin  - Mandatory when orderID is empty. Send either orderId or collateralCoin, if both parameters are sent, take orderId only.
      * @returns { Promise <  > }
     */
-    async crypto_loan_customize_margin_call_trade(marginCall, orderId, collateralCoin) {
+    crypto_loan_customize_margin_call_trade: async (marginCall, orderId, collateralCoin) => {
 
       if (typeof marginCall === 'undefined') return new Error('marginCall', 'REQUIRED');
 
@@ -6006,7 +6006,7 @@ class Spot {
      * @param {number | undefined} endTime
      * @returns { Promise <  > }
     */
-    async get_pay_trade_history(limit, startTime, endTime) {
+    get_pay_trade_history: async (limit, startTime, endTime) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/pay/transactions', { limit, startTime, endTime }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6030,7 +6030,7 @@ class Spot {
      * @param {string} toAsset  - User receives coin
      * @returns { Promise < [{"fromAsset":"BTC","toAsset":"USDT","fromAssetMinAmount":"0.0004","fromAssetMaxAmount":"50","toAssetMinAmount":"20","toAssetMaxAmount":"2500000"}] > }
     */
-    async list_all_convert_pairs(fromAsset, toAsset) {
+    list_all_convert_pairs: async (fromAsset, toAsset) => {
 
       if (typeof fromAsset === 'undefined') return new Error('fromAsset', 'REQUIRED');
 
@@ -6048,7 +6048,7 @@ class Spot {
      * - Weight(IP): `100`
      * @returns { Promise < [{"asset":"BTC","fraction":8},{"asset":"SHIB","fraction":2}] > }
     */
-    async query_order_quantity_precision_per_asset() {
+    query_order_quantity_precision_per_asset: async () => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/convert/assetInfo', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -6070,7 +6070,7 @@ class Spot {
      * @param {ENUM | undefined} validTime  - `10`s, `30`s, `1`m, `2`m, default `10`s
      * @returns { Promise < {"quoteId":"12415572564","ratio":"38163.7","inverseRatio":"0.0000262","validTimestamp":1623319461670,"toAmount":"3816.37","fromAmount":"0.1"} > }
     */
-    async send_quote_request(fromAsset, toAsset, fromAmount, toAmount, walletType, validTime) {
+    send_quote_request: async (fromAsset, toAsset, fromAmount, toAmount, walletType, validTime) => {
 
       if (typeof fromAsset === 'undefined') return new Error('fromAsset', 'REQUIRED');
 
@@ -6093,7 +6093,7 @@ class Spot {
      * @param {string} quoteId
      * @returns { Promise < {"orderId":"933256278426274426","createTime":1623381330472,"orderStatus":"PROCESS"} > }
     */
-    async accept_quote_trade(quoteId) {
+    accept_quote_trade: async (quoteId) => {
 
       if (typeof quoteId === 'undefined') return new Error('quoteId', 'REQUIRED');
 
@@ -6111,7 +6111,7 @@ class Spot {
      * @param {string | undefined} quoteId  - Either orderId or quoteId is required
      * @returns { Promise < {"orderId":933256278426274400,"orderStatus":"SUCCESS","fromAsset":"BTC","fromAmount":"0.00054414","toAsset":"USDT","toAmount":"20","ratio":"36755","inverseRatio":"0.00002721","createTime":1623381330472} > }
     */
-    async order_status(orderId, quoteId) {
+    order_status: async (orderId, quoteId) => {
 
       const resp = await this.request('GET', 'sapi', '/sapi/v1/convert/orderStatus', { orderId, quoteId }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6128,7 +6128,7 @@ class Spot {
      * @param {number | undefined} limit  - Default `100`, Max `1000`
      * @returns { Promise < {"list":[{"quoteId":"f3b91c525b2644c7bc1e1cd31b6e1aa6","orderId":940708407462087200,"orderStatus":"SUCCESS","fromAsset":"USDT","fromAmount":"20","toAsset":"BNB","toAmount":"0.06154036","ratio":"0.00307702","inverseRatio":"324.99","createTime":1624248872184}],"startTime":1623824139000,"endTime":1626416139000,"limit":100,"moreData":false} > }
     */
-    async get_convert_trade_history(startTime, endTime, limit) {
+    get_convert_trade_history: async (startTime, endTime, limit) => {
       // Expects (HMAC SHA256)
       if (typeof startTime === 'undefined') return new Error('startTime', 'REQUIRED');
 
@@ -6157,7 +6157,7 @@ class Spot {
      * @param {number | undefined} page  - Default `1`
      * @returns { Promise < {"status":"OK","type":"GENERAL","code":"000000000","data":{"page":1,"totalRecords":2,"totalPageNum":1,"data":[{"asset":"USDT","type":1,"amount":"0.0001126","updateTime":1637651320000},{"asset":"ETH","type":1,"amount":"0.00000056","updateTime":1637928379000}]}} > }
     */
-    async get_spot_rebate_history_records(startTime, endTime, page) {
+    get_spot_rebate_history_records: async (startTime, endTime, page) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/rebate/taxQuery', { startTime, endTime, page }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6184,7 +6184,7 @@ class Spot {
      * @param {number | undefined} page  - Default `1`
      * @returns { Promise < {"total":2,"list":[{"orderNo":"1_470502070600699904","tokens":[{"network":"BSC","tokenId":"216000000496","contractAddress":"MYSTERY_BOX0000087"}],"tradeTime":1626941236000,"tradeAmount":"19.60000000","tradeCurrency":"BNB"},{"orderNo":"1_488306442479116288","tokens":[{"network":"BSC","tokenId":"132900000007","contractAddress":"0xAf12111a592e408DAbC740849fcd5e68629D9fb6"}],"tradeTime":1631186130000,"tradeAmount":"192.00000000","tradeCurrency":"BNB"}]} > }
     */
-    async get_nft_transaction_history(orderType, limit, startTime, endTime, page) {
+    get_nft_transaction_history: async (orderType, limit, startTime, endTime, page) => {
       // Expects (HMAC SHA256)
       if (typeof orderType === 'undefined') return new Error('orderType', 'REQUIRED');
 
@@ -6205,7 +6205,7 @@ class Spot {
      * @param {number | undefined} page  - Default `1`
      * @returns { Promise < {"total":2,"list":[{"network":"ETH","txID":null,"contractAdrress":"0xe507c961ee127d4439977a61af39c34eafee0dc6","tokenId":"10014","timestamp":1629986047000},{"network":"BSC","txID":null,"contractAdrress":"0x058451b463bab04f52c0799d55c4094f507acfa9","tokenId":"10016","timestamp":1630083581000}]} > }
     */
-    async get_nft_deposit_history(limit, startTime, endTime, page) {
+    get_nft_deposit_history: async (limit, startTime, endTime, page) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/nft/history/deposit', { limit, startTime, endTime, page }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6224,7 +6224,7 @@ class Spot {
      * @param {number | undefined} page  - Default `1`
      * @returns { Promise < {"total":178,"list":[{"network":"ETH","txID":"0x2be5eed31d787fdb4880bc631c8e76bdfb6150e137f5cf1732e0416ea206f57f","contractAdrress":"0xe507c961ee127d4439977a61af39c34eafee0dc6","tokenId":"1000001247","timestamp":1633674433000,"fee":0.1,"feeAsset":"ETH"},{"network":"ETH","txID":"0x3b3aea5c0a4faccd6f306641e6deb9713ab229ac233be3be227f580311e4362a","contractAdrress":"0xe507c961ee127d4439977a61af39c34eafee0dc6","tokenId":"40000030","timestamp":1633677022000,"fee":0.1,"feeAsset":"ETH"}]} > }
     */
-    async get_nft_withdraw_history(limit, startTime, endTime, page) {
+    get_nft_withdraw_history: async (limit, startTime, endTime, page) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/nft/history/withdraw', { limit, startTime, endTime, page }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6240,7 +6240,7 @@ class Spot {
      * @param {number | undefined} page  - Default `1`
      * @returns { Promise < {"total":347,"list":[{"network":"BSC","contractAddress":"REGULAR11234567891779","tokenId":"100900000017"},{"network":"BSC","contractAddress":"SSMDQ8W59","tokenId":"200500000011"},{"network":"BSC","contractAddress":"SSMDQ8W59","tokenId":"200500000019"}]} > }
     */
-    async get_nft_asset(limit, page) {
+    get_nft_asset: async (limit, page) => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/nft/user/getAsset', { limit, page }, 'USER_DATA');
       if (resp.error) return resp;
@@ -6270,7 +6270,7 @@ class Spot {
      * @param {number} amount  - The amount of the token contained in the Binance Gift Card
      * @returns { Promise < {"code":"000000","message":"success","data":{"referenceNo":"0033002327977405","code":"AOGANK3NB4GIT3C6"},"success":true} > }
     */
-    async create_a_single_token_gift_card(token, amount) {
+    create_a_single_token_gift_card: async (token, amount) => {
       // Expects (HMAC SHA256)
       if (typeof token === 'undefined') return new Error('token', 'REQUIRED');
 
@@ -6303,7 +6303,7 @@ class Spot {
      * @param {number | undefined} discount  - Stablecoin-denominated card discount percentage, Example: `1` for `1`% discount. Scale should be less than `6`.
      * @returns { Promise < {"code":"000000","message":"success","data":{"referenceNo":"0033002327977405","code":"AOGANK3NB4GIT3C6"},"success":true} > }
     */
-    async create_a_dual_token_gift_card_fixed_value_discount_feature_trade(baseToken, faceToken, baseTokenAmount, discount) {
+    create_a_dual_token_gift_card_fixed_value_discount_feature_trade: async (baseToken, faceToken, baseTokenAmount, discount) => {
       // Expects (HMAC SHA256)
       if (typeof baseToken === 'undefined') return new Error('baseToken', 'REQUIRED');
 
@@ -6334,7 +6334,7 @@ class Spot {
      * @param {string | undefined} externalUid  - Each external unique ID represents a unique user on the partner platform. The function helps you to identify the redemption behavior of different users, such as redemption frequency and amount. It also helps risk and limit control of a single account, such as daily limit on redemption volume, frequency, and incorrect number of entries. This will also prevent a single user account reach the partner's daily redemption limits. We strongly recommend you to use this feature and transfer us the User ID of your users if you have different users redeeming Binance Gift Cards on your platform. To protect user data privacy, you may choose to transfer the user id in any desired format (max. `400` characters).
      * @returns { Promise < {"code":"000000","message":"success","data":{"referenceNo":"0033002328060227","identityNo":"10317392647411060736","token":"BNB","amount":"0.00000001"},"success":true} > }
     */
-    async redeem_a_binance_gift_card(code, externalUid) {
+    redeem_a_binance_gift_card: async (code, externalUid) => {
       // Expects (HMAC SHA256)
       if (typeof code === 'undefined') return new Error('code', 'REQUIRED');
 
@@ -6351,7 +6351,7 @@ class Spot {
      * @param {string} referenceNo  - Enter the Gift Card Number
      * @returns { Promise < {"code":"000000","message":"success","data":{"valid":true,"token":"BNB","amount":"0.00000001"},"success":true} > }
     */
-    async verify_binance_gift_card_by_gift_card_number(referenceNo) {
+    verify_binance_gift_card_by_gift_card_number: async (referenceNo) => {
       // Expects (HMAC SHA256)
       if (typeof referenceNo === 'undefined') return new Error('referenceNo', 'REQUIRED');
 
@@ -6367,7 +6367,7 @@ class Spot {
      * - Weight(IP): `1`
      * @returns { Promise < {"code":"000000","message":"success","data":"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCXBBVKLAc1GQ5FsIFFqOHrPTox5noBONIKr+IAedTR9FkVxq6e65updEbfdhRNkMOeYIO2i0UylrjGC0X8YSoIszmrVHeV0l06Zh1oJuZos1+7N+WLuz9JvlPaawof3GUakTxYWWCa9+8KIbLKsoKMdfS96VT+8iOXO3quMGKUmQIDAQAB","success":true} > }
     */
-    async fetch_rsa_public_key() {
+    fetch_rsa_public_key: async () => {
       // Expects (HMAC SHA256)
       const resp = await this.request('GET', 'sapi', '/sapi/v1/giftcard/cryptography/rsa-public-key', {}, 'USER_DATA');
       if (resp.error) return resp;
@@ -6384,7 +6384,7 @@ class Spot {
      * @param {string} baseToken  - The token you want to pay, example: BUSD
      * @returns { Promise < {"code":"000000","message":"success","data":[{"coin":"BNB","fromMin":"0.01","fromMax":"1"}],"success":true} > }
     */
-    async fetch_token_limit(baseToken) {
+    fetch_token_limit: async (baseToken) => {
       // Expects (HMAC SHA256)
       if (typeof baseToken === 'undefined') return new Error('baseToken', 'REQUIRED');
 

@@ -35,7 +35,7 @@ class Binance {
      * - This is provided by Binance only ONCE (upon creation) from `https://www.binance.com/en/my/settings/api-management`
      * - Allows `administrative access` like purchases and permission changes
      * - You are supposed to save it somewhere secure, NEVER SHARE IT WITH ANYONE.
-     * @param { {fetchFloats?:Boolean, useServerTime?:Boolean, showQueries?:Boolean, showWSQueries?:Boolean, recvWindow?:Boolean, extraTimestampOffset?:Number} } opts -
+     * @param { {fetchFloats?:Boolean, useServerTime?:Boolean, showQueries?:Boolean, showWSQueries?:Boolean, recvWindow?:number, extraTimestampOffset?:number} } opts -
      * 
      * - `fetchFloats`: handles converting all incoming strings into numbers. Meant to simplify conversions when not in need of string data
      * - `useServerTime`: when true, the library will periodically fetch the Binance server's time and check the offset between the local time and the server time. This offset will be stored in `info.timestamp_offset`
