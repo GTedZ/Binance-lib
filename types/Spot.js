@@ -2488,34 +2488,27 @@ class stringNumber { }
  * @returns {number}
  */
 String.prototype.parseFloat = function () {
-    const i = parseFloat(this);
-    if (i == i) {
+    let i = parseFloat(this);
+    if (i === i) {
         try {
-            return JSON_Bigint.parse(this);
+            return JSON_Bigint.parse(this.valueOf());
         } catch (err) {
-            return this;
+            return this.valueOf();
         }
-    } else return this;
+    } else return this.valueOf();
 };
+
 /**
  * Converts the `string` and returns the `number` value
  * @returns {number}
  */
-stringNumber.prototype.parseFloat = function () {
-    const i = parseFloat(this);
-    if (i == i) {
-        try {
-            return JSON_Bigint.parse(this);
-        } catch (err) {
-            return this;
-        }
-    } else return this;
-}
+stringNumber.prototype.parseFloat = function () { }
+
 /**
  * Converts the `string` and returns the `number` value
  * @returns {number}
  */
-Number.prototype.parseFloat = function () { return this; };
+Number.prototype.parseFloat = function () { return this.valueOf(); };
 
 
 

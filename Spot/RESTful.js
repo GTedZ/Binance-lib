@@ -83,6 +83,7 @@ class Spot {
     const response = await this.request('GET', 'api', '/api/v3/ping', {}, 'NONE');
     if (response.error) {
       if (!reconnect || tries === 0) return response;
+      await new Promise(r => setTimeout(r, 500));
       return this.ping(reconnect, --tries);
     } else response.latency = performance.now() - startTime;
     return response;
@@ -100,6 +101,7 @@ class Spot {
     const response = await this.request('GET', 'api', '/api/v3/time', {}, 'NONE');
     if (response.error) {
       if (!reconnect || tries === 0) return response;
+      await new Promise(r => setTimeout(r, 500));
       return this.serverTime(reconnect, --tries);
     } else response.latency = performance.now() - startTime;
     return response;

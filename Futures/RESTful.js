@@ -272,6 +272,7 @@ class Futures {
         const response = await this.request('GET', '/fapi/v1/ping', undefined, 'NONE');
         if (response.error) {
             if (!reconnect || tries === 0) return response;
+            await new Promise(r => setTimeout(r, 500));
             return this.ping(reconnect, --tries);
         } else response.latency = performance.now() - startTime;
         return response;
@@ -289,6 +290,7 @@ class Futures {
         const response = await this.request('GET', '/fapi/v1/time', undefined, 'NONE');
         if (response.error) {
             if (!reconnect || tries === 0) return response;
+            await new Promise(r => setTimeout(r, 500));
             return this.serverTime(reconnect, --tries);
         } else response.latency = performance.now() - startTime;
         return response;
@@ -306,6 +308,7 @@ class Futures {
         const response = await this.request('GET', '/fapi/v1/exchangeInfo', undefined, 'NONE');
         if (response.error) {
             if (!reconnect || tries === 0) return response;
+            await new Promise(r => setTimeout(r, 500));
             return this.exchangeInfo(reconnect, --tries);
         }
 
