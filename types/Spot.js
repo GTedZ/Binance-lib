@@ -2538,6 +2538,7 @@ module.exports = {
 
     exchangeInfo_rateLimit,
     exchangeInfo_Symbol,
+    exchangeInfo_Symbol_mapped,
 
     exchangeInfo_Symbol_filter,
 
