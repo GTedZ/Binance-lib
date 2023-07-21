@@ -27,6 +27,8 @@ const { Futures_aggTrade, Futures_candlestick, Futures_orderBook,
     Futures_Balance,
     Futures_Account,
     Futures_PositionInfo,
+    Futures_Leverage_Notional,
+    Futures_Leverage_Notional_Bracket,
 
     Futures_interval,
     Futures_period,
