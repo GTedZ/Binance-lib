@@ -178,6 +178,21 @@ class exchangeInfo_mapped {
     symbols;
 
     /**
+     * @type { Object <string, exchangeInfo_Symbol_mapped[]> }
+     * 
+     * Use `statuses_arr` to access the keys (the name of the `status`) of `statuses`
+     */
+    statuses;
+
+    /**
+     * @type {symbolStatus[]}
+     * 
+     * - An array of all the symbols' `status`
+     */
+    statuses_arr = [];
+
+
+    /**
     * @param {exchangeInfo} exchangeInfo 
     */
     constructor(exchangeInfo) {
@@ -191,8 +206,10 @@ class exchangeInfo_mapped {
         this.exchangeFilters = exchangeInfo.exchangeFilters;
 
         this.symbols_arr = [];
-
         this.symbols = {};
+
+        const statuses_set = new Set();
+        const statuses = {};
 
         for (const symbol_obj of exchangeInfo.symbols) {
             this.symbols_arr.push(symbol_obj.symbol);
@@ -209,12 +226,21 @@ class exchangeInfo_mapped {
                         filters_arr.push(filter.filterType);
                         filters[filter.filterType] = filter;
                     }
+
+                    newSymbol.filters_arr = filters_arr;
+                    newSymbol.filters = filters;
+                } else if (key === 'status') {
+                    newSymbol[key] = value;
+
+                    if (!statuses[value]) statuses[value] = [];
+                    statuses[value].push(newSymbol);
+                    statuses_set.add(value);
                 } else newSymbol[key] = value;
 
             }
 
-            newSymbol.filters_arr = filters_arr;
-            newSymbol.filters = filters;
+            this.statuses_arr = Array.from(statuses_set);
+            this.statuses = statuses;
         }
 
     }
