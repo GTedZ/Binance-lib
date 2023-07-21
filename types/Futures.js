@@ -194,6 +194,20 @@ class Futures_exchangeInfo_mapped {
     symbols;
 
     /**
+     * @type { Object <string, Futures_exchangeInfo_Symbol_mapped[]> }
+     * 
+     * Use `statuses_arr` to access the keys (the name of the `status`) of `statuses`
+     */
+    statuses;
+
+    /**
+     * @type {Futures_contractStatus[]}
+     * 
+     * - An array of all the symbols' `status`
+     */
+    statuses_arr = [];
+
+    /**
      * @type { Futures_contractType[] }
      * 
      * - An array of all the symbols' `contractType`s
@@ -237,6 +251,9 @@ class Futures_exchangeInfo_mapped {
 
     constructor(response) {
         // this is coded for readability, not optimization (still not readable much)
+        const statuses_set = new Set();
+        const statuses = {};
+
         const contractTypes_set = new Set();
         const contractTypes = {};
 
@@ -266,6 +283,12 @@ class Futures_exchangeInfo_mapped {
                     currentSymbol.filters_arr = filters_arr;
                     currentSymbol.filters = filters;
 
+                } else if (key === 'status') {
+                    currentSymbol[key] = value;
+
+                    if (!statuses[value]) statuses[value] = [];
+                    statuses[value].push(currentSymbol);
+                    statuses_set.add(value);
                 } else if (key === 'contractType') {
                     currentSymbol[key] = value;
 
@@ -309,6 +332,9 @@ class Futures_exchangeInfo_mapped {
                 this.symbols = symbols;
             } else this[key] = value;
         }
+
+        this.statuses_arr = Array.from(statuses_set);
+        this.statuses = statuses;
 
         this.contractTypes_arr = Array.from(contractTypes_set);
         this.contractTypes = contractTypes
@@ -2354,6 +2380,13 @@ class Futures_Leverage_Notional {
      * @type {string}
      */
     symbol;
+
+    /**
+     * user symbol bracket multiplier, `only` appears when user's symbol bracket is adjusted
+     * - this is to show the bracket multiplier comparing to default leverage bracket
+     * @type {number | undefined}
+     */
+    notionalCoef;
 
     /**
      * @type {Futures_Leverage_Notional_Bracket[]}
