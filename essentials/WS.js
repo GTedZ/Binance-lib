@@ -22,6 +22,8 @@ class WS {
      */
     parent_eventEmitter;
 
+    connectionHealth_interval;
+
     /**
      * @param {string} baseURL 
      * @param {Set} paths_set 
@@ -80,21 +82,21 @@ class WS {
             }
         );
 
-        setInterval(
+        this.connectionHealth_interval = setInterval(
             async () => {
 
                 const isConnectionHealthy = await new Promise(
                     (resolve) => {
                         let ponged = false;
 
-                        setTimeout(() => resolve(false), 5 * SECOND);
+                        setTimeout(() => resolve(false), 15 * SECOND);
 
                         this.socket.once(
                             'pong'
                             ,
                             () => {
-                                resolve(true);
                                 ponged = true;
+                                resolve(true);
                             }
                         );
 
@@ -112,14 +114,14 @@ class WS {
                                 if (!ponged) this.socket.ping();
                             }
                             ,
-                            2 * SECOND
+                            5 * SECOND
                         );
                         setTimeout(
                             () => {
                                 if (!ponged) this.socket.ping();
                             }
                             ,
-                            3 * SECOND
+                            10 * SECOND
                         );
                     }
                 )
@@ -129,7 +131,7 @@ class WS {
 
             }
             ,
-            MINUTE
+            2 * MINUTE
         )
     }
 
@@ -252,6 +254,7 @@ class WS_Connection {
     close() {
         this.isAlive = false;
         this.Websocket.close();
+        clearInterval(this.Websocket.connectionHealth_interval);
     }
 
     /**
