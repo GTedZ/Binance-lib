@@ -20,7 +20,7 @@ class WS {
     /**
      * @type {EventEmitter}
      */
-    parent_eventEmitter;
+    mainObj_eventEmitter;
 
     connectionHealth_interval;
 
