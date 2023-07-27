@@ -667,7 +667,7 @@ class Futures_Websockets {
         if (Array.isArray(msg)) return msg.map(item => this.convert_websocket_response(item, converter_arr));
 
         for (const [oldKey, newKey, nestedObject] of converter_arr) {
-            // if (typeof msg[oldKey] === 'undefined') continue;
+            if (typeof msg[oldKey] === 'undefined') continue;
             msg[newKey] = msg[oldKey];
             delete msg[oldKey];
             if (typeof nestedObject === 'object') this.convert_websocket_response(msg[newKey], nestedObject);
