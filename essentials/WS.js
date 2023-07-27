@@ -161,6 +161,7 @@ class WS {
     }
 
     close() {
+        clearInterval(this.connectionHealth_interval);
         this.socket.close();
     }
 
@@ -254,7 +255,6 @@ class WS_Connection {
     close() {
         this.isAlive = false;
         this.Websocket.close();
-        clearInterval(this.Websocket.connectionHealth_interval);
     }
 
     /**
