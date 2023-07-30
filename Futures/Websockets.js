@@ -6,7 +6,7 @@ const { Websocket_Connection, Binance_userData_WS_Connection } = require('../Web
 
 const Error = require('../essentials/Error');
 
-const Types = require('../types/Futures');
+const { Futures_WS_orderBook, Futures_WS_aggTrade, Futures_WS_markPrice, Futures_WS_candlestick, Futures_interval, Futures_WS_continuousCandlestick, Futures_WS_miniTicker, Futures_WS_ticker, Futures_WS_bookTicker, Futures_WS_liquidationOrder, Futures_WS_partialOrderBook } = require('../types/Futures');
 
 const Futures = require('./RESTful');
 
@@ -76,7 +76,7 @@ class Futures_Websockets {
 
     /**
      * - ***Update speed: `100ms`***
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_aggTrade) => void } callback 
      * @param {string} symbol 
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -104,7 +104,7 @@ class Futures_Websockets {
 
     /**
      * - ***Update speed: `3000ms` or `1000ms`***
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_markPrice) => void } callback 
      * @param {string} symbol 
      * @param {'1s'|'3s'|undefined} interval 
      * @returns { Promise < Websocket_Connection | 
@@ -132,7 +132,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_markPrice[]) => void } callback 
      * @param {'1s'|'3s'|undefined} interval 
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -158,14 +158,14 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_candlestick) => void } callback 
      * @param {string} symbol
-     * @param {Types.Futures_interval} interval 
+     * @param {Futures_interval} interval 
      * @returns { Promise < Websocket_Connection | 
      *  {   
-     *      subscribe: (symbol:string, interval:Types.Futures_interval) => Promise< {error?: Error | undefined} >
+     *      subscribe: (symbol:string, interval:Futures_interval) => Promise< {error?: Error | undefined} >
      *      ,
-     *      batch_subscribe: (...args:[symbol:string, interval:Types.Futures_interval][]) => Promise< {error?: Error | undefined} > >
+     *      batch_subscribe: (...args:[symbol:string, interval:Futures_interval][]) => Promise< {error?: Error | undefined} > >
      *  } 
      * >
      * }
@@ -186,15 +186,15 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_continuousCandlestick) => void } callback 
      * @param {string} pair
      * @param {'PERPETUAL'|'CURRENT_QUARTER'|'NEXT_QUARTER'} contractType
-     * @param {Types.Futures_interval} interval 
+     * @param {Futures_interval} interval 
      * @returns { Promise < Websocket_Connection | 
      *  {   
-     *      subscribe: (pair:string, contractType:'PERPETUAL'|'CURRENT_QUARTER'|'NEXT_QUARTER', interval:Types.Futures_interval) => Promise< {error?: Error | undefined} >
+     *      subscribe: (pair:string, contractType:'PERPETUAL'|'CURRENT_QUARTER'|'NEXT_QUARTER', interval:Futures_interval) => Promise< {error?: Error | undefined} >
      *      ,
-     *      batch_subscribe: (...args:[pair:string, contractType:'PERPETUAL'|'CURRENT_QUARTER'|'NEXT_QUARTER', interval:Types.Futures_interval][]) => Promise< {error?: Error | undefined} > >
+     *      batch_subscribe: (...args:[pair:string, contractType:'PERPETUAL'|'CURRENT_QUARTER'|'NEXT_QUARTER', interval:Futures_interval][]) => Promise< {error?: Error | undefined} > >
      *  } 
      * >
      * }
@@ -215,7 +215,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_miniTicker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -242,7 +242,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_miniTicker[]) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -267,7 +267,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_ticker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -294,7 +294,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_ticker[]) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -319,7 +319,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_bookTicker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -346,7 +346,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_bookTicker) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -371,11 +371,11 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_liquidationOrder) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
-     *      subscribe: (symbol:string, interval:Types.Futures_interval) => Promise< {error?: Error | undefined} >
+     *      subscribe: (symbol:string, interval:Futures_interval) => Promise< {error?: Error | undefined} >
      *      ,
      *      batch_subscribe: (...symbols:string[]) => Promise< {error?: Error | undefined} > >
      *  } 
@@ -398,7 +398,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_liquidationOrder) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -423,7 +423,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_partialOrderBook) => void } callback 
      * @param {string} symbol
      * @param {'5'|'10'|'20'} levels
      * @param {'100ms'|'250ms'|'500ms'} interval 
@@ -453,7 +453,7 @@ class Futures_Websockets {
 
     /**
      * - Order book price and quantity depth updates used to locally manage an order book.
-     * @param {Function} callback 
+     * @param { (msg: Futures_WS_orderBook) => void } callback 
      * @param {string} symbol
      * @param {'100ms'|'250ms'|'500ms'} interval 
      * @returns { Promise < Websocket_Connection | 
@@ -511,9 +511,9 @@ class Futures_Websockets {
      * @param {Function} callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
-     *      subscribe: (symbol:string, interval:Types.Futures_interval) => Promise< {error?: Error | undefined} >
+     *      subscribe: (symbol:string, interval:Futures_interval) => Promise< {error?: Error | undefined} >
      *      ,
-     *      batch_subscribe: (...args:[symbol:string, interval:Types.Futures_interval][]) => Promise< {error?: Error | undefined} > >
+     *      batch_subscribe: (...args:[symbol:string, interval:Futures_interval][]) => Promise< {error?: Error | undefined} > >
      *  } 
      * >
      * }
@@ -562,12 +562,12 @@ class Futures_Websockets {
     /**
      * @param {Function} callback 
      * @param {string} symbol
-     * @param {Types.Futures_interval} interval 
+     * @param {Futures_interval} interval 
      * @returns { Promise < Websocket_Connection | 
      *  {   
-     *      subscribe: (symbol:string, interval:Types.Futures_interval) => Promise< {error?: Error | undefined} >
+     *      subscribe: (symbol:string, interval:Futures_interval) => Promise< {error?: Error | undefined} >
      *      ,
-     *      batch_subscribe: (...args:[symbol:string, interval:Types.Futures_interval][]) => Promise< {error?: Error | undefined} > >
+     *      batch_subscribe: (...args:[symbol:string, interval:Futures_interval][]) => Promise< {error?: Error | undefined} > >
      *  } 
      * >
      * }
@@ -601,7 +601,7 @@ class Futures_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param {(msg: {event: 'listenKeyExpired'| 'MARGIN_CALL'| 'ACCOUNT_UPDATE'| 'ORDER_TRADE_UPDATE'| 'ACCOUNT_CONFIG_UPDATE'| 'STRATEGY_UPDATE'| 'GRID_UPDATE'| 'CONDITIONAL_ORDER_TRIGGER_REJECT'}) => void} callback 
      * @returns { Promise < Futures_userData_Websocket > }
      */
     async userData_stream(callback) {

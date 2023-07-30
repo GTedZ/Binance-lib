@@ -6,7 +6,7 @@ const { Websocket_Connection, Binance_userData_WS_Connection } = require('../Web
 
 const Error = require('../essentials/Error');
 
-const { kline_interval } = require('../types/Spot');
+const { kline_interval, WS_AggTrade, WS_Trade, WS_Candlestick, WS_MiniTicker, WS_Ticker, WS_RollingWindowStats, WS_BookTicker, WS_Partial_OrderBook, WS_OrderBook, WS_userData_ACCOUNT_UPDATE, WS_userData_BALANCE_UPDATE, WS_userData_LIST_STATUS, WS_userData_ORDER_UPDATE } = require('../types/Spot');
 
 const Spot = require('./RESTful');
 
@@ -67,7 +67,7 @@ class Spot_Websockets {
     /**
      * The Aggregate Trade Streams push trade information that is aggregated for a single taker order.
      * - ***Update speed: `real-time`***
-     * @param {Function} callback 
+     * @param { (msg: WS_AggTrade) => void } callback 
      * @param {string} symbol 
      * @returns { Promise < Websocket_Connection | 
     *  {   
@@ -96,7 +96,7 @@ class Spot_Websockets {
     /**
      * The Trade Streams push raw trade information; each trade has a unique buyer and seller.
      * - ***Update speed: `real-time`***
-     * @param {Function} callback 
+     * @param { (msg: WS_Trade) => void } callback 
      * @param {string} symbol 
      * @returns { Promise < Websocket_Connection | 
     *  {   
@@ -128,7 +128,7 @@ class Spot_Websockets {
      * - - `1000ms` for `1s`
      * - - `2000ms` for the other intervals
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_Candlestick) => void } callback 
      * @param {string} symbol 
      * @param {kline_interval} interval
      * @returns { Promise < Websocket_Connection | 
@@ -161,7 +161,7 @@ class Spot_Websockets {
      * - Note that only tickers that have changed will be present in the array.
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_MiniTicker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -193,7 +193,7 @@ class Spot_Websockets {
      * - Note that only tickers that have changed will be present in the array.
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_MiniTicker[]) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -222,7 +222,7 @@ class Spot_Websockets {
      * - These are NOT the statistics of the UTC day, but a 24hr rolling window for the previous 24hrs.
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_Ticker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -253,7 +253,7 @@ class Spot_Websockets {
      * - These are NOT the statistics of the UTC day, but a 24hr rolling window for the previous 24hrs.
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_Ticker[]) => void } callback 
      * @returns { Promise < Websocket_Connection | 
      *  {   
      *      subscribe: () => Promise< {error?: Error | undefined} >
@@ -286,7 +286,7 @@ class Spot_Websockets {
      * -
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_RollingWindowStats) => void } callback 
      * @param {string} symbol
      * @param {"1h"|"4h"|"1d"} windowSize
      * @returns { Promise < Websocket_Connection | 
@@ -324,7 +324,7 @@ class Spot_Websockets {
      * -
      * - *** Update speed: `1000ms`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_RollingWindowStats[]) => void } callback 
      * @param {string} symbol
      * @param {"1h"|"4h"|"1d"} windowSize
      * @returns { Promise < Websocket_Connection | 
@@ -356,7 +356,7 @@ class Spot_Websockets {
      * Pushes any update to the best bid or ask's price or quantity in real-time for a specified symbol.
      * - ***Update speed: `real-time`***
      * - 
-     * @param {Function} callback 
+     * @param { (msg: WS_BookTicker) => void } callback 
      * @param {string} symbol
      * @returns { Promise < Websocket_Connection | 
      *  {   
@@ -385,7 +385,7 @@ class Spot_Websockets {
     /**
      * - Top bids and asks, Valid are `5`, `10`, or `20`.
      * - ***Update speed: `1000ms` or `100ms`***
-     * @param {Function} callback 
+     * @param { (msg: WS_Partial_OrderBook) => void } callback 
      * @param {string} symbol
      * @param {'5'|'10'|'20'} levels
      * @param {'100ms'|'1000ms'} interval 
@@ -418,7 +418,7 @@ class Spot_Websockets {
     /**
      * - Order book price and quantity depth updates used to locally manage an order book.
      * - ***Update speed: `100ms` or `1000ms`***
-     * @param {Function} callback 
+     * @param { (msg: WS_OrderBook) => void } callback 
      * @param {string} symbol
      * @param {'100ms'|'1000ms'} interval 
      * @returns { Promise < Websocket_Connection | 
@@ -465,7 +465,7 @@ class Spot_Websockets {
     }
 
     /**
-     * @param {Function} callback 
+     * @param { (msg: {event: 'outboundAccountPosition' | 'balanceUpdate' | 'executionReport' | 'listStatus'}) => void } callback 
      * @returns { Promise < Spot_userData_Websocket > }
      */
     async userData_stream(callback) {
@@ -542,7 +542,7 @@ class Spot_Websockets {
 class Spot_userData_Websocket extends Binance_userData_WS_Connection {
 
     events = {
-        ACCOUNT_UPDATE: 'outboundAccountPosition ',
+        ACCOUNT_UPDATE: 'outboundAccountPosition',
         BALANCE_UPDATE: 'balanceUpdate',
         ORDER_UPDATE: 'executionReport',
         /**
