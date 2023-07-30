@@ -10,8 +10,10 @@ const Spot = require('./Spot/RESTful');
 
 const Futures = require('./Futures/RESTful');
 
-require('./types/Spot');        // this is for intellisense
-require('./types/Futures');     // this is for intellisense
+require('./Spot/Websockets');       // this is for intellisense
+require('./Futures/Websockets');    // this is for intellisense
+require('./types/Spot');            // this is for intellisense
+require('./types/Futures');         // this is for intellisense
 
 class Binance {
 
