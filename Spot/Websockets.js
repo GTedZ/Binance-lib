@@ -2,11 +2,11 @@ const Options = require('../essentials/Options');
 
 const Info = require('../essentials/Info');
 
-const { Websocket_Connection, Binance_userData_WS_Connection } = require('../WebsocketConnection');
+const { Websocket_Connection } = require('../WebsocketConnection');
 
 const Error = require('../essentials/Error');
 
-const { kline_interval, WS_AggTrade, WS_Trade, WS_Candlestick, WS_MiniTicker, WS_Ticker, WS_RollingWindowStats, WS_BookTicker, WS_Partial_OrderBook, WS_OrderBook, WS_userData_ACCOUNT_UPDATE, WS_userData_BALANCE_UPDATE, WS_userData_LIST_STATUS, WS_userData_ORDER_UPDATE } = require('../types/Spot');
+const { kline_interval, WS_AggTrade, WS_Trade, WS_Candlestick, WS_MiniTicker, WS_Ticker, WS_RollingWindowStats, WS_BookTicker, WS_Partial_OrderBook, WS_OrderBook, WS_userData_ACCOUNT_UPDATE, WS_userData_BALANCE_UPDATE, WS_userData_LIST_STATUS, WS_userData_ORDER_UPDATE, Spot_userData_Websocket } = require('../types/Spot');
 
 const Spot = require('./RESTful');
 
@@ -535,24 +535,6 @@ class Spot_Websockets {
         }
 
         return msg;
-    }
-
-}
-
-class Spot_userData_Websocket extends Binance_userData_WS_Connection {
-
-    events = {
-        ACCOUNT_UPDATE: 'outboundAccountPosition',
-        BALANCE_UPDATE: 'balanceUpdate',
-        ORDER_UPDATE: 'executionReport',
-        /**
-         * This event is pushed when the order is an `OCO` trade alongside `ORDER_UPDATE`
-         */
-        listStatus: 'listStatus'
-    }
-
-    constructor(baseURL, listenKey, callback, response_converter, keepAlive_function) {
-        super(baseURL, listenKey, callback, response_converter, keepAlive_function);
     }
 
 }

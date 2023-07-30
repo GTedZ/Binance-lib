@@ -1,3 +1,5 @@
+const { Binance_userData_WS_Connection } = require('../WebsocketConnection');
+
 const JSON_Bigint = require('json-bigint')({ storeAsString: true });
 
 /**
@@ -2503,6 +2505,23 @@ class WS_userData_LIST_STATUS {
     orders;
 
 }
+class Spot_userData_Websocket extends Binance_userData_WS_Connection {
+
+    events = {
+        ACCOUNT_UPDATE: 'outboundAccountPosition',
+        BALANCE_UPDATE: 'balanceUpdate',
+        ORDER_UPDATE: 'executionReport',
+        /**
+         * This event is pushed when the order is an `OCO` trade alongside `ORDER_UPDATE`
+         */
+        listStatus: 'listStatus'
+    }
+
+    constructor(baseURL, listenKey, callback, response_converter, keepAlive_function) {
+        super(baseURL, listenKey, callback, response_converter, keepAlive_function);
+    }
+
+}
 
 
 ////////////////////////
@@ -2612,5 +2631,6 @@ module.exports = {
     WS_userData_ACCOUNT_UPDATE,
     WS_userData_BALANCE_UPDATE,
     WS_userData_ORDER_UPDATE,
-    WS_userData_LIST_STATUS
+    WS_userData_LIST_STATUS,
+    Spot_userData_Websocket
 }

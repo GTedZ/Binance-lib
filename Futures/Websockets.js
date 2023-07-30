@@ -2,11 +2,11 @@ const Options = require('../essentials/Options');
 
 const Info = require('../essentials/Info');
 
-const { Websocket_Connection, Binance_userData_WS_Connection } = require('../WebsocketConnection');
+const { Websocket_Connection } = require('../WebsocketConnection');
 
 const Error = require('../essentials/Error');
 
-const { Futures_WS_orderBook, Futures_WS_aggTrade, Futures_WS_markPrice, Futures_WS_candlestick, Futures_interval, Futures_WS_continuousCandlestick, Futures_WS_miniTicker, Futures_WS_ticker, Futures_WS_bookTicker, Futures_WS_liquidationOrder, Futures_WS_partialOrderBook } = require('../types/Futures');
+const { Futures_WS_orderBook, Futures_WS_aggTrade, Futures_WS_markPrice, Futures_WS_candlestick, Futures_interval, Futures_WS_continuousCandlestick, Futures_WS_miniTicker, Futures_WS_ticker, Futures_WS_bookTicker, Futures_WS_liquidationOrder, Futures_WS_partialOrderBook, Futures_userData_Websocket } = require('../types/Futures');
 
 const Futures = require('./RESTful');
 
@@ -674,86 +674,6 @@ class Futures_Websockets {
         }
 
         return msg;
-    }
-
-}
-
-class Futures_userData_Websocket extends Binance_userData_WS_Connection {
-
-    events = {
-        LISTENKEY_EXPIRED: 'listenKeyExpired',
-        MARGIN_CALL: 'MARGIN_CALL',
-        ACCOUNT_UPDATE: 'ACCOUNT_UPDATE',
-        ORDER_TRADE_UPDATE: 'ORDER_TRADE_UPDATE',
-        ACCOUNT_CONFIG_UPDATE: 'ACCOUNT_CONFIG_UPDATE',
-        STRATEGY_UPDATE: 'STRATEGY_UPDATE',
-        GRID_UPDATE: 'GRID_UPDATE',
-        CONDITIONAL_ORDER_TRIGGER_REJECT: 'CONDITIONAL_ORDER_TRIGGER_REJECT'
-    }
-
-    constructor(baseURL, listenKey, callback, response_converter, keepAlive_function) {
-        super(baseURL, listenKey, callback, response_converter, keepAlive_function);
-    }
-
-    /**
-     * @returns { Promise <  
-    *  {
-    *      req:"<listenKey>@account",
-    *      res: {
-    *           accountAlias:string,
-    *           feeTier:number,
-    *           canTrade:boolean,
-    *           canDeposit:boolean,
-    *           canWithdraw:boolean,
-    *      } 
-    *  }  
-    * > }
-    */
-    async get_accountDetail() {
-        const response = await this.WS_handler.sendPrivateMessage(
-            {
-                "method": "REQUEST",
-                "params":
-                    [
-                        `${this.listenKey}@account`
-                    ]
-            }
-        );
-        if (response.error) return response;
-        return response.result[0];
-    }
-
-    /**
-     * @returns { Promise <  
-     *  {
-     *      req:"<listenKey>@balance",
-     *      res: {
-     *          accountAlias:string,
-     *          balances: { 
-     *              asset:string,
-     *              balance:stringNumber,
-     *              crossWalletBalance:stringNumber,
-     *              crossUnPnL:stringNumber,
-     *              availableBalance:stringNumber,
-     *              maxWithdrawAmount:stringNumber,
-     *              updateTime:number
-     *          }[]
-     *      } 
-     *  }  
-     * > }
-     */
-    async get_accountBalance() {
-        const response = await this.WS_handler.sendPrivateMessage(
-            {
-                "method": "REQUEST",
-                "params":
-                    [
-                        `${this.listenKey}@balance`
-                    ]
-            }
-        );
-        if (response.error) return response;
-        return response.result[0];
     }
 
 }
