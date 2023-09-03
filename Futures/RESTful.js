@@ -2182,7 +2182,7 @@ class Futures {
     /**
      * REQUIRES BOTH `APIKEY` AND `APISECRET`
      * - Weight: `5`
-     * @returns { Promise < Futures_Balance > }
+     * @returns { Promise < Futures_Balance[] > }
     */
     async balance() {
         // Expects (HMAC SHA256)
@@ -2377,7 +2377,7 @@ class Futures {
      * REQUIRES BOTH `APIKEY` AND `APISECRET`
      * - Weight: `1`
      * @param {string | undefined} symbol
-     * @returns { Promise < Futures_Leverage_Notional > }
+     * @returns { Promise < Futures_Leverage_Notional[] > }
     */
     async leverage_notional_brackets(symbol) {
 
