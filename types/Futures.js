@@ -560,6 +560,16 @@ class Futures_exchangeInfo_Symbol {
      */
     filters;
 
+    /**
+     * @type { Futures_OrderType[] }
+     */
+    orderTypes;
+
+    /**
+     * @type { Futures_TimeInForce[] }
+     */
+    timeInForce;
+
 }
 
 class Futures_exchangeInfo_Symbol_mapped {
@@ -724,6 +734,16 @@ class Futures_exchangeInfo_Symbol_mapped {
      * } }
      */
     filters;
+
+    /**
+     * @type { Futures_OrderType[] }
+     */
+    orderTypes;
+
+    /**
+     * @type { Futures_TimeInForce[] }
+     */
+    timeInForce;
 
 }
 
