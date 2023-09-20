@@ -3870,20 +3870,11 @@ class Spot {
   /**
    * - Start a new user data stream. The stream will close after `60` minutes unless a keepalive is sent. If the account has an active listenKey , that listenKey will be returned and its validity will be extended for `60` minutes.
    * - Weight: `1`
-   * - Data Source: Memory
-   * - Keepalive a user data stream to prevent a time out. User data streams will close after `60` minutes. It's recommended to send a ping about every `30` minutes.
-   * - Weight: `1`
-   * - Data Source: Memory
-   * - Weight: `1`
-   * - Data Source: Memory
-   * @param {string} listenKey
    * @returns { Promise < {"listenKey":"pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1"} > }
   */
   async listenKey_Spot() {
 
-    if (typeof listenKey === 'undefined') return new Error('listenKey', 'REQUIRED');
-
-    const resp = await this.request('POST', 'api', '/api/v3/userDataStream', { listenKey }, 'NONE');
+    const resp = await this.request('POST', 'api', '/api/v3/userDataStream', {}, 'USER_STREAM');
     if (resp.error) return resp;
 
     return resp;
@@ -3891,20 +3882,12 @@ class Spot {
 
   /**
    * REQUIRES BOTH `APIKEY` AND `APISECRET`
+   * - Start a new user data stream. The stream will close after `60` minutes unless a keepalive is sent. If the account has an active listenKey , that listenKey will be returned and its validity will be extended for `60` minutes.
    * - Weight: `1`
-   * - NONE
-   * - Weight: `1`
-   * - Weight: `1`
-   * @param {string} listenKey
    * @returns { Promise < {"listenKey":"T3ee22BIYuWqmvne0HNq2A2WsFlEtLhvWCtItw6ffhhdmjifQ2tRbuKkTHhr"} > }
-   * @returns { Promise < {} > }
-   * @returns { Promise < {} > }
   */
-  async listenKey_Margin(listenKey) {
-
-    if (typeof listenKey === 'undefined') return new Error('listenKey', 'REQUIRED');
-
-    const resp = await this.request('POST', 'sapi', '/sapi/v1/userDataStream', { listenKey }, 'MARGIN');
+  async listenKey_Margin() {
+    const resp = await this.request('POST', 'sapi', '/sapi/v1/userDataStream', {}, 'USER_STREAM');
     if (resp.error) return resp;
 
     return resp;
@@ -3912,19 +3895,15 @@ class Spot {
 
   /**
    * REQUIRES BOTH `APIKEY` AND `APISECRET`
-   * - Weight: `1`
-   * - Weight: `1`
    * - Weight: `1`
    * @param {string} symbol
    * @returns { Promise < {"listenKey":"T3ee22BIYuWqmvne0HNq2A2WsFlEtLhvWCtItw6ffhhdmjifQ2tRbuKkTHhr"} > }
-   * @returns { Promise < {} > }
-   * @returns { Promise < {} > }
-  */
+   */
   async listenKey_isolatedMargin(symbol) {
 
     if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
 
-    const resp = await this.request('POST', 'sapi', '/sapi/v1/userDataStream/isolated', { symbol }, 'MARGIN');
+    const resp = await this.request('POST', 'sapi', '/sapi/v1/userDataStream/isolated', { symbol }, 'USER_STREAM');
     if (resp.error) return resp;
 
     return resp;
@@ -3938,7 +3917,22 @@ class Spot {
 
     if (typeof listenKey === 'undefined') return new Error('listenKey', 'REQUIRED');
 
-    const resp = await this.request('PUT', 'api', '/api/v3/userDataStream', { listenKey }, 'NONE');
+    const resp = await this.request('PUT', 'api', '/api/v3/userDataStream', { listenKey }, 'USER_STREAM');
+    if (resp.error) return resp;
+
+    return resp;
+  }
+
+  /**
+  * @param {string} listenKey
+  * @returns { Promise < {} > }
+  */
+  async keepAlive_listenKey_isolatedMargin(symbol, listenKey) {
+
+    if (typeof symbol === 'undefined') return new Error('symbol', 'REQUIRED');
+    if (typeof listenKey === 'undefined') return new Error('listenKey', 'REQUIRED');
+
+    const resp = await this.request('PUT', 'sapi', '/sapi/v1/userDataStream/isolated', { symbol, listenKey }, 'USER_STREAM');
     if (resp.error) return resp;
 
     return resp;
