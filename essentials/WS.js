@@ -100,25 +100,25 @@ class WS {
                             }
                         );
 
-                        this.socket.ping();
+                        if (this.socket.readyState === this.socket.OPEN) this.socket.ping();
 
                         setTimeout(
                             () => {
-                                if (!ponged) this.socket.ping();
+                                if (!ponged && this.socket.readyState === this.socket.OPEN) this.socket.ping();
                             }
                             ,
                             1 * SECOND
                         );
                         setTimeout(
                             () => {
-                                if (!ponged) this.socket.ping();
+                                if (!ponged && this.socket.readyState === this.socket.OPEN) this.socket.ping();
                             }
                             ,
                             5 * SECOND
                         );
                         setTimeout(
                             () => {
-                                if (!ponged) this.socket.ping();
+                                if (!ponged && this.socket.readyState === this.socket.OPEN) this.socket.ping();
                             }
                             ,
                             10 * SECOND
@@ -127,7 +127,6 @@ class WS {
                 )
 
                 if (!isConnectionHealthy) this.socket.close();
-                console.log({ isConnectionHealthy, for: this.socket.url, on: new Date().toLocaleTimeString() })
 
             }
             ,
