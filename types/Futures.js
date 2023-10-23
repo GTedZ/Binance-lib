@@ -2856,14 +2856,16 @@ class userData_Futures_ACCOUNT_UPDATE_Order {
     closePosition;
 
     /**
+     * - Activation Price, only returned with TRAILING_STOP_MARKET order
      * @type {stringNumber}
      */
-    activationPrice;
+    activatePrice;
 
     /**
+     * - Callback Rate, only return with TRAILING_STOP_MARKET order
      * @type {stringNumber}
      */
-    callbackRate;
+    priceRate;
 
     /**
      * @type {stringNumber}
