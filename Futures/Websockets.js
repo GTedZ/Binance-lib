@@ -757,7 +757,7 @@ const USERDATA_RESPONSES = {
                 ['L', 'lastFilledPrice'],
                 ['N', 'commissionAsset'],
                 ['n', 'commission'],
-                ['T', 'tradeTime'],
+                ['T', 'updateTime'],
                 ['t', 'tradeId'],
                 ['b', 'bidsNotional'],
                 ['a', 'askNotional'],

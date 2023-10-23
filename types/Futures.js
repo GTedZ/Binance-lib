@@ -2808,7 +2808,7 @@ class userData_Futures_ACCOUNT_UPDATE_Order {
     /**
      * @type {number}
      */
-    tradeTime;
+    updateTime;
 
     /**
      * @type {number}
