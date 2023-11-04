@@ -206,8 +206,11 @@ class WS_Connection {
 
     constructor(baseURL, path_or_paths) {
         this.baseURL = baseURL;
-        if (Array.isArray(path_or_paths)) for (const path of path_or_paths) this.paths.add(path);
-        else this.paths.add(path_or_paths)
+
+        if (typeof path_or_paths !== 'undefined') {
+            if (Array.isArray(path_or_paths)) for (const path of path_or_paths) this.paths.add(path);
+            else this.paths.add(path_or_paths)
+        }
 
         this.Websocket = new WS(baseURL, this.paths, this.eventEmitter);
 
@@ -386,6 +389,7 @@ function delay(ms) {
 
 
 module.exports = {
+    WS,
     WS_Connection,
     Binance_WS_Connection
 };

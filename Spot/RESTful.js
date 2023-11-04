@@ -11,6 +11,7 @@ const Spot_Websockets = require('./Websockets');
 const { exchangeInfo, exchangeInfo_mapped,
   ticker_24h, miniTicker_24h, bookTicker, kline_interval, orderSide, orderType, timeInForce, newOrderRespType, selfTradePreventionMode, cancelRestrictions,
   Account, Trade, AggTrade, Candlestick, Order, Account_mapped } = require('../types/Spot');
+const Websocket_API = require('./Websocket_API');
 
 class Spot {
 
@@ -53,6 +54,21 @@ class Spot {
     requestTypes_SIGNED: ['TRADE', 'MARGIN', 'USER_DATA'],
 
 
+  }
+
+  /**
+   * @returns { Promise < Websocket_API > }
+   */
+  async websocket_API() {
+    const socket = new Websocket_API(this.options, this.info);
+
+    try {
+      await socket.connect();
+    } catch (err) {
+      return err
+    } finally {
+      return socket;
+    }
   }
 
   // MARKET DATA  \\\\
