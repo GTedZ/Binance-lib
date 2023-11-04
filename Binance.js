@@ -14,6 +14,7 @@ require('./Spot/Websockets');       // this is for intellisense
 require('./Futures/Websockets');    // this is for intellisense
 require('./types/Spot');            // this is for intellisense
 require('./types/Futures');         // this is for intellisense
+require('./Spot/Websocket_API');
 
 class Binance {
 
