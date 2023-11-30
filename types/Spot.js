@@ -1519,15 +1519,16 @@ class Order {
 
         const fills_count = Order.fills.length;
 
-        let mult_total = 0;
+        let mult_total = 0, total_qty = 0;
 
         for (const fill of Order.fills) {
             mult_total += fill.price.parseFloat() * fill.qty.parseFloat();
+            total_qty += fill.qty.parseFloat();
             if (!this.commissions[fill.commissionAsset]) this.commissions[fill.commissionAsset] = 0;
             this.commissions[fill.commissionAsset] += fill.commission.parseFloat();
         }
 
-        this.avgPrice = parseFloat((mult_total / fills_count).toFixed(8));
+        this.avgPrice = parseFloat(((mult_total / fills_count) / total_qty).toFixed(8));
 
         this.commissionAssets = Object.keys(this.commissions);
     }
