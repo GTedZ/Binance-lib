@@ -1517,8 +1517,6 @@ class Order {
 
         if (!Order.fills || Order.fills.length === 0) return;
 
-        const fills_count = Order.fills.length;
-
         let mult_total = 0, total_qty = 0;
 
         for (const fill of Order.fills) {
@@ -1528,7 +1526,7 @@ class Order {
             this.commissions[fill.commissionAsset] += fill.commission.parseFloat();
         }
 
-        this.avgPrice = parseFloat(((mult_total / fills_count) / total_qty).toFixed(8));
+        this.avgPrice = parseFloat((mult_total / total_qty).toFixed(8));
 
         this.commissionAssets = Object.keys(this.commissions);
     }
