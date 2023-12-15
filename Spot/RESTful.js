@@ -518,12 +518,13 @@ class Spot {
      * console.log( await testGenerator.limitMarketBuy('BTCUSDT', ...) )
      * console.log( await testGenerator.<functionName>(parameters) )
      * 
-     * @returns {Promise <Spot>}
+     * @returns {Spot}
      * @since v3.0.0
      */
-  async create_testOrder_generator() {
+  create_testOrder_generator() {
     const Binance = require('../Binance');
     const temp_binanceSpot = new Binance().spot;
+
     Object.assign(
       temp_binanceSpot
       ,
