@@ -37,7 +37,7 @@ class Futures_Websockets {
         MARKPRICE: (symbol, interval) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@markPrice${interval === '1s' ? '@1s' : ''}`) : '',
         ALL_MARKPRICE: (interval) => `!markPrice@arr${interval === '1s' ? '@1s' : ''}`,
 
-        CANDLESTICKS: (symbol, interval) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@${interval}`) : '',
+        CANDLESTICKS: (symbol, interval) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@kline_${interval}`) : '',
 
         CONTINUOUSCANDLESTICKS: (pair, contractType, interval) => typeof pair === 'string' ? (`${pair.toLowerCase()}_${contractType}@continuousKline_${interval}`) : '',
 

@@ -34,7 +34,7 @@ class Spot_Websockets {
 
         TRADE: (symbol) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@trade`) : '',
 
-        CANDLESTICKS: (symbol, interval) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@${interval}`) : '',
+        CANDLESTICKS: (symbol, interval) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@kline_${interval}`) : '',
 
         MINITICKER: (symbol) => typeof symbol === 'string' ? (`${symbol.toLowerCase()}@miniTicker`) : '',
         ALL_MINITICKER: () => '!miniTicker@arr',
