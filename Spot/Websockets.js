@@ -483,10 +483,10 @@ class Spot_Websockets {
             callback
             ,
             (msg) => {
-                if (msg.event === WS.events.ACCOUNT_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.ACCOUNT_UPDATE);
-                if (msg.event === WS.events.BALANCE_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.BALANCE_UPDATE);
-                if (msg.event === WS.events.ORDER_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.ORDER_UPDATE);
-                if (msg.event === WS.events.listStatus) return this.convert_websocket_response(msg, USERDATA_RESPONSES.listStatus);
+                if (msg.e === WS.events.ACCOUNT_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.ACCOUNT_UPDATE);
+                if (msg.e === WS.events.BALANCE_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.BALANCE_UPDATE);
+                if (msg.e === WS.events.ORDER_UPDATE) return this.convert_websocket_response(msg, USERDATA_RESPONSES.ORDER_UPDATE);
+                if (msg.e === WS.events.listStatus) return this.convert_websocket_response(msg, USERDATA_RESPONSES.listStatus);
                 else return msg;
             }
             ,
