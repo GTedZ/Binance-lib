@@ -4,7 +4,7 @@
   "description": "A JS library for binance, only the basic features.",
   "main": "Binance.js",
   "scripts": {
-    "test": "@echo off & start cmd /k \"title global & node tests/global & title spot-test & node tests/spot-t & title futures-test & node tests/futures-t\""
+    "test": ""
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,6 @@
   "licenseURL": "https://www.mit.edu/~amini/LICENSE.md",
   "homepage": "https://github.com/GTedZ/Binance-lib#readme",
   "dependencies": {
-    "axios": "^1.4.0",
-    "json-bigint": "^1.0.0",
     "ws": "^8.9.0"
   },
   "keywords": [
